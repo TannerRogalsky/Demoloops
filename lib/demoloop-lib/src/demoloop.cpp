@@ -6,13 +6,17 @@
 #include "helpers.h"
 #include "cleanup.h"
 
+#ifdef EMSCRIPTEN
+  #include <emscripten.h>
+#endif
+
 const int SCREEN_WIDTH = 640, SCREEN_HEIGHT = 480;
 
 // implementation of constructor
 Demoloop::Demoloop()
  :quit(false) {
 
-  if (SDL_Init(SDL_INIT_EVERYTHING) != 0){
+  if (SDL_Init(SDL_INIT_VIDEO) != 0){
     logSDLError(std::cerr, "SDL_Init");
     // return 1;
   }
@@ -41,6 +45,7 @@ Demoloop::Demoloop()
 Demoloop::~Demoloop() {
   cleanup(renderer, window);
   IMG_Quit();
+  TTF_Quit();
   SDL_Quit();
 }
 
@@ -66,7 +71,11 @@ void Demoloop::InternalUpdate(float dt) {
 void Demoloop::Run() {
   #ifdef __EMSCRIPTEN__
     // void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop);
-    emscripten_set_main_loop(InternalUpdate, -1, 1);
+    // emscripten_set_main_loop(InternalUpdate, -1, 1);
+    emscripten_set_main_loop_arg([](void *arg) {
+      Demoloop *self = (Demoloop*)arg;
+      self->InternalUpdate(1.0/60.0);
+    }, (void *)this, 0, 1);
   #else
     while (!quit) {
       InternalUpdate(1.0/60.0);

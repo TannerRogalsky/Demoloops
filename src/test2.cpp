@@ -36,7 +36,7 @@ int main(int, char**){
   //this lets us choose when to upload or remove textures from the GPU
   // std::string path = SDL_GetBasePath();
   // std::string imagePath = path.substr(0, path.rfind("build")) + "res/hello.bmp";
-  std::string imagePath = "../res/hello.bmp";
+  std::string imagePath = "../res/image.png";
   SDL_Surface *bmp = SDL_LoadBMP(imagePath.c_str());
   if (bmp == nullptr){
     SDL_DestroyRenderer(ren);
