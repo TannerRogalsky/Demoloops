@@ -12,16 +12,19 @@
 
 const int SCREEN_WIDTH = 640, SCREEN_HEIGHT = 480;
 
+Demoloop::Demoloop() : Demoloop(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0) {}
+Demoloop::Demoloop(int r, int g, int b) : Demoloop(SCREEN_WIDTH, SCREEN_HEIGHT, r, g, b) {}
+
 // implementation of constructor
-Demoloop::Demoloop()
- :quit(false) {
+Demoloop::Demoloop(int width, int height, int r, int g, int b)
+ :quit(false), bg_r(r), bg_g(g), bg_b(b) {
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0){
     logSDLError(std::cerr, "SDL_Init");
     // return 1;
   }
 
-  window = SDL_CreateWindow("Lesson 2", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+  window = SDL_CreateWindow("Demoloop", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
   if (window == nullptr){
     logSDLError(std::cerr, "CreateWindow");
     SDL_Quit();
@@ -56,16 +59,17 @@ void Demoloop::InternalUpdate(float dt) {
       quit = true;
     }
     //If user presses any key
-    if (e.type == SDL_KEYDOWN){
-      quit = true;
-    }
-    //If user clicks the mouse
-    if (e.type == SDL_MOUSEBUTTONDOWN){
+    if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE){
       quit = true;
     }
   }
 
+  SDL_SetRenderDrawColor(renderer, bg_r, bg_g, bg_b, 255);
+  SDL_RenderClear(renderer);
+
   Update(dt);
+
+  SDL_RenderPresent(renderer);
 }
 
 void Demoloop::Run() {
