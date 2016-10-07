@@ -1,5 +1,11 @@
 #pragma once
 
+#include <iostream>
+#include <string>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+
 /*
  * Log an SDL error with some error message to the output stream of our choice
  * @param os The output stream to write the message too
