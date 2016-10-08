@@ -17,7 +17,7 @@ Demoloop::Demoloop(int r, int g, int b) : Demoloop(SCREEN_WIDTH, SCREEN_HEIGHT, 
 
 // implementation of constructor
 Demoloop::Demoloop(int width, int height, int r, int g, int b)
- :quit(false), bg_r(r), bg_g(g), bg_b(b) {
+ :quit(false), width(width), height(height), bg_r(r), bg_g(g), bg_b(b) {
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0){
     logSDLError(std::cerr, "SDL_Init");

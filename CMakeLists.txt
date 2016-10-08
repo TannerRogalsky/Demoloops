@@ -1,17 +1,18 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.3)
 project(demoloops)
 
-set(LOOPS
-  test1
-  test2
-  test3
+set(ASSET_LOOPS
   test4
+)
+
+set(LOOPS ${ASSET_LOOPS}
+  loop1
+  loop2
 )
 
 # SDL2
 if (EMSCRIPTEN)
   add_definitions("-std=c++11 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --preload-file ../res --use-preload-plugins")
 
   include_directories("/Users/tanner/code/c/SDL2_gfx-1.0.1")
 else()
@@ -38,6 +39,16 @@ foreach(LOOP ${LOOPS})
   add_executable(${LOOP} ${PROJECT_SOURCE_DIR}/src/${LOOP}.cpp)
 
   if (EMSCRIPTEN)
+    if (${LOOP} IN_LIST ASSET_LOOPS)
+      get_target_property(TEMP ${LOOP} LINK_FLAGS)
+      if(TEMP STREQUAL "TEMP-NOTFOUND")
+        SET(TEMP "") # set to empty string
+      endif()
+      # append our values
+      SET(TEMP "${TEMP} --preload-file ../res --use-preload-plugins")
+      set_target_properties(${LOOP} PROPERTIES LINK_FLAGS ${TEMP} )
+    endif()
+
     target_link_libraries(${LOOP} demoloop-lib "/Users/tanner/code/c/SDL2_gfx-1.0.1/build/.libs/libSDL2_gfx.a")
     set_property(TARGET ${LOOP} PROPERTY SUFFIX ".html")
   else()
@@ -52,5 +63,5 @@ foreach(LOOP ${LOOPS})
         DEPENDS ${LOOP}
         WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
     )
-  endif(NOT EMSCRIPTEN)
+  endif(EMSCRIPTEN)
 endforeach(LOOP)

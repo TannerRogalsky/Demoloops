@@ -9,6 +9,7 @@ public:
   ~Demoloop();
   void Run();
   virtual void Update(float dt) = 0;
+  const int width, height;
 protected:
   bool quit;
   SDL_Renderer *renderer;
