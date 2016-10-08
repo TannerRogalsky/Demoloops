@@ -11,6 +11,7 @@
 #endif
 
 const int SCREEN_WIDTH = 640, SCREEN_HEIGHT = 480;
+const int FRAMES_PER_SECOND = 60;
 
 Demoloop::Demoloop() : Demoloop(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0) {}
 Demoloop::Demoloop(int r, int g, int b) : Demoloop(SCREEN_WIDTH, SCREEN_HEIGHT, r, g, b) {}
@@ -52,7 +53,7 @@ Demoloop::~Demoloop() {
   SDL_Quit();
 }
 
-void Demoloop::InternalUpdate(float dt) {
+void Demoloop::InternalUpdate() {
   while (SDL_PollEvent(&e)){
     //If user closes the window
     if (e.type == SDL_QUIT){
@@ -67,24 +68,28 @@ void Demoloop::InternalUpdate(float dt) {
   SDL_SetRenderDrawColor(renderer, bg_r, bg_g, bg_b, 255);
   SDL_RenderClear(renderer);
 
-  Update(dt);
+  auto now = std::chrono::high_resolution_clock::now();
+  std::chrono::microseconds delta = std::chrono::duration_cast<std::chrono::microseconds>(now - previous_frame);
+  Update(delta.count() / 1000000.0);
+  previous_frame = std::chrono::high_resolution_clock::now();
 
   SDL_RenderPresent(renderer);
 }
 
 void Demoloop::Run() {
+  previous_frame = std::chrono::high_resolution_clock::now();
   #ifdef __EMSCRIPTEN__
     // void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop);
     // emscripten_set_main_loop(InternalUpdate, -1, 1);
     emscripten_set_main_loop_arg([](void *arg) {
       Demoloop *self = (Demoloop*)arg;
-      self->InternalUpdate(1.0/60.0);
+      self->InternalUpdate();
     }, (void *)this, 0, 1);
   #else
     while (!quit) {
-      InternalUpdate(1.0/60.0);
+      InternalUpdate();
       // Delay to keep frame rate constant (using SDL)
-      SDL_Delay(16);
+      SDL_Delay(1.0/FRAMES_PER_SECOND);
     }
   #endif
 }
