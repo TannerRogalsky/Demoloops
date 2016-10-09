@@ -8,6 +8,7 @@ set(ASSET_LOOPS
 set(LOOPS ${ASSET_LOOPS}
   loop1
   loop2
+  loop3
 )
 
 # SDL2
