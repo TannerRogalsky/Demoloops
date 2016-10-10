@@ -3,13 +3,13 @@
 #include <SDL.h>
 #include <chrono>
 
-class Demoloop
+class DemoloopOpenGL
 {
 public:
-  Demoloop();
-  Demoloop(int r, int g, int b);
-  Demoloop(int width, int height, int r, int g, int b);
-  ~Demoloop();
+  DemoloopOpenGL();
+  DemoloopOpenGL(int r, int g, int b);
+  DemoloopOpenGL(int width, int height, int r, int g, int b);
+  ~DemoloopOpenGL();
   void Run();
   virtual void Update(float dt) = 0;
   const int width, height;

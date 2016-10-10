@@ -10,6 +10,7 @@ set(LOOPS ${ASSET_LOOPS}
   loop2
   loop3
   loop4
+  testopengl
 )
 
 # SDL2
@@ -30,6 +31,16 @@ else()
                       ${SDL2TTF_INCLUDE_DIRS}
                       ${SDL2GFX_INCLUDE_DIRS})
 endif(EMSCRIPTEN)
+
+if (NOT EMSCRIPTEN)
+  # OpenGL
+  find_package(OpenGL REQUIRED)
+  include_directories(${OPENGL_INCLUDE_DIR})
+
+  # GLEW
+  find_package(GLEW REQUIRED)
+  include_directories(${GLEW_INCLUDE_DIRS})
+endif()
 
 # DEMOLOOP LIB
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/demoloop-lib)
@@ -58,7 +69,9 @@ foreach(LOOP ${LOOPS})
                           ${SDL2_LIBRARIES}
                           ${SDL2IMAGE_LIBRARIES}
                           ${SDL2TFF_LIBRARIES}
-                          ${SDL2GFX_LIBRARIES})
+                          ${SDL2GFX_LIBRARIES}
+                          ${OPENGL_LIBRARIES}
+                          ${GLEW_LIBRARIES})
     set_property(TARGET ${LOOP} PROPERTY CXX_STANDARD 11)
     add_custom_target(run-${LOOP}
         COMMAND ${LOOP}

@@ -6,12 +6,24 @@ set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(SRCS
   ${PROJECT_SOURCE_DIR}/demoloop.cpp
+  ${PROJECT_SOURCE_DIR}/demoloop_opengl.cpp
   ${PROJECT_SOURCE_DIR}/helpers.cpp
+  ${PROJECT_SOURCE_DIR}/opengl_helpers.cpp
   ${PROJECT_SOURCE_DIR}/hsl.cpp
 )
 
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories("${PROJECT_INCLUDE_DIR}")
+
+if (NOT EMSCRIPTEN)
+  # OpenGL
+  find_package(OpenGL REQUIRED)
+  include_directories(${OPENGL_INCLUDE_DIR})
+
+  # GLEW
+  find_package(GLEW REQUIRED)
+  include_directories(${GLEW_INCLUDE_DIRS})
+endif()
 
 # SDL2
 if (EMSCRIPTEN)
@@ -31,5 +43,10 @@ else()
 endif(EMSCRIPTEN)
 
 add_library(${PROJECT_NAME} SHARED ${SRCS})
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} ${SDL2TFF_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+  ${SDL2_LIBRARIES}
+  ${SDL2IMAGE_LIBRARIES}
+  ${SDL2TFF_LIBRARIES}
+  ${OPENGL_LIBRARIES}
+  ${GLEW_LIBRARIES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
