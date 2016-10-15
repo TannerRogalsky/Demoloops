@@ -21,7 +21,6 @@ public:
 
     float cycle = fmod(t, CYCLE_LENGTH);
     float cycle_ratio = cycle / CYCLE_LENGTH;
-    float aspect_ratio = (width + 0.0) / height;
     int ox = width / 2, oy = height / 2;
 
     const int num_vertices = 8;

@@ -16,7 +16,7 @@ public:
     image = loadTexture(getResourcePath() + "image.png", renderer);
 
     auto font = loadFont(getResourcePath() + "04b03.TTF", 16);
-    SDL_Color White = {255, 255, 255};
+    SDL_Color White = {255, 255, 255, 255};
     text = renderText("TEST", font, White, renderer);
     cleanup(font);
   }

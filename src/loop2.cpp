@@ -21,23 +21,31 @@ public:
 
     float cycle = fmod(t, CYCLE_LENGTH);
     float cycle_ratio = cycle / CYCLE_LENGTH;
-    float aspect_ratio = (width + 0.0) / height;
     int ox = width / 2, oy = height / 2;
 
     const int num_vertices = 20;
     const float interval = (PI * 2) / num_vertices;
-    int16_t xCoords[num_vertices];
-    int16_t yCoords[num_vertices];
-    for (int i = 0; i < num_vertices; ++i) {
-      float t = i;
-      float interval_cycle_ratio = fmod(t / num_vertices + cycle_ratio, 1);
+    int16_t xCoords[num_vertices + 1];
+    int16_t yCoords[num_vertices + 1];
+    for (int i = 0; i < num_vertices + 1; ++i) {
+      const float t = i % num_vertices;
+      const float interval_cycle_ratio = fmod(t / num_vertices + cycle_ratio, 1);
+      const float num_extra_vertices = pow(sin(cycle_ratio * PI), 2) * 2 + 2;
+      const float vertex_cycle = pow(sin(interval_cycle_ratio * PI * num_extra_vertices), 2);
 
-      xCoords[i] = cos(interval * t) * (interval_cycle_ratio) * RADIUS + ox;
-      yCoords[i] = sin(interval * t) * (interval_cycle_ratio) * RADIUS + oy;
+      xCoords[i] = cos(interval * t) * (vertex_cycle) * RADIUS + ox;
+      yCoords[i] = sin(interval * t) * (vertex_cycle) * RADIUS + oy;
     }
 
-    auto color = hsl2rgb(cycle_ratio, 1, 0.5);
-    filledPolygonColor(renderer, xCoords, yCoords, num_vertices, rgb2uint32(color));
+    for (int i = 0; i < num_vertices; ++i) {
+      const float t = i;
+      const float interval_cycle_ratio = fmod(t / num_vertices + cycle_ratio, 1);
+      const auto color = hsl2rgb(interval_cycle_ratio, 1, 0.5);
+      filledTrigonColor(renderer,
+                        ox, oy,
+                        xCoords[i], yCoords[i],
+                        xCoords[i + 1], yCoords[i + 1], rgb2uint32(color));
+    }
   }
 
 private:

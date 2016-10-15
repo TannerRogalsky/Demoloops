@@ -19,7 +19,7 @@ DemoloopOpenGL::DemoloopOpenGL(int r, int g, int b) : DemoloopOpenGL(SCREEN_WIDT
 
 // implementation of constructor
 DemoloopOpenGL::DemoloopOpenGL(int width, int height, int r, int g, int b)
- :quit(false), width(width), height(height), bg_r(r), bg_g(g), bg_b(b) {
+ :width(width), height(height), quit(false), bg_r(r), bg_g(g), bg_b(b) {
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0){
     logSDLError(std::cerr, "SDL_Init");

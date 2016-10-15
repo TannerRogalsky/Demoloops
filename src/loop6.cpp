@@ -21,7 +21,6 @@ public:
 
     float cycle = fmod(t, CYCLE_LENGTH);
     float cycle_ratio = cycle / CYCLE_LENGTH;
-    float aspect_ratio = (width + 0.0) / height;
     int ox = width / 2, oy = height / 2;
 
     const int num_vertices = 5;
@@ -38,7 +37,6 @@ public:
     filledPolygonColor(renderer, xCoords, yCoords, num_vertices, rgb2uint32(color));
 
     const int dot_count = 20;
-    const float angularOffset = -PI / 2;
     for (float i = 0; i < dot_count; ++i) {
       float interval_cycle_ratio = fmod(i / dot_count + cycle_ratio, 1);
 

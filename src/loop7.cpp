@@ -7,6 +7,8 @@
 #include "hsl.h"
 using namespace std;
 
+#define MAX_VERTS 9
+
 float t = 0;
 const float CYCLE_LENGTH = 10;
 
@@ -21,7 +23,6 @@ public:
 
     float cycle = fmod(t, CYCLE_LENGTH);
     float cycle_ratio = cycle / CYCLE_LENGTH;
-    float aspect_ratio = (width + 0.0) / height;
     int ox = width / 2, oy = height / 2;
 
     const int num_vertices = cycle_ratio * 6 + 3;
@@ -29,8 +30,8 @@ public:
     const float rotation_offset = rotationOffset(num_vertices);
 
     const float interval = (PI * 2) / num_vertices;
-    int16_t xCoords[num_vertices];
-    int16_t yCoords[num_vertices];
+    int16_t xCoords[MAX_VERTS];
+    int16_t yCoords[MAX_VERTS];
     for (int i = 0; i < num_vertices; ++i) {
       float t = i;
       xCoords[i] = cos(interval * t - rotation_offset) * RADIUS + ox;
@@ -41,7 +42,6 @@ public:
     filledPolygonColor(renderer, xCoords, yCoords, num_vertices, rgb2uint32(color));
 
     const int dot_count = 50;
-    const float angularOffset = -PI / 2;
     for (float i = 0; i < dot_count; ++i) {
       float interval_cycle_ratio = fmod(i / dot_count + cycle_ratio, 1);
 
