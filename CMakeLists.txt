@@ -10,6 +10,10 @@ set(LOOPS ${ASSET_LOOPS}
   loop2
   loop3
   loop4
+  loop5
+  loop6
+  loop7
+  loop8
   testopengl
 )
 

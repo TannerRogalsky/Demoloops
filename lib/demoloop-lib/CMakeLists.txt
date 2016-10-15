@@ -10,6 +10,8 @@ set(SRCS
   ${PROJECT_SOURCE_DIR}/helpers.cpp
   ${PROJECT_SOURCE_DIR}/opengl_helpers.cpp
   ${PROJECT_SOURCE_DIR}/hsl.cpp
+  ${PROJECT_SOURCE_DIR}/common/matrix.cpp
+  ${PROJECT_SOURCE_DIR}/common/vector.cpp
 )
 
 include_directories("${PROJECT_BINARY_DIR}")
