@@ -60,3 +60,5 @@ TTF_Font* loadFont(const std::string &fontFile, int fontSize);
  * @return An SDL_Texture containing the rendered message, or nullptr if something went wrong
  */
 SDL_Texture* renderText(const std::string &message, TTF_Font *font, SDL_Color color, SDL_Renderer *renderer);
+
+char* filetobuf(char *file);

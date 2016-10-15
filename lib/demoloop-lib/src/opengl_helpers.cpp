@@ -89,23 +89,25 @@ const char* getVersionPragma() {
   return profileMask == SDL_GL_CONTEXT_PROFILE_ES ? "#version 100\n" : "#version 120\n";
 }
 
-std::string createVertexCode(const char *vertexShaderSource) {
+std::string createVertexCode(const std::string &vertexShaderSource) {
   std::stringstream ss;
   ss << getVersionPragma() << SYNTAX << VERTEX_HEADER << UNIFORMS << vertexShaderSource << "\n" << VERTEX_FOOTER;
   return ss.str();
 }
 
-std::string createFragmentCode(const char *fragmentShaderSource) {
+std::string createFragmentCode(const std::string &fragmentShaderSource) {
   std::stringstream ss;
   ss << getVersionPragma() << SYNTAX << FRAG_HEADER << UNIFORMS << fragmentShaderSource << "\n" << FRAG_FOOTER;
   return ss.str();
 }
 
-GLuint loadProgram(const char* vertexShaderSource, const char* fragmentShaderSource) {
+GLuint loadProgram(const std::string &vertexShaderSource, const std::string &fragmentShaderSource) {
   GLuint gProgramID = glCreateProgram();
 
   GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+  const char *vertexSrc = vertexShaderSource.c_str();
+  GLint vertexSrclen = (GLint) vertexShaderSource.length();
+  glShaderSource(vertexShader, 1, (const GLchar **)&vertexSrc, &vertexSrclen);
   glCompileShader(vertexShader);
   GLint vShaderCompiled = GL_FALSE;
   glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vShaderCompiled);
@@ -117,7 +119,9 @@ GLuint loadProgram(const char* vertexShaderSource, const char* fragmentShaderSou
   }
 
   GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+  const char *fragmentSrc = fragmentShaderSource.c_str();
+  GLint fragmentSrclen = (GLint) fragmentShaderSource.length();
+  glShaderSource(fragmentShader, 1, (const GLchar **)&fragmentSrc, &fragmentSrclen);
   glCompileShader(fragmentShader);
   GLint fShaderCompiled = GL_FALSE;
   glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fShaderCompiled);
