@@ -35,25 +35,30 @@ public:
 
     auto color = hsl2rgb(cycle_ratio, 1, 0.5);
     filledPolygonColor(renderer, xCoords, yCoords, num_vertices, rgb2uint32(color));
-
     const int dot_count = 20;
     for (int v = 0; v < num_vertices; ++v) {
       const float angularOffset = interval * v;
       for (float i = 0; i < dot_count; ++i) {
-        float interval_cycle_ratio = fmod(i / dot_count + cycle_ratio, 1);
+        const float interval_cycle_ratio = fmod(i / dot_count + cycle_ratio, 1);
 
-        float x1 = cos(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
-        float y1 = sin(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
+        const float x1 = cos(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
+        const float y1 = sin(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
 
         filledCircleRGBA(renderer, x1 + ox, y1 + oy, 3, 0, 0, 0, 255 * interval_cycle_ratio);
+
+        if (i == 0) {
+          const float x2 = cos(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
+          const float y2 = sin(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
+          lineRGBA(renderer, x2 + ox, y2 + oy, xCoords[v], yCoords[v], 0, 0, 0, 255);
+        }
       }
     }
 
     for (float i = 0; i < dot_count; ++i) {
-      float interval_cycle_ratio = fmod(i / dot_count + cycle_ratio, 1);
+      const float interval_cycle_ratio = fmod(i / dot_count + cycle_ratio, 1);
 
-      float x1 = cos(interval_cycle_ratio * PI * 2 - PI / 2) * RADIUS;
-      float y1 = sin(interval_cycle_ratio * PI * 2 - PI / 2) * RADIUS;
+      const float x1 = cos(interval_cycle_ratio * PI * 2 - PI / 2) * RADIUS;
+      const float y1 = sin(interval_cycle_ratio * PI * 2 - PI / 2) * RADIUS;
 
       filledCircleRGBA(renderer, x1 + ox, y1 + oy, 3, 0, 0, 0, 255);
     }
