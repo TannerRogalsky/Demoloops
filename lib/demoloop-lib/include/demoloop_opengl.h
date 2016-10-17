@@ -4,8 +4,8 @@
 #include <chrono>
 #include "graphics/gl.h"
 
-class DemoloopOpenGL
-{
+namespace Demoloop {
+class DemoloopOpenGL {
 public:
   DemoloopOpenGL();
   DemoloopOpenGL(int r, int g, int b);
@@ -25,3 +25,4 @@ private:
   void InternalUpdate();
   SDL_Event e;
 };
+}

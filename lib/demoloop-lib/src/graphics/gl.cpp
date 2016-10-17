@@ -48,6 +48,21 @@ namespace Demoloop {
     matrices.projection.back() = Matrix4::ortho(0, v.w, v.h, 0);
   }
 
+  void GL::pushTransform()
+  {
+    matrices.transform.push_back(matrices.transform.back());
+  }
+
+  void GL::popTransform()
+  {
+    matrices.transform.pop_back();
+  }
+
+  Matrix4 &GL::getTransform()
+  {
+    return matrices.transform.back();
+  }
+
   void GL::prepareDraw() {
     Shader::defaultShader->attach();
 

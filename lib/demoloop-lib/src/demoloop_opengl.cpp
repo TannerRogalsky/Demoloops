@@ -11,6 +11,8 @@
   #include <emscripten.h>
 #endif
 
+namespace Demoloop {
+
 const int SCREEN_WIDTH = 640, SCREEN_HEIGHT = 480;
 const int FRAMES_PER_SECOND = 60;
 
@@ -101,8 +103,6 @@ void DemoloopOpenGL::InternalUpdate() {
     }
   }
 
-  // SDL_SetRenderDrawColor(renderer, bg_r, bg_g, bg_b, 255);
-  // SDL_RenderClear(renderer);
   glClearColor( bg_r / 255.0, bg_g / 255.0, bg_b / 255.0, 1.f );
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -111,15 +111,12 @@ void DemoloopOpenGL::InternalUpdate() {
   Update(delta.count() / 1000000.0);
   previous_frame = std::chrono::high_resolution_clock::now();
 
-  // SDL_RenderPresent(renderer);
   SDL_GL_SwapWindow(window);
 }
 
 void DemoloopOpenGL::Run() {
   previous_frame = std::chrono::high_resolution_clock::now();
   #ifdef __EMSCRIPTEN__
-    // void emscripten_set_main_loop(em_callback_func func, int fps, int simulate_infinite_loop);
-    // emscripten_set_main_loop(InternalUpdate, -1, 1);
     emscripten_set_main_loop_arg([](void *arg) {
       DemoloopOpenGL *self = (DemoloopOpenGL*)arg;
       self->InternalUpdate();
@@ -131,4 +128,6 @@ void DemoloopOpenGL::Run() {
       SDL_Delay(1.0/FRAMES_PER_SECOND);
     }
   #endif
+}
+
 }

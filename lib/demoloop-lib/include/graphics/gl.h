@@ -40,6 +40,10 @@ public:
    **/
   void setViewport(const Viewport &v);
 
+  void pushTransform();
+  void popTransform();
+  Matrix4 &getTransform();
+
   void prepareDraw();
 
   void polygon(const Vertex *coords, size_t count);

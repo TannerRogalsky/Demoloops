@@ -1,23 +1,13 @@
 #include <iostream>
 #include <cmath>
-#include <GL/glew.h>
 #include <SDL.h>
-#include <SDL2_gfxPrimitives.h>
-#include "common/matrix.h"
 #include "demoloop_opengl.h"
-#include "opengl_helpers.h"
-#include "graphics/gl.h"
-#include "hsl.h"
 using namespace std;
+using namespace Demoloop;
 
 float t = 0;
 const float PI = 3.1459;
 const float CYCLE_LENGTH = 3;
-
-struct Vector3f
-{
-  float x, y, z;
-};
 
 class Test4 : public DemoloopOpenGL {
 public:
@@ -28,33 +18,27 @@ public:
   void Update(float dt) {
     t += dt;
 
-    // const float RADIUS = height / 3;
+    const float cycle = fmod(t, CYCLE_LENGTH);
+    const float cycle_ratio = cycle / CYCLE_LENGTH;
 
-    // float cycle = fmod(t, CYCLE_LENGTH);
-    // float cycle_ratio = cycle / CYCLE_LENGTH;
-    // float count = 50;
-    // float aspect_ratio = (width + 0.0) / height;
+    const uint16_t num_vertices = 6;
+    const uint16_t RADIUS = height / 3;
 
-    // for (int i = 0; i < count; ++i) {
-    //   float interval_cycle_ratio = fmod(i / count + cycle_ratio, 1);
-    //   auto color = hsl2rgb(interval_cycle_ratio, 1, 0.5);
+    const float interval = PI * 2 / num_vertices;
 
-    //   float t = -interval_cycle_ratio;
-    //   int x1 = cos(t * PI * 2) * sin(i * PI * 2) * aspect_ratio * RADIUS;
-    //   int y1 = sin(t * PI * 2) * RADIUS;
-    //   filledCircleRGBA(renderer, x1, y1, 2, color.r, color.g, color.b, 255);
-    // }
+    Demoloop::Vertex coords[num_vertices];
+    for (int i = 0; i < num_vertices; ++i) {
+      const float t = i;
+      coords[i].x = cos(interval * t) * RADIUS + width / 2 + sin(cycle_ratio * PI * 2) * RADIUS / 2;
+      coords[i].y = sin(interval * t) * RADIUS + height / 2 + sin(cycle_ratio * PI * 2) * RADIUS / 2;
+    }
 
-    Demoloop::Vertex coords[4];
-    coords[0].x = -100 + 200;
-    coords[0].y = -100 + 200;
-    coords[1].x = 100 + 200;
-    coords[1].y = -100 + 200;
-    coords[2].x = 100 + 200;
-    coords[2].y = 100 + 200;
-    coords[3].x = -100 + 200;
-    coords[3].y = 100 + 200;
-    gl.polygon(coords, 4);
+    gl.pushTransform();
+    Matrix4& transform = gl.getTransform();
+    transform.translate(100, 100);
+
+    gl.polygon(coords, num_vertices);
+    gl.popTransform();
   }
 
 private:
