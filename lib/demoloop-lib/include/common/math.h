@@ -58,7 +58,7 @@
 #define LOVE_TORAD(x) (float)(x*LOVE_M_TORAD)
 #define LOVE_TODEG(x) (float)(x*LOVE_M_TODEG)
 
-namespace love
+namespace Demoloop
 {
 
 struct Vertex

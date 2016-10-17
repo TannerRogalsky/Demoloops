@@ -20,7 +20,7 @@
 
 #include "common/vector.h"
 
-namespace love
+namespace Demoloop
 {
 // Implementation in header.
 }

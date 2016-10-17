@@ -109,7 +109,8 @@ void DemoloopOpenGL::InternalUpdate() {
   Update(delta.count() / 1000000.0);
   previous_frame = std::chrono::high_resolution_clock::now();
 
-  SDL_RenderPresent(renderer);
+  // SDL_RenderPresent(renderer);
+  SDL_GL_SwapWindow(window);
 }
 
 void DemoloopOpenGL::Run() {

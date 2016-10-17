@@ -12,6 +12,8 @@ set(SRCS
   ${PROJECT_SOURCE_DIR}/hsl.cpp
   ${PROJECT_SOURCE_DIR}/common/matrix.cpp
   ${PROJECT_SOURCE_DIR}/common/vector.cpp
+  ${PROJECT_SOURCE_DIR}/graphics/shader.cpp
+  ${PROJECT_SOURCE_DIR}/graphics/gl.cpp
 )
 
 include_directories("${PROJECT_BINARY_DIR}")

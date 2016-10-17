@@ -27,7 +27,7 @@
 // LOVE
 #include "common/matrix.h"
 
-namespace love
+namespace Demoloop
 {
 
 /**

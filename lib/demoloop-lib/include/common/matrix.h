@@ -24,7 +24,7 @@
 // LOVE
 #include "common/math.h"
 
-namespace love
+namespace Demoloop
 {
 
 /**
