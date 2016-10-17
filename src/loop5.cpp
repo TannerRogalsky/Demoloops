@@ -38,7 +38,8 @@ public:
     const int dot_count = 20;
     for (int v = 0; v < num_vertices; ++v) {
       const float angularOffset = interval * v;
-      for (float i = 0; i < dot_count; ++i) {
+      for (int t = 0; t < dot_count; ++t) {
+        float i = t;
         const float interval_cycle_ratio = fmod(i / dot_count + cycle_ratio, 1);
 
         const float x1 = cos(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
@@ -46,10 +47,14 @@ public:
 
         filledCircleRGBA(renderer, x1 + ox, y1 + oy, 3, 0, 0, 0, 255 * interval_cycle_ratio);
 
-        if (i == 0) {
+        if (t == 0) {
+          const int n = (v + 1) % num_vertices;
           const float x2 = cos(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
           const float y2 = sin(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
+          const float x3 = cos(interval_cycle_ratio * PI * 2 - PI / 2 + (interval * n)) * interval_cycle_ratio * RADIUS;
+          const float y3 = sin(interval_cycle_ratio * PI * 2 - PI / 2 + (interval * n)) * interval_cycle_ratio * RADIUS;
           lineRGBA(renderer, x2 + ox, y2 + oy, xCoords[v], yCoords[v], 0, 0, 0, 255);
+          lineRGBA(renderer, x2 + ox, y2 + oy, x3 + ox, y3 + oy, 0, 0, 0, 255);
         }
       }
     }
