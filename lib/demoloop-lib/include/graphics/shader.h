@@ -15,6 +15,12 @@ class Shader {
 
 public:
 
+  // Pointer to currently active Shader.
+  static Shader *current;
+
+  // Pointer to the default Shader.
+  static Shader *defaultShader;
+
   enum UniformType
   {
     UNIFORM_FLOAT,

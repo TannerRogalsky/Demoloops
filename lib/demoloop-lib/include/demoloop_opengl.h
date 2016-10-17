@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <chrono>
+#include "graphics/gl.h"
 
 class DemoloopOpenGL
 {
@@ -18,6 +19,7 @@ protected:
   SDL_Renderer *renderer;
   SDL_Window *window;
   std::chrono::time_point<std::chrono::high_resolution_clock> previous_frame;
+  Demoloop::GL gl;
 private:
   int bg_r, bg_g, bg_b;
   void InternalUpdate();

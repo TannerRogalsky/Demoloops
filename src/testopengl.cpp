@@ -23,7 +23,6 @@ class Test4 : public DemoloopOpenGL {
 public:
   Test4() : DemoloopOpenGL(150, 150, 150) {
     std::cout << glGetString(GL_VERSION) << std::endl;
-    gl.setViewport({0, 0, width, height});
   }
 
   void Update(float dt) {
@@ -59,7 +58,6 @@ public:
   }
 
 private:
-  Demoloop::GL gl;
 };
 
 int main(int, char**){

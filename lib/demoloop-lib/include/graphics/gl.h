@@ -32,6 +32,8 @@ public:
   GL();
   ~GL();
 
+  bool initContext();
+
   /**
    * Sets the OpenGL rendering viewport to the specified rectangle.
    * The y-coordinate starts at the top.
@@ -47,7 +49,6 @@ private:
   void initMatrices();
   void createDefaultTexture();
 
-  Shader mDefaultShader;
   GLuint mDefaultTexture;
 
   GLuint mTexCoordBuffer;

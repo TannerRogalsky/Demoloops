@@ -65,7 +65,9 @@ DemoloopOpenGL::DemoloopOpenGL(int width, int height, int r, int g, int b)
       std::cerr << "Error initializing GLEW! " << glewGetErrorString(glewError) << std::endl;
     }
 
+    gl.initContext();
     glEnable(GL_MULTISAMPLE); // TODO: is this doing anything?
+    gl.setViewport({0, 0, width, height});
 
     //Use Vsync
     if (SDL_GL_SetSwapInterval(1) < 0) {

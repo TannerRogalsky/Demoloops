@@ -18,8 +18,8 @@ const char* VERTEX_HEADER = "#define VERTEX\n"
                             "#define LOVE_PRECISE_GAMMA\n"
                             "\n"
                             "attribute vec4 VertexPosition;\n"
-                            // "attribute vec4 VertexTexCoord;\n"
-                            // "attribute vec4 VertexColor;\n"
+                            "attribute vec4 VertexTexCoord;\n"
+                            "attribute vec4 VertexColor;\n"
                             "attribute vec4 ConstantColor;\n"
                             "\n"
                             "varying vec4 VaryingTexCoord;\n"
@@ -147,7 +147,9 @@ GLuint loadProgram(const std::string &vertexShaderSource, const std::string &fra
   }
 
   glBindAttribLocation(gProgramID, 0, "VertexPosition");
-  glBindAttribLocation(gProgramID, 1, "ConstantColor");
+  glBindAttribLocation(gProgramID, 1, "VertexTexCoord");
+  glBindAttribLocation(gProgramID, 2, "VertexColor");
+  glBindAttribLocation(gProgramID, 3, "ConstantColor");
 
   glLinkProgram(gProgramID);
 

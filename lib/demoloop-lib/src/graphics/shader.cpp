@@ -4,18 +4,21 @@
 
 namespace Demoloop {
 
+Shader *Shader::current = nullptr;
+Shader *Shader::defaultShader = nullptr;
+
 Shader::Shader(const ShaderSource &source) {
   mProgram = loadProgram(createVertexCode(source.vertex), createFragmentCode(source.fragment));
   mapActiveUniforms();
 
-  std::cout << "Shader Source:" << std::endl
-            << createVertexCode(source.vertex) << std::endl
-            << createFragmentCode(source.fragment) << std::endl << std::endl;
+  // std::cout << "Shader Source:" << std::endl
+  //           << createVertexCode(source.vertex) << std::endl
+  //           << createFragmentCode(source.fragment) << std::endl << std::endl;
 
-  std::cout << "Uniforms:" << std::endl;
-  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it) { // calls a_map.begin() and a_map.end()
-    std::cout << it->first << ", " << it->second.location << '\n';
-  }
+  // std::cout << "Uniforms:" << std::endl;
+  // for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it) { // calls a_map.begin() and a_map.end()
+  //   std::cout << it->first << ", " << it->second.location << '\n';
+  // }
 }
 
 Shader::~Shader() {}
