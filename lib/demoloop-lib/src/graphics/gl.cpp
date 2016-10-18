@@ -63,15 +63,63 @@ namespace Demoloop {
     return matrices.transform.back();
   }
 
-  void GL::prepareDraw() {
-    Shader::defaultShader->attach();
+  void GL::pushProjection()
+  {
+    matrices.projection.push_back(matrices.projection.back());
+  }
 
-    Matrix4 transform = matrices.transform.back();
+  void GL::popProjection()
+  {
+    matrices.projection.pop_back();
+  }
+
+  Matrix4 &GL::getProjection()
+  {
+    return matrices.projection.back();
+  }
+
+  void GL::prepareDraw() {
+    // Matrix4 transform = matrices.transform.back();
     // Shader::defaultShader->sendMatrix("TransformMatrix", 4, transform.getElements(), 1);
-    Matrix4 projection = matrices.projection.back();
+    // Matrix4 projection = matrices.projection.back();
     // Shader::defaultShader->sendMatrix("ProjectionMatrix", 4, projection.getElements(), 1);
-    Matrix4 tpMatrix(projection * transform);
-    Shader::defaultShader->sendMatrix("TransformProjectionMatrix", 4, tpMatrix.getElements(), 1);
+    // Matrix4 tpMatrix(projection * transform);
+    // Shader::defaultShader->sendMatrix("TransformProjectionMatrix", 4, tpMatrix.getElements(), 1);
+
+    // glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) 640 / (float) 480, 0.1f, 100.0f);
+    // // glm::mat4 Projection = glm::ortho(0.0, 640.0, 480.0, 0.0, 0.1, 100.0);
+    // // glm::mat4 Projection = glm::ortho(-1.0, 1.0, -1.0, 1.0, 0.1, 100.0);
+    // glm::mat4 View = glm::lookAt(
+    //     glm::vec3(0,0,100), // Camera is at (4,3,3), in World Space
+    //     glm::vec3(0,0,0), // and looks at the origin
+    //     glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+    //     );
+    // // for (int y = 0; y < 4; ++y)
+    // // {
+    // //   for (int x = 0; x < 4; ++x)
+    // //   {
+    // //     std::cout << View[y][x] << std::endl;
+    // //   }
+    // //   std::cout << std::endl;
+    // // }
+    // // std::cout << std::endl << std::endl;
+    // glm::mat4 Model = glm::mat4(1.0f);
+    // // Model = translate(Model, glm::vec3(100, 100, 0));
+    // glm::mat4 mvp = Projection * View * Model;
+    // Shader::defaultShader->sendMatrix("TransformProjectionMatrix", 4, &mvp[0][0], 1);
+
+    Matrix4 View = matrices.transform.back();
+    Matrix4 Projection = matrices.projection.back();
+    // Matrix4 Projection = Matrix4::perspective(45.0f, 640.0 / 480.0, 0.1, 100.0);
+
+    // for (int i = 0; i < 16; ++i)
+    // {
+    //   std::cout << View.e[i] << std::endl;
+    // }
+    // std::cout << std::endl;
+
+    Matrix4 mvp = Projection * View; // * Model
+    Shader::defaultShader->sendMatrix("TransformProjectionMatrix", 4, mvp.getElements(), 1);
   }
 
   void GL::polygon(const Vertex *coords, size_t count) {

@@ -44,6 +44,10 @@ public:
   void popTransform();
   Matrix4 &getTransform();
 
+  void pushProjection();
+  void popProjection();
+  Matrix4 &getProjection();
+
   void prepareDraw();
 
   void polygon(const Vertex *coords, size_t count);

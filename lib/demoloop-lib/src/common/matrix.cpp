@@ -177,6 +177,13 @@ void Matrix4::shear(float kx, float ky)
   this->operator *=(t);
 }
 
+void Matrix4::copy(const Matrix4 &other) {
+  auto otherE = other.getElements();
+  for (int i = 0; i < 16; ++i) {
+    e[i] = otherE[i];
+  }
+}
+
 Matrix4 Matrix4::ortho(float left, float right, float bottom, float top)
 {
   Matrix4 m;
@@ -187,6 +194,93 @@ Matrix4 Matrix4::ortho(float left, float right, float bottom, float top)
 
   m.e[12] = -(right + left) / (right - left);
   m.e[13] = -(top + bottom) / (top - bottom);
+
+  return m;
+}
+
+Matrix4 Matrix4::ortho(float left, float right, float bottom, float top, float near, float far)
+{
+  Matrix4 m;
+
+  m.e[0] = 2.0f / (right - left);
+  m.e[1] = 0;
+  m.e[2] = 0;
+  m.e[3] = 0;
+
+  m.e[4] = 0;
+  m.e[5] = 2.0f / (top - bottom);
+  m.e[6] = 0;
+  m.e[7] = 0;
+
+  m.e[8] = 0;
+  m.e[9] = 0;
+  m.e[10] = -2.0f / (far - near);
+  m.e[11] = 0;
+
+  m.e[12] = -(right + left) / (right - left);
+  m.e[13] = -(top + bottom) / (top - bottom);
+  m.e[14] = -(far + near) / (far - near);
+  m.e[15] = 1;
+
+  return m;
+}
+
+Matrix4 Matrix4::lookAt(const Vector3 &eye, const Vector3 &center, const Vector3 &up) {
+  Matrix4 m;
+
+  Vector3 f = eye - center;
+  f.normalize();
+  Vector3 s = up.cross(f);
+  s.normalize();
+  Vector3 u = f.cross(s);
+
+  m.e[0] = s.x;
+  m.e[1] = s.y;
+  m.e[2] = s.z;
+  m.e[3] = 0;
+
+  m.e[4] = u.x;
+  m.e[5] = u.y;
+  m.e[6] = u.z;
+  m.e[7] = 0;
+
+  m.e[8] = f.x;
+  m.e[9] = f.y;
+  m.e[10] = f.z;
+  m.e[11] = 0;
+
+  m.e[12] = -s.dot(eye);
+  m.e[13] = -u.dot(eye);
+  m.e[14] = -f.dot(eye);
+  m.e[15] = 1;
+
+  return m;
+}
+
+Matrix4 Matrix4::perspective(float fov, float aspectRatio, float near, float far) {
+  Matrix4 m;
+
+  const float halfTanFov = tan(fov / 2);
+
+  m.e[0] = 1.0f / (aspectRatio * halfTanFov);
+  m.e[1] = 0;
+  m.e[2] = 0;
+  m.e[3] = 0;
+
+  m.e[4] = 0;
+  m.e[5] = 1.0f / halfTanFov;
+  m.e[6] = 0;
+  m.e[7] = 0;
+
+  m.e[8] =  0;
+  m.e[9] =  0;
+  m.e[10] = (near + far) / (near - far);
+  m.e[11] = -1;
+
+  m.e[12] = 0;
+  m.e[13] = 0;
+  m.e[14] = (2 * near * far) / (near - far);
+  m.e[15] = 0;
 
   return m;
 }

@@ -23,6 +23,7 @@
 
 // LOVE
 #include "common/math.h"
+#include "common/vector.h"
 
 namespace Demoloop
 {
@@ -157,11 +158,21 @@ public:
   void transform(V *dst, const V *src, int size) const;
 
   /**
+   * Copy the values from another matrix to this one.
+   **/
+  void copy(const Matrix4 &other);
+
+  /**
    * Creates a new orthographic projection matrix with depth in the range of
    * [-1, 1].
    **/
   static Matrix4 ortho(float left, float right, float bottom, float top);
 
+  static Matrix4 ortho(float left, float right, float bottom, float top, float near, float far);
+
+  static Matrix4 lookAt(const Vector3 &eye, const Vector3 &center, const Vector3 &up);
+
+  static Matrix4 perspective(float fov, float aspectRatio, float near, float far);
 private:
 
   /**
