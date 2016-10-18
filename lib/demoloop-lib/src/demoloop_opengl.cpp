@@ -106,8 +106,8 @@ void DemoloopOpenGL::InternalUpdate() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   auto now = std::chrono::high_resolution_clock::now();
-  std::chrono::microseconds delta = std::chrono::duration_cast<std::chrono::microseconds>(now - previous_frame);
-  Update(delta.count() / 1000000.0);
+  auto delta = std::chrono::duration_cast<std::chrono::duration<float>>(now - previous_frame);
+  Update(delta.count());
   previous_frame = std::chrono::high_resolution_clock::now();
 
   SDL_GL_SwapWindow(window);
@@ -122,9 +122,11 @@ void DemoloopOpenGL::Run() {
     }, (void *)this, 0, 1);
   #else
     while (!quit) {
+      auto start = std::chrono::high_resolution_clock::now();
       InternalUpdate();
       // Delay to keep frame rate constant (using SDL)
       SDL_Delay(1.0/FRAMES_PER_SECOND);
+      while((std::chrono::high_resolution_clock::now() - start).count() < 1.0f / FRAMES_PER_SECOND ){}
     }
   #endif
 }
