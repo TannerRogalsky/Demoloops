@@ -63,9 +63,11 @@ namespace Demoloop
 
 struct Vertex
 {
-  float x, y;
+  float x, y, z;
   float s, t;
-  unsigned char r, g, b, a;
+  uint8_t r, g, b, a;
+
+  Vertex(): r(255), g(255), b(255), a(255) {}
 };
 
 struct Triangle

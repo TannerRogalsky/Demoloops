@@ -59,9 +59,8 @@ private:
 
   GLuint mDefaultTexture;
 
-  GLuint mTexCoordBuffer;
-  GLuint mPositionBuffer;
-  GLuint mIndicesBuffer;
+  GLuint mVBO;
+  GLuint mIBO;
 
 };
 }

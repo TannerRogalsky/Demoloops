@@ -30,13 +30,15 @@ const char* VERTEX_HEADER = "#define VERTEX\n"
                             "#endif\n";
 
 const char* VERTEX_FOOTER = "void main() {\n"
-                            "VaryingTexCoord = vec4(0, 0, 0, 0);\n"
-                            "VaryingColor = ConstantColor;\n"
+                            "VaryingTexCoord = VertexTexCoord;\n"
+                            "VaryingColor = VertexColor * ConstantColor;\n"
                             // "VaryingColor = gammaCorrectColor(VertexColor) * ConstantColor;\n"
                             "#ifdef GL_ES\n"
                             "gl_PointSize = demoloop_PointSize;\n"
                             "#endif\n"
-                            "gl_Position = position(TransformProjectionMatrix, VertexPosition);\n"
+                            // "gl_Position = position(TransformProjectionMatrix, VertexPosition);\n"
+                            // "gl_Position.w = 1.0;\n"
+                            "gl_Position = TransformProjectionMatrix * vec4(VertexPosition.xyz, 1);\n"
                             "}\n";
 
 const char* FRAG_HEADER = "#define PIXEL\n"

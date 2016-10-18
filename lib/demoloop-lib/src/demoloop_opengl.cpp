@@ -68,7 +68,6 @@ DemoloopOpenGL::DemoloopOpenGL(int width, int height, int r, int g, int b)
     }
 
     gl.initContext();
-    glEnable(GL_MULTISAMPLE); // TODO: is this doing anything?
     gl.setViewport({0, 0, width, height});
 
     //Use Vsync
@@ -104,7 +103,7 @@ void DemoloopOpenGL::InternalUpdate() {
   }
 
   glClearColor( bg_r / 255.0, bg_g / 255.0, bg_b / 255.0, 1.f );
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   auto now = std::chrono::high_resolution_clock::now();
   std::chrono::microseconds delta = std::chrono::duration_cast<std::chrono::microseconds>(now - previous_frame);
