@@ -23,6 +23,7 @@
 
 #include <climits> // for CHAR_BIT
 #include <cstdlib> // for rand() and RAND_MAX
+#include <cstdint>
 
 /* Definitions of useful mathematical constants
  * M_E        - e
