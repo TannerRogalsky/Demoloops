@@ -2,19 +2,20 @@ cmake_minimum_required(VERSION 3.3)
 project(demoloops)
 
 set(ASSET_LOOPS
-  test4
+  asset_test
 )
 
 set(LOOPS ${ASSET_LOOPS}
-  loop1
-  loop2
-  loop3
-  loop4
-  loop5
-  loop6
-  loop7
-  loop8
-  loop9
+  loop001
+  loop002
+  loop003
+  loop004
+  loop005
+  loop006
+  loop007
+  loop008
+  loop009
+  loop010
   testopengl
 )
 
