@@ -27,7 +27,6 @@ public:
     float aspect_ratio = (width + 0.0) / height;
     int ox = width / 2, oy = height / 2;
 
-    auto colorLocation = Shader::defaultShader->getAttribLocation("ConstantColor");
     for (int i = 0; i < count; ++i) {
       float interval_cycle_ratio = fmod(i / count + cycle_ratio, 1);
       auto color = hsl2rgb(interval_cycle_ratio, 1, 0.5);
@@ -35,7 +34,8 @@ public:
       float t = -interval_cycle_ratio;
       int x1 = cos(t * PI * 2) * sin(i * PI * 2) * aspect_ratio * RADIUS + ox;
       int y1 = sin(t * PI * 2) * RADIUS + oy;
-      glVertexAttrib4f(colorLocation, color.r / 255.0, color.g / 255.0, color.b / 255.0, 1);
+
+      setColor(color);
       circle(gl, x1, y1, 3);
     }
   }

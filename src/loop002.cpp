@@ -1,7 +1,7 @@
 #include <iostream>
 #include <SDL.h>
-#include <SDL2_gfxPrimitives.h>
-#include "demoloop.h"
+#include "demoloop_opengl.h"
+#include "graphics/2d_primitives.h"
 #include "helpers.h"
 #include "hsl.h"
 using namespace std;
@@ -10,9 +10,9 @@ float t = 0;
 const float PI = 3.1459;
 const float CYCLE_LENGTH = 3;
 
-class Loop2 : public Demoloop {
+class Loop2 : public Demoloop::DemoloopOpenGL {
 public:
-  Loop2() : Demoloop(150, 150, 150) {}
+  Loop2() : Demoloop::DemoloopOpenGL(150, 150, 150) {}
 
   void Update(float dt) {
     t += dt;
@@ -25,8 +25,8 @@ public:
 
     const int num_vertices = 20;
     const float interval = (PI * 2) / num_vertices;
-    int16_t xCoords[num_vertices + 1];
-    int16_t yCoords[num_vertices + 1];
+    float xCoords[num_vertices + 1];
+    float yCoords[num_vertices + 1];
     for (int i = 0; i < num_vertices + 1; ++i) {
       const float t = i % num_vertices;
       const float interval_cycle_ratio = fmod(t / num_vertices + cycle_ratio, 1);
@@ -41,10 +41,8 @@ public:
       const float t = i;
       const float interval_cycle_ratio = fmod(t / num_vertices + cycle_ratio, 1);
       const auto color = hsl2rgb(interval_cycle_ratio, 1, 0.5);
-      filledTrigonColor(renderer,
-                        ox, oy,
-                        xCoords[i], yCoords[i],
-                        xCoords[i + 1], yCoords[i + 1], rgb2uint32(color));
+      setColor(color);
+      triangle(gl, ox, oy, xCoords[i], yCoords[i], xCoords[i + 1], yCoords[i + 1]);
     }
   }
 
