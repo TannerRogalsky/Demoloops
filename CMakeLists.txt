@@ -73,6 +73,7 @@ foreach(LOOP ${LOOPS})
   add_executable(${LOOP} ${PROJECT_SOURCE_DIR}/src/${LOOP}.cpp)
 
   if (EMSCRIPTEN)
+    # if it's an asset loop, preload the assets
     if (${LOOP} IN_LIST ASSET_LOOPS)
       get_target_property(TEMP ${LOOP} LINK_FLAGS)
       if(TEMP STREQUAL "TEMP-NOTFOUND")
