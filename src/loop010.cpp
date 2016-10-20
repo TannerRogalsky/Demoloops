@@ -1,21 +1,17 @@
 #include <iostream>
-#include <cmath>
-#include <SDL.h>
 #include "demoloop_opengl.h"
+#include "graphics/3d_primitives.h"
 #include "hsl.h"
 using namespace std;
 using namespace Demoloop;
 
 float t = 0;
-const float PI = 3.1459;
 const float CYCLE_LENGTH = 3;
 
 class Loop10 : public DemoloopOpenGL {
 public:
   Loop10() : DemoloopOpenGL(150, 150, 150) {
-    std::cout << glGetString(GL_VERSION) << std::endl;
-
-    Matrix4 perspective = Matrix4::perspective(PI / 4.0, (float)width / (float)height, 0.1, 100.0);
+    Matrix4 perspective = Matrix4::perspective(DEMOLOOP_M_PI / 4.0, (float)width / (float)height, 0.1, 100.0);
     gl.getProjection().copy(perspective);
   }
 
@@ -25,54 +21,13 @@ public:
     const float cycle = fmod(t, CYCLE_LENGTH);
     const float cycle_ratio = cycle / CYCLE_LENGTH;
 
-    const uint16_t num_vertices = 12 * 3;
-    const uint16_t RADIUS = 1;
-    Demoloop::Vertex vertices[num_vertices];
-    static const GLfloat g_vertex_buffer_data[] = {
-        -1.0f,-1.0f,-1.0f, // triangle 1 : begin
-        -1.0f,-1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f, // triangle 1 : end
-        1.0f, 1.0f,-1.0f, // triangle 2 : begin
-        -1.0f,-1.0f,-1.0f,
-        -1.0f, 1.0f,-1.0f, // triangle 2 : end
-        1.0f,-1.0f, 1.0f,
-        -1.0f,-1.0f,-1.0f,
-        1.0f,-1.0f,-1.0f,
-        1.0f, 1.0f,-1.0f,
-        1.0f,-1.0f,-1.0f,
-        -1.0f,-1.0f,-1.0f,
-        -1.0f,-1.0f,-1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f,-1.0f,
-        1.0f,-1.0f, 1.0f,
-        -1.0f,-1.0f, 1.0f,
-        -1.0f,-1.0f,-1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f,-1.0f, 1.0f,
-        1.0f,-1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f,-1.0f,-1.0f,
-        1.0f, 1.0f,-1.0f,
-        1.0f,-1.0f,-1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f,-1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f,-1.0f,
-        -1.0f, 1.0f,-1.0f,
-        1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f,-1.0f,
-        -1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-        1.0f,-1.0f, 1.0f
-    };
-    for (int i = 0; i < num_vertices; ++i) {
+    static const uint16_t NUM_VERTS = 36;
+    static const uint16_t RADIUS = 1;
+    cube(vertices, 0, 0, 0, RADIUS);
+    for (int i = 0; i < NUM_VERTS; ++i) {
       const float t = i;
-      vertices[i].x = g_vertex_buffer_data[i * 3 + 0] * RADIUS;
-      vertices[i].y = g_vertex_buffer_data[i * 3 + 1] * RADIUS;
-      vertices[i].z = g_vertex_buffer_data[i * 3 + 2] * RADIUS;
-
-      auto color = hsl2rgb(t / num_vertices, 1, 0.5);
+      const float interval_cycle_ratio = fmod(t / NUM_VERTS + cycle_ratio, 1);
+      auto color = hsl2rgb(interval_cycle_ratio, 1, 0.5);
 
       vertices[i].r = color.r;
       vertices[i].g = color.g;
@@ -82,17 +37,18 @@ public:
 
     gl.pushTransform();
     Matrix4& transform = gl.getTransform();
-    const float cameraX = sin(cycle_ratio * PI * 2) * 4;
-    const float cameraY = pow(sin(cycle_ratio * PI * 2), 2) * 3;
-    const float cameraZ = cos(cycle_ratio * PI * 2) * 3;
+    const float cameraX = sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 4;
+    const float cameraY = pow(sin(cycle_ratio * DEMOLOOP_M_PI * 2), 2) * 3;
+    const float cameraZ = cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
     transform.copy(lookAt);
 
-    gl.triangles(vertices, num_vertices);
+    gl.triangles(vertices, NUM_VERTS);
     gl.popTransform();
   }
 
 private:
+  Vertex vertices[36];
 };
 
 int main(int, char**){
