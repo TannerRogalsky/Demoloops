@@ -37,20 +37,16 @@ endif()
 # SDL2
 if (EMSCRIPTEN)
   add_definitions("-std=c++11 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2")
-
-  include_directories("/Users/tanner/code/c/SDL2_gfx-1.0.1")
 else()
   include(FindPkgConfig)
 
   pkg_search_module(SDL2 REQUIRED sdl2)
   pkg_search_module(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
   pkg_search_module(SDL2TFF REQUIRED SDL2_ttf>=2.0.0)
-  pkg_search_module(SDL2GFX REQUIRED SDL2_gfx>=1.0.1)
 
   include_directories(${SDL2_INCLUDE_DIRS}
                       ${SDL2IMAGE_INCLUDE_DIRS}
-                      ${SDL2TTF_INCLUDE_DIRS}
-                      ${SDL2GFX_INCLUDE_DIRS})
+                      ${SDL2TTF_INCLUDE_DIRS})
 endif(EMSCRIPTEN)
 
 if (NOT EMSCRIPTEN)
@@ -84,14 +80,13 @@ foreach(LOOP ${LOOPS})
       set_target_properties(${LOOP} PROPERTIES LINK_FLAGS ${TEMP} )
     endif()
 
-    target_link_libraries(${LOOP} demoloop-lib "/Users/tanner/code/c/SDL2_gfx-1.0.1/build/.libs/libSDL2_gfx.a")
+    target_link_libraries(${LOOP} demoloop-lib)
     set_property(TARGET ${LOOP} PROPERTY SUFFIX ".html")
   else()
     target_link_libraries(${LOOP} demoloop-lib
                           ${SDL2_LIBRARIES}
                           ${SDL2IMAGE_LIBRARIES}
                           ${SDL2TFF_LIBRARIES}
-                          ${SDL2GFX_LIBRARIES}
                           ${OPENGL_LIBRARIES}
                           ${GLEW_LIBRARIES})
     set_property(TARGET ${LOOP} PROPERTY CXX_STANDARD 11)

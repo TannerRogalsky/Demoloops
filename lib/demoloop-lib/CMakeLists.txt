@@ -62,7 +62,11 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
   endif()
 endif()
 
-add_library(${PROJECT_NAME} SHARED ${SRCS})
+if (EMSCRIPTEN)
+  add_library(${PROJECT_NAME} STATIC ${SRCS})
+else ()
+  add_library(${PROJECT_NAME} SHARED ${SRCS})
+endif (EMSCRIPTEN)
 target_link_libraries(${PROJECT_NAME}
   ${SDL2_LIBRARIES}
   ${SDL2IMAGE_LIBRARIES}

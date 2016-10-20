@@ -5,7 +5,6 @@
 using namespace std;
 
 float t = 0;
-const float PI = 3.1459;
 const float CYCLE_LENGTH = 10;
 
 class Loop5 : public Demoloop::DemoloopOpenGL {
@@ -24,13 +23,13 @@ public:
     int ox = width / 2, oy = height / 2;
 
     const int num_vertices = 5;
-    const float interval = (PI * 2) / num_vertices;
+    const float interval = (DEMOLOOP_M_PI * 2) / num_vertices;
     float xCoords[num_vertices];
     float yCoords[num_vertices];
     for (int i = 0; i < num_vertices; ++i) {
       float t = i;
-      xCoords[i] = cos(interval * t - PI / 10) * RADIUS + ox;
-      yCoords[i] = sin(interval * t - PI / 10) * RADIUS + oy;
+      xCoords[i] = cos(interval * t - DEMOLOOP_M_PI / 10) * RADIUS + ox;
+      yCoords[i] = sin(interval * t - DEMOLOOP_M_PI / 10) * RADIUS + oy;
     }
 
     auto color = hsl2rgb(cycle_ratio, 1, 0.5);
@@ -44,18 +43,18 @@ public:
         float i = t;
         const float interval_cycle_ratio = fmod(i / dot_count + cycle_ratio, 1);
 
-        const float x1 = cos(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
-        const float y1 = sin(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
+        const float x1 = cos(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
+        const float y1 = sin(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
 
         setColor(0, 0, 0, 255 * interval_cycle_ratio);
         circle(gl, x1 + ox, y1 + oy, 3);
 
         if (t == 0) {
           const int n = (v + 1) % num_vertices;
-          const float x2 = cos(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
-          const float y2 = sin(interval_cycle_ratio * PI * 2 - PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
-          const float x3 = cos(interval_cycle_ratio * PI * 2 - PI / 2 + (interval * n)) * interval_cycle_ratio * RADIUS;
-          const float y3 = sin(interval_cycle_ratio * PI * 2 - PI / 2 + (interval * n)) * interval_cycle_ratio * RADIUS;
+          const float x2 = cos(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
+          const float y2 = sin(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
+          const float x3 = cos(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2 + (interval * n)) * interval_cycle_ratio * RADIUS;
+          const float y3 = sin(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2 + (interval * n)) * interval_cycle_ratio * RADIUS;
 
           setColor(0, 0, 0);
           line(gl, x2 + ox, y2 + oy, xCoords[v], yCoords[v]);
@@ -67,8 +66,8 @@ public:
     for (float i = 0; i < dot_count; ++i) {
       const float interval_cycle_ratio = fmod(i / dot_count + cycle_ratio, 1);
 
-      const float x1 = cos(interval_cycle_ratio * PI * 2 - PI / 2) * RADIUS;
-      const float y1 = sin(interval_cycle_ratio * PI * 2 - PI / 2) * RADIUS;
+      const float x1 = cos(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2) * RADIUS;
+      const float y1 = sin(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2) * RADIUS;
 
       setColor(0, 0, 0);
       circle(gl, x1 + ox, y1 + oy, 3);

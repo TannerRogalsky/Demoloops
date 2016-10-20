@@ -1,8 +1,6 @@
 #include <iostream>
-#include <SDL.h>
-#include <SDL2_gfxPrimitives.h>
-#include "demoloop.h"
-#include "helpers.h"
+#include "demoloop_opengl.h"
+#include "graphics/2d_primitives.h"
 #include "math_helpers.h"
 #include "hsl.h"
 using namespace std;
@@ -12,9 +10,11 @@ using namespace std;
 float t = 0;
 const float CYCLE_LENGTH = 10;
 
-class Loop6 : public Demoloop {
+class Loop7 : public Demoloop::DemoloopOpenGL {
 public:
-  Loop6() : Demoloop(150, 150, 150) {}
+  Loop7() : Demoloop::DemoloopOpenGL(150, 150, 150) {
+    glDisable(GL_DEPTH_TEST);
+  }
 
   void Update(float dt) {
     t += dt;
@@ -29,9 +29,9 @@ public:
     // const int num_vertices = 3;
     const float rotation_offset = rotationOffset(num_vertices);
 
-    const float interval = (PI * 2) / num_vertices;
-    int16_t xCoords[MAX_VERTS];
-    int16_t yCoords[MAX_VERTS];
+    const float interval = (DEMOLOOP_M_PI * 2) / num_vertices;
+    float xCoords[MAX_VERTS];
+    float yCoords[MAX_VERTS];
     for (int i = 0; i < num_vertices; ++i) {
       float t = i;
       xCoords[i] = cos(interval * t - rotation_offset) * RADIUS + ox;
@@ -39,18 +39,19 @@ public:
     }
 
     auto color = hsl2rgb(cycle_ratio, 1, 0.5);
-    filledPolygonColor(renderer, xCoords, yCoords, num_vertices, rgb2uint32(color));
+    setColor(color);
+    polygon(gl, xCoords, yCoords, num_vertices);
 
     const int dot_count = 50;
     for (float i = 0; i < dot_count; ++i) {
       float interval_cycle_ratio = fmod(i / dot_count + cycle_ratio, 1);
 
-      const int INTERNAL_RADIUS = cos(PI / num_vertices) * RADIUS;
+      const int INTERNAL_RADIUS = cos(DEMOLOOP_M_PI / num_vertices) * RADIUS;
 
-      float x1 = cos(interval_cycle_ratio * PI * 2) * INTERNAL_RADIUS;
-      float y1 = sin(interval_cycle_ratio * PI * 2) * INTERNAL_RADIUS;
-      x1 += sin(interval_cycle_ratio * PI * 2 * (num_vertices - 1)) * INTERNAL_RADIUS * 0.5;
-      y1 += cos(interval_cycle_ratio * PI * 2 * (num_vertices - 1)) * INTERNAL_RADIUS * 0.5;
+      float x1 = cos(interval_cycle_ratio * DEMOLOOP_M_PI * 2) * INTERNAL_RADIUS;
+      float y1 = sin(interval_cycle_ratio * DEMOLOOP_M_PI * 2) * INTERNAL_RADIUS;
+      x1 += sin(interval_cycle_ratio * DEMOLOOP_M_PI * 2 * (num_vertices - 1)) * INTERNAL_RADIUS * 0.5;
+      y1 += cos(interval_cycle_ratio * DEMOLOOP_M_PI * 2 * (num_vertices - 1)) * INTERNAL_RADIUS * 0.5;
 
       float c = cos(rotation_offset);
       float s = sin(rotation_offset);
@@ -58,7 +59,8 @@ public:
       float y2 = s * x1 + c * y1;
 
       float color = interval_cycle_ratio * 255;
-      filledCircleRGBA(renderer, x2 + ox, y2 + oy, 3, color, color, color, 255);
+      setColor(color, color, color);
+      circle(gl, x2 + ox, y2 + oy, 3);
     }
   }
 
@@ -66,7 +68,7 @@ private:
 };
 
 int main(int, char**){
-  Loop6 loop;
+  Loop7 loop;
   loop.Run();
 
   return 0;

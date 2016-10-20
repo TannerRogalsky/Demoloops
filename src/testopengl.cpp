@@ -74,7 +74,7 @@ public:
       vertices[i].y = g_vertex_buffer_data[i * 3 + 1] * RADIUS;
       vertices[i].z = g_vertex_buffer_data[i * 3 + 2] * RADIUS;
 
-      auto color = hsl2rgb(t / num_vertices, 1, 0.5);
+      auto color = hsl2rgb(interval_cycle_ratio, 1, 0.5);
 
       vertices[i].r = color.r;
       vertices[i].g = color.g;
@@ -92,7 +92,7 @@ public:
     // Matrix4 lookAt = Matrix4::lookAt({0, 0, 3}, {0, 0, 0}, {0, 1, 0});
     transform.copy(lookAt);
 
-    gl.polygon(vertices, num_vertices);
+    gl.triangles(vertices, num_vertices);
     gl.popTransform();
 
     const uint16_t num_vertices2 = 3;
@@ -120,7 +120,7 @@ public:
     // transform.copy(lookAt);
     // transform.translate(cos(cycle_ratio * PI * 2) * RADIUS / 2, sin(cycle_ratio * PI * 2) * RADIUS / 2);
 
-    // gl.polygon(coords, num_vertices2);
+    // gl.triangles(coords, num_vertices2);
     // gl.popTransform();
   }
 
