@@ -88,7 +88,7 @@ public:
     Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
     transform.copy(lookAt);
 
-    gl.polygon(vertices, num_vertices);
+    gl.triangles(vertices, num_vertices);
     gl.popTransform();
   }
 
