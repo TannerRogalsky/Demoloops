@@ -81,7 +81,7 @@ public:
    * @param x Translation along x-axis.
    * @param y Translation along y-axis.
    **/
-  void setTranslation(float x, float y);
+  void setTranslation(float x, float y, float z = 0.0);
 
   /**
    * Resets this Matrix to a rotation.
@@ -124,7 +124,7 @@ public:
    * @param x Translation along x-axis.
    * @param y Translation along y-axis.
    **/
-  void translate(float x, float y);
+  void translate(float x, float y, float z = 0.0);
 
   /**
    * Multiplies this Matrix with a rotation.

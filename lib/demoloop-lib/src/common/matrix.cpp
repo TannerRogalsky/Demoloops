@@ -99,11 +99,12 @@ void Matrix4::setIdentity()
   e[0] = e[5] = e[10] = e[15] = 1;
 }
 
-void Matrix4::setTranslation(float x, float y)
+void Matrix4::setTranslation(float x, float y, float z)
 {
   setIdentity();
   e[12] = x;
   e[13] = y;
+  e[14] = z;
 }
 
 void Matrix4::setRotation(float rad)
@@ -149,10 +150,10 @@ void Matrix4::setTransformation(float x, float y, float angle, float sx, float s
   e[13] = y - ox * e[1] - oy * e[5];
 }
 
-void Matrix4::translate(float x, float y)
+void Matrix4::translate(float x, float y, float z)
 {
   Matrix4 t;
-  t.setTranslation(x, y);
+  t.setTranslation(x, y, z);
   this->operator *=(t);
 }
 
