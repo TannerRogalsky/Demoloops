@@ -21,6 +21,9 @@ namespace Demoloop {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
     Shader::defaultShader = new Shader({defaultVertexShader, defaultFragShader});
     Shader::defaultShader->attach();
 
@@ -89,7 +92,28 @@ namespace Demoloop {
     Shader::defaultShader->sendMatrix("TransformProjectionMatrix", 4, mvp.getElements(), 1);
   }
 
-  void GL::polygon(const Vertex *coords, size_t count) {
+  void GL::lines(const Vertex *coords, size_t count) {
+    prepareDraw();
+
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0].x, GL_DYNAMIC_DRAW);
+
+    GLint positionLocation = Shader::defaultShader->getAttribLocation("VertexPosition");
+    GLint colorLocation = Shader::defaultShader->getAttribLocation("VertexColor");
+
+    glEnableVertexAttribArray(positionLocation);
+    glEnableVertexAttribArray(colorLocation);
+
+    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+    glVertexAttribPointer(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) (5 * sizeof(GLfloat)));
+
+    glDrawArrays(GL_LINES, 0, count);
+
+    glDisableVertexAttribArray(positionLocation);
+    glDisableVertexAttribArray(colorLocation);
+  }
+
+  void GL::triangles(const Vertex *coords, size_t count) {
     prepareDraw();
 
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);

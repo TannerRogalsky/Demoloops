@@ -50,7 +50,8 @@ public:
 
   void prepareDraw();
 
-  void polygon(const Vertex *coords, size_t count);
+  void triangles(const Vertex *coords, size_t count);
+  void lines(const Vertex *coords, size_t count);
 
 private:
 
