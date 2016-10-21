@@ -203,7 +203,7 @@ void polygon(GL& gl, const float* xCoords, const float* yCoords, const float* zC
 
     vertices[vertexIndex].x = xCoords[i];
     vertices[vertexIndex].y = yCoords[i];
-    vertices[vertexIndex].z = xCoords[i];
+    vertices[vertexIndex].z = zCoords[i];
     vertexIndex++;
 
     vertices[vertexIndex].x = xCoords[i+1];
@@ -213,6 +213,7 @@ void polygon(GL& gl, const float* xCoords, const float* yCoords, const float* zC
   }
 
   gl.triangles(vertices, vertexIndex);
+  delete[] vertices;
 }
 
 }

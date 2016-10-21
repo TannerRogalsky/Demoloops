@@ -1,5 +1,7 @@
 #include <cmath>
+#include <algorithm>
 #include "graphics/2d_primitives.h"
+#include "graphics/3d_primitives.h"
 #include "common/math.h"
 
 namespace Demoloop {
@@ -18,6 +20,8 @@ void ellipse(GL& gl, const float x, const float y, const float radiusX, const fl
   }
 
   polygon(gl, xCoords, yCoords, points);
+  delete[] xCoords;
+  delete[] yCoords;
 }
 
 void circle(GL& gl, const float x, const float y, const float radius, int points) {
@@ -37,29 +41,10 @@ void triangle(GL& gl, const float x1, const float y1, const float x2, const floa
 }
 
 void polygon(GL& gl, const float* xCoords, const float* yCoords, uint32_t count) {
-  const float x = xCoords[0];
-  const float y = yCoords[0];
-
-  Vertex *vertices = new Vertex[(count - 2) * 3];
-  uint32_t vertexIndex = 0;
-  for (uint32_t i = 1; i < count - 1; i++) {
-    vertices[vertexIndex].x = x;
-    vertices[vertexIndex].y = y;
-    vertices[vertexIndex].z = 1;
-    vertexIndex++;
-
-    vertices[vertexIndex].x = xCoords[i];
-    vertices[vertexIndex].y = yCoords[i];
-    vertices[vertexIndex].z = 1;
-    vertexIndex++;
-
-    vertices[vertexIndex].x = xCoords[i+1];
-    vertices[vertexIndex].y = yCoords[i+1];
-    vertices[vertexIndex].z = 1;
-    vertexIndex++;
-  }
-
-  gl.triangles(vertices, vertexIndex);
+  float* zCoords = new float[count];
+  std::fill_n(zCoords, count, 1);
+  polygon(gl, xCoords, yCoords, zCoords, count);
+  delete[] zCoords;
 }
 
 void line(GL& gl, const float x1, const float y1, const float x2, const float y2) {
