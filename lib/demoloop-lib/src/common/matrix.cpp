@@ -117,11 +117,12 @@ void Matrix4::setRotation(float rad)
   e[5] = c;
 }
 
-void Matrix4::setScale(float sx, float sy)
+void Matrix4::setScale(float sx, float sy, float sz)
 {
   setIdentity();
   e[0] = sx;
   e[5] = sy;
+  e[10] = sz;
 }
 
 void Matrix4::setShear(float kx, float ky)
@@ -164,10 +165,10 @@ void Matrix4::rotate(float rad)
   this->operator *=(t);
 }
 
-void Matrix4::scale(float sx, float sy)
+void Matrix4::scale(float sx, float sy, float sz)
 {
   Matrix4 t;
-  t.setScale(sx, sy);
+  t.setScale(sx, sy, sz);
   this->operator *=(t);
 }
 

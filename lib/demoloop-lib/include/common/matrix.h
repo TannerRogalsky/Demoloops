@@ -94,7 +94,7 @@ public:
    * @param sx Scale factor along the x-axis.
    * @param sy Scale factor along the y-axis.
    **/
-  void setScale(float sx, float sy);
+  void setScale(float sx, float sy, float sz = 0.0);
 
   /**
    * Resets this Matrix to a shear transformation.
@@ -137,7 +137,7 @@ public:
    * @param sx Scale factor along the x-axis.
    * @param sy Scale factor along the y-axis.
    **/
-  void scale(float sx, float sy);
+  void scale(float sx, float sy, float sz = 0.0);
 
   /**
    * Multiplies this Matrix with a shear transformation.
