@@ -48,15 +48,7 @@ void polygon(GL& gl, const float* xCoords, const float* yCoords, uint32_t count)
 }
 
 void line(GL& gl, const float x1, const float y1, const float x2, const float y2) {
-  Vertex vertices[2];
-  vertices[0].x = x1;
-  vertices[0].y = y1;
-  vertices[0].z = 1;
-
-  vertices[1].x = x2;
-  vertices[1].y = y2;
-  vertices[1].z = 1;
-  gl.lines(vertices, 2);
+  line(gl, x1, y1, 1, x2, y2, 1);
 }
 
 }

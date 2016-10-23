@@ -52,10 +52,9 @@ void cube(Vertex vertices[36], const float cx, const float cy, const float cz, c
   // return vertices;
 }
 
-void sphere(Vertex vertices[60], const float cx, const float cy, const float cz, const float radius) {
+void spherePoints(Vertex points[12], const float cx, const float cy, const float cz, const float radius) {
   const float t = (1.0 + sqrt(5.0)) / 2.0 * radius;
 
-  Vertex points[12];
   points[0].x = -radius + cx;
   points[0].y =  t + cy;
   points[0].z =  0 + cz;
@@ -105,7 +104,9 @@ void sphere(Vertex vertices[60], const float cx, const float cy, const float cz,
   points[11].x = -t + cx;
   points[11].y =  0 + cy;
   points[11].z =  radius + cz;
+}
 
+void sphereTriangles(Vertex vertices[60], Vertex points[12]) {
   vertices[0] = points[0];
   vertices[1] = points[11];
   vertices[2] = points[5];
@@ -214,6 +215,18 @@ void polygon(GL& gl, const float* xCoords, const float* yCoords, const float* zC
 
   gl.triangles(vertices, vertexIndex);
   delete[] vertices;
+}
+
+void line(GL& gl, const float x1, const float y1, const float z1, const float x2, const float y2, const float z2) {
+  Vertex vertices[2];
+  vertices[0].x = x1;
+  vertices[0].y = y1;
+  vertices[0].z = z1;
+
+  vertices[1].x = x2;
+  vertices[1].y = y2;
+  vertices[1].z = z2;
+  gl.lines(vertices, 2);
 }
 
 }

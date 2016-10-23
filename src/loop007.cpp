@@ -1,66 +1,73 @@
 #include <iostream>
+#include <cmath>
 #include "demoloop_opengl.h"
 #include "graphics/2d_primitives.h"
-#include "math_helpers.h"
 #include "hsl.h"
 using namespace std;
 
-#define MAX_VERTS 9
+#define MAX_VERTS 6
 
 float t = 0;
-const float CYCLE_LENGTH = 10;
+const float CYCLE_LENGTH = 6;
 
 class Loop7 : public Demoloop::DemoloopOpenGL {
 public:
   Loop7() : Demoloop::DemoloopOpenGL(150, 150, 150) {
     glDisable(GL_DEPTH_TEST);
+
+    int ox = width / 2, oy = height / 2;
+    Demoloop::Matrix4& transform = gl.getTransform();
+    transform.translate(ox, oy);
   }
 
   void Update(float dt) {
     t += dt;
 
-    const float RADIUS = height / 3;
+    const float RADIUS = height / 6;
 
     float cycle = fmod(t, CYCLE_LENGTH);
     float cycle_ratio = cycle / CYCLE_LENGTH;
-    int ox = width / 2, oy = height / 2;
 
-    const int num_vertices = cycle_ratio * 6 + 3;
-    // const int num_vertices = 3;
-    const float rotation_offset = rotationOffset(num_vertices);
+    const uint8_t num_vertices = MAX_VERTS;
 
     const float interval = (DEMOLOOP_M_PI * 2) / num_vertices;
     float xCoords[MAX_VERTS];
     float yCoords[MAX_VERTS];
     for (int i = 0; i < num_vertices; ++i) {
       float t = i;
-      xCoords[i] = cos(interval * t - rotation_offset) * RADIUS + ox;
-      yCoords[i] = sin(interval * t - rotation_offset) * RADIUS + oy;
+      xCoords[i] = cos(interval * t) * RADIUS;
+      yCoords[i] = sin(interval * t) * RADIUS;
     }
 
     auto color = hsl2rgb(cycle_ratio, 1, 0.5);
     setColor(color);
     polygon(gl, xCoords, yCoords, num_vertices);
 
-    const int dot_count = 50;
-    for (float i = 0; i < dot_count; ++i) {
-      float interval_cycle_ratio = fmod(i / dot_count + cycle_ratio, 1);
+    color = hsl2rgb(fmod(cycle_ratio + 0.5, 1), 1, 0.5);
+    setColor(color, 255 / 6);
 
-      const int INTERNAL_RADIUS = cos(DEMOLOOP_M_PI / num_vertices) * RADIUS;
+    for (int i = 0; i < 6; i+=1) {
+      const float t = i;
 
-      float x1 = cos(interval_cycle_ratio * DEMOLOOP_M_PI * 2) * INTERNAL_RADIUS;
-      float y1 = sin(interval_cycle_ratio * DEMOLOOP_M_PI * 2) * INTERNAL_RADIUS;
-      x1 += sin(interval_cycle_ratio * DEMOLOOP_M_PI * 2 * (num_vertices - 1)) * INTERNAL_RADIUS * 0.5;
-      y1 += cos(interval_cycle_ratio * DEMOLOOP_M_PI * 2 * (num_vertices - 1)) * INTERNAL_RADIUS * 0.5;
+      const float phi = cycle_ratio * DEMOLOOP_M_PI * 2;
+      const float c = cos(phi);
+      const float s = sin(phi);
 
-      float c = cos(rotation_offset);
-      float s = sin(rotation_offset);
-      float x2 = c * x1 - s * y1;
-      float y2 = s * x1 + c * y1;
+      const float cx = cos(interval * t) * RADIUS;
+      const float cy = sin(interval * t) * RADIUS;
 
-      float color = interval_cycle_ratio * 255;
-      setColor(color, color, color);
-      circle(gl, x2 + ox, y2 + oy, 3);
+      for (int j = 0; j < num_vertices; ++j) {
+        const float u = j;
+        const float px = cos(interval * u) * RADIUS;
+        const float py = sin(interval * u) * RADIUS;
+
+        const float dx = px - cx;
+        const float dy = py - cy;
+
+        xCoords[j] = cx + (dx * c - dy * s);
+        yCoords[j] = cy + (dx * s + dy * c);
+      }
+      polygon(gl, xCoords, yCoords, num_vertices);
     }
   }
 

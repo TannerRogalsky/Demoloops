@@ -17,6 +17,9 @@ set(LOOPS ${ASSET_LOOPS}
   loop009
   loop010
   loop011
+  loop012
+  loop013
+  loop014
   testopengl
 )
 
@@ -82,7 +85,7 @@ foreach(LOOP ${LOOPS})
     endif()
 
     target_link_libraries(${LOOP} demoloop-lib)
-    set_property(TARGET ${LOOP} PROPERTY SUFFIX ".html")
+    # set_property(TARGET ${LOOP} PROPERTY SUFFIX ".html")
   else()
     target_link_libraries(${LOOP} demoloop-lib
                           ${SDL2_LIBRARIES}
