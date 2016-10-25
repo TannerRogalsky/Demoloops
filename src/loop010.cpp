@@ -1,4 +1,5 @@
 #include <iostream>
+#include <numeric>
 #include "demoloop_opengl.h"
 #include "graphics/3d_primitives.h"
 #include "hsl.h"
@@ -13,6 +14,9 @@ public:
   Loop10() : DemoloopOpenGL(150, 150, 150) {
     Matrix4 perspective = Matrix4::perspective(DEMOLOOP_M_PI / 4.0, (float)width / (float)height, 0.1, 100.0);
     gl.getProjection().copy(perspective);
+
+    mesh = cube(0, 0, 0, 1);
+    iota(mesh->mIndices.begin(), mesh->mIndices.end(), 0);
   }
 
   void Update(float dt) {
@@ -22,17 +26,17 @@ public:
     const float cycle_ratio = cycle / CYCLE_LENGTH;
 
     static const uint16_t NUM_VERTS = 36;
-    static const uint16_t RADIUS = 1;
-    cube(vertices, 0, 0, 0, RADIUS);
+
     for (int i = 0; i < NUM_VERTS; ++i) {
       const float t = i;
       const float interval_cycle_ratio = fmod(t / NUM_VERTS + cycle_ratio, 1);
       auto color = hsl2rgb(interval_cycle_ratio, 1, 0.5);
 
-      vertices[i].r = color.r;
-      vertices[i].g = color.g;
-      vertices[i].b = color.b;
-      vertices[i].a = 255;
+      Vertex &v = mesh->mVertices[i];
+      v.r = color.r;
+      v.g = color.g;
+      v.b = color.b;
+      v.a = 255;
     }
 
     gl.pushTransform();
@@ -43,12 +47,13 @@ public:
     Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
     transform.copy(lookAt);
 
-    gl.triangles(vertices, NUM_VERTS);
+    mesh->draw(gl);
+
     gl.popTransform();
   }
 
 private:
-  Vertex vertices[36];
+  Mesh *mesh;
 };
 
 int main(int, char**){

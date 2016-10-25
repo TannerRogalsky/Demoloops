@@ -1,6 +1,7 @@
 #include "graphics/gl.h"
 #include <string>
 #include <iostream>
+#include <cstddef>
 
 const std::string defaultVertexShader = "vec4 position(mat4 transform_proj, vec4 vertpos) {\n"
                                         "  return transform_proj * vertpos;\n"
@@ -104,8 +105,8 @@ namespace Demoloop {
     glEnableVertexAttribArray(positionLocation);
     glEnableVertexAttribArray(colorLocation);
 
-    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) (5 * sizeof(GLfloat)));
+    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+    glVertexAttribPointer(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
     glDrawArrays(GL_LINES, 0, count);
 
@@ -125,10 +126,38 @@ namespace Demoloop {
     glEnableVertexAttribArray(positionLocation);
     glEnableVertexAttribArray(colorLocation);
 
-    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) (5 * sizeof(GLfloat)));
+    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+    glVertexAttribPointer(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
     glDrawArrays(GL_TRIANGLES, 0, count);
+
+    glDisableVertexAttribArray(positionLocation);
+    glDisableVertexAttribArray(colorLocation);
+  }
+
+  void GL::triangles(const Triangle *triangleVertices, size_t count) {
+    triangles((Vertex *)triangleVertices, count * 3);
+  }
+
+  void GL::triangles(const Vertex *coords, const uint32_t *indices, size_t count) {
+    prepareDraw();
+
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0], GL_DYNAMIC_DRAW);
+
+    GLint positionLocation = Shader::defaultShader->getAttribLocation("VertexPosition");
+    GLint colorLocation = Shader::defaultShader->getAttribLocation("VertexColor");
+
+    glEnableVertexAttribArray(positionLocation);
+    glEnableVertexAttribArray(colorLocation);
+
+    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+    glVertexAttribPointer(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), &indices[0], GL_DYNAMIC_DRAW);
+
+    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
 
     glDisableVertexAttribArray(positionLocation);
     glDisableVertexAttribArray(colorLocation);

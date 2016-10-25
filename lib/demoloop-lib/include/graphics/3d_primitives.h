@@ -1,10 +1,12 @@
 #pragma once
 
+#include <array>
 #include "graphics/gl.h"
+#include "graphics/mesh.h"
 
 namespace Demoloop {
 
-void cube(Vertex vertices[36], const float cx, const float cy, const float cz, const float radius);
+Mesh* cube(const float cx, const float cy, const float cz, const float radius);
 void spherePoints(Vertex vertices[12], const float cx, const float cy, const float cz, const float radius);
 void sphereTriangles(Vertex vertices[60], Vertex points[12]);
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include <GL/glew.h>
 #include <vector>
 #include "common/matrix.h"
@@ -51,6 +49,8 @@ public:
   void prepareDraw();
 
   void triangles(const Vertex *coords, size_t count);
+  void triangles(const Triangle* triangles, size_t count);
+  void triangles(const Vertex* triangles, const uint32_t *indices, size_t count);
   void lines(const Vertex *coords, size_t count);
 
 private:

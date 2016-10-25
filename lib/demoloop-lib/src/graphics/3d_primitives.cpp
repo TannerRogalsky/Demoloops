@@ -3,53 +3,81 @@
 
 namespace Demoloop {
 
-void cube(Vertex vertices[36], const float cx, const float cy, const float cz, const float radius) {
+Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
   static const GLfloat g_vertex_buffer_data[] = {
       -1.0f,-1.0f,-1.0f,
       -1.0f,-1.0f, 1.0f,
       -1.0f, 1.0f, 1.0f,
+
       1.0f, 1.0f,-1.0f,
       -1.0f,-1.0f,-1.0f,
       -1.0f, 1.0f,-1.0f,
+
       1.0f,-1.0f, 1.0f,
       -1.0f,-1.0f,-1.0f,
       1.0f,-1.0f,-1.0f,
+
       1.0f, 1.0f,-1.0f,
       1.0f,-1.0f,-1.0f,
       -1.0f,-1.0f,-1.0f,
+
       -1.0f,-1.0f,-1.0f,
       -1.0f, 1.0f, 1.0f,
       -1.0f, 1.0f,-1.0f,
+
       1.0f,-1.0f, 1.0f,
       -1.0f,-1.0f, 1.0f,
       -1.0f,-1.0f,-1.0f,
+
       -1.0f, 1.0f, 1.0f,
       -1.0f,-1.0f, 1.0f,
       1.0f,-1.0f, 1.0f,
+
       1.0f, 1.0f, 1.0f,
       1.0f,-1.0f,-1.0f,
       1.0f, 1.0f,-1.0f,
+
       1.0f,-1.0f,-1.0f,
       1.0f, 1.0f, 1.0f,
       1.0f,-1.0f, 1.0f,
+
       1.0f, 1.0f, 1.0f,
       1.0f, 1.0f,-1.0f,
       -1.0f, 1.0f,-1.0f,
+
       1.0f, 1.0f, 1.0f,
       -1.0f, 1.0f,-1.0f,
       -1.0f, 1.0f, 1.0f,
+
       1.0f, 1.0f, 1.0f,
       -1.0f, 1.0f, 1.0f,
       1.0f,-1.0f, 1.0f
   };
 
-  // Vertex vertices[36];
-  for (int i = 0; i < 36; ++i) {
-    vertices[i].x = g_vertex_buffer_data[i * 3 + 0] * radius + cx;
-    vertices[i].y = g_vertex_buffer_data[i * 3 + 1] * radius + cy;
-    vertices[i].z = g_vertex_buffer_data[i * 3 + 2] * radius + cz;
+  // std::vector<uint32_t> indices = {
+  //   0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+  //   10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+  //   20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+  //   30, 31, 33, 33, 34, 35
+  // };
+  std::vector<uint32_t> indices = {
+    0, 1, 2, 3, 0, 5, 6, 0, 8, 3, 8,
+    0, 0, 2, 5, 6, 1, 0, 2, 1, 6, 21,
+    8, 3, 8, 21, 6, 21, 3, 5, 21, 5, 2, 21, 2, 6
+  };
+
+  std::vector<Vertex> vertices;
+  vertices.reserve(36);
+  for (int i = 0; i < 36; ++i)
+  {
+    Vertex v;
+    v.x = g_vertex_buffer_data[i * 3 + 0] * radius + cx;
+    v.y = g_vertex_buffer_data[i * 3 + 1] * radius + cy;
+    v.z = g_vertex_buffer_data[i * 3 + 2] * radius + cz;
+    vertices.push_back(v);
   }
-  // return vertices;
+
+  return new Mesh(vertices, indices);
 }
 
 void spherePoints(Vertex points[12], const float cx, const float cy, const float cz, const float radius) {

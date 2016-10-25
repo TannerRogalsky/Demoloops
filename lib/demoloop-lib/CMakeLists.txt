@@ -14,6 +14,7 @@ set(SRCS
   ${PROJECT_SOURCE_DIR}/common/vector.cpp
   ${PROJECT_SOURCE_DIR}/graphics/shader.cpp
   ${PROJECT_SOURCE_DIR}/graphics/gl.cpp
+  ${PROJECT_SOURCE_DIR}/graphics/mesh.cpp
   ${PROJECT_SOURCE_DIR}/graphics/2d_primitives.cpp
   ${PROJECT_SOURCE_DIR}/graphics/3d_primitives.cpp
 )
