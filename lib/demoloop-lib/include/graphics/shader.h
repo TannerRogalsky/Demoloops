@@ -33,6 +33,8 @@ public:
 
   Shader(const ShaderSource &source);
   ~Shader();
+
+  std::map<std::string, GLint> mAttributes;
   GLint getAttribLocation(const std::string &name);
 
   /**
