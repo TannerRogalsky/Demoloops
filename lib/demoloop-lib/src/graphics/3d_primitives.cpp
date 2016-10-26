@@ -54,12 +54,6 @@ Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
       1.0f,-1.0f, 1.0f
   };
 
-  // std::vector<uint32_t> indices = {
-  //   0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-  //   10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-  //   20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-  //   30, 31, 33, 33, 34, 35
-  // };
   std::vector<uint32_t> indices = {
     0, 1, 2, 3, 0, 5, 6, 0, 8, 3, 8,
     0, 0, 2, 5, 6, 1, 0, 2, 1, 6, 21,
