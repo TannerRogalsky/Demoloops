@@ -88,10 +88,6 @@ namespace Demoloop {
 
   void GL::prepareDraw() {
     Shader::defaultShader->checkSetBuiltinUniforms();
-    Matrix4 View = matrices.transform.back();
-    Matrix4 Projection = matrices.projection.back();
-    Matrix4 mvp = Projection * View; // * Model
-    Shader::defaultShader->sendMatrix("TransformProjectionMatrix", 4, mvp.getElements(), 1);
   }
 
   void GL::lines(const Vertex *coords, size_t count) {
