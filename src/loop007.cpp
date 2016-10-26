@@ -4,19 +4,20 @@
 #include "graphics/2d_primitives.h"
 #include "hsl.h"
 using namespace std;
+using namespace Demoloop;
 
 #define MAX_VERTS 6
 
 float t = 0;
 const float CYCLE_LENGTH = 6;
 
-class Loop7 : public Demoloop::DemoloopOpenGL {
+class Loop7 : public DemoloopOpenGL {
 public:
-  Loop7() : Demoloop::DemoloopOpenGL(150, 150, 150) {
+  Loop7() : DemoloopOpenGL(150, 150, 150) {
     glDisable(GL_DEPTH_TEST);
 
     int ox = width / 2, oy = height / 2;
-    Demoloop::Matrix4& transform = gl.getTransform();
+    Matrix4& transform = gl.getTransform();
     transform.translate(ox, oy);
   }
 

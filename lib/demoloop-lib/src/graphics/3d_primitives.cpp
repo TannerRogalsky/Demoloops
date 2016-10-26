@@ -1,5 +1,6 @@
 #include "graphics/3d_primitives.h"
 #include <cmath>
+#include <numeric>
 
 namespace Demoloop {
 
@@ -74,9 +75,10 @@ Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
   return new Mesh(vertices, indices);
 }
 
-void spherePoints(Vertex points[12], const float cx, const float cy, const float cz, const float radius) {
+Mesh* sphere(const float cx, const float cy, const float cz, const float radius) {
   const float t = (1.0 + sqrt(5.0)) / 2.0 * radius;
 
+  Vertex points[12];
   points[0].x = -radius + cx;
   points[0].y =  t + cy;
   points[0].z =  0 + cz;
@@ -126,89 +128,100 @@ void spherePoints(Vertex points[12], const float cx, const float cy, const float
   points[11].x = -t + cx;
   points[11].y =  0 + cy;
   points[11].z =  radius + cz;
-}
 
-void sphereTriangles(Vertex vertices[60], Vertex points[12]) {
-  vertices[0] = points[0];
-  vertices[1] = points[11];
-  vertices[2] = points[5];
+  std::vector<Vertex> vertices;
+  vertices.reserve(60);
 
-  vertices[3] = points[0];
-  vertices[4] = points[5];
-  vertices[5] = points[1];
+  vertices.push_back(Vertex(points[0]));
+  vertices.push_back(Vertex(points[11]));
+  vertices.push_back(Vertex(points[5]));
 
-  vertices[6] = points[0];
-  vertices[7] = points[1];
-  vertices[8] = points[7];
+  vertices.push_back(Vertex(points[0]));
+  vertices.push_back(Vertex(points[5]));
+  vertices.push_back(Vertex(points[1]));
 
-  vertices[9] = points[0];
-  vertices[10] = points[7];
-  vertices[11] = points[10];
+  vertices.push_back(Vertex(points[0]));
+  vertices.push_back(Vertex(points[1]));
+  vertices.push_back(Vertex(points[7]));
 
-  vertices[12] = points[0];
-  vertices[13] = points[10];
-  vertices[14] = points[11];
+  vertices.push_back(Vertex(points[0]));
+  vertices.push_back(Vertex(points[7]));
+  vertices.push_back(Vertex(points[10]));
 
-  vertices[15] = points[1];
-  vertices[16] = points[5];
-  vertices[17] = points[9];
+  vertices.push_back(Vertex(points[0]));
+  vertices.push_back(Vertex(points[10]));
+  vertices.push_back(Vertex(points[11]));
 
-  vertices[18] = points[5];
-  vertices[19] = points[11];
-  vertices[20] = points[4];
+  vertices.push_back(Vertex(points[1]));
+  vertices.push_back(Vertex(points[5]));
+  vertices.push_back(Vertex(points[9]));
 
-  vertices[21] = points[11];
-  vertices[22] = points[10];
-  vertices[23] = points[2];
+  vertices.push_back(Vertex(points[5]));
+  vertices.push_back(Vertex(points[11]));
+  vertices.push_back(Vertex(points[4]));
 
-  vertices[24] = points[10];
-  vertices[25] = points[7];
-  vertices[26] = points[6];
+  vertices.push_back(Vertex(points[11]));
+  vertices.push_back(Vertex(points[10]));
+  vertices.push_back(Vertex(points[2]));
 
-  vertices[27] = points[7];
-  vertices[28] = points[1];
-  vertices[29] = points[8];
+  vertices.push_back(Vertex(points[10]));
+  vertices.push_back(Vertex(points[7]));
+  vertices.push_back(Vertex(points[6]));
 
-  vertices[30] = points[3];
-  vertices[31] = points[9];
-  vertices[32] = points[4];
+  vertices.push_back(Vertex(points[7]));
+  vertices.push_back(Vertex(points[1]));
+  vertices.push_back(Vertex(points[8]));
 
-  vertices[33] = points[3];
-  vertices[34] = points[4];
-  vertices[35] = points[2];
+  vertices.push_back(Vertex(points[3]));
+  vertices.push_back(Vertex(points[9]));
+  vertices.push_back(Vertex(points[4]));
 
-  vertices[36] = points[3];
-  vertices[37] = points[2];
-  vertices[38] = points[6];
+  vertices.push_back(Vertex(points[3]));
+  vertices.push_back(Vertex(points[4]));
+  vertices.push_back(Vertex(points[2]));
 
-  vertices[39] = points[3];
-  vertices[40] = points[6];
-  vertices[41] = points[8];
+  vertices.push_back(Vertex(points[3]));
+  vertices.push_back(Vertex(points[2]));
+  vertices.push_back(Vertex(points[6]));
 
-  vertices[42] = points[3];
-  vertices[43] = points[8];
-  vertices[44] = points[9];
+  vertices.push_back(Vertex(points[3]));
+  vertices.push_back(Vertex(points[6]));
+  vertices.push_back(Vertex(points[8]));
 
-  vertices[45] = points[4];
-  vertices[46] = points[9];
-  vertices[47] = points[5];
+  vertices.push_back(Vertex(points[3]));
+  vertices.push_back(Vertex(points[8]));
+  vertices.push_back(Vertex(points[9]));
 
-  vertices[48] = points[2];
-  vertices[49] = points[4];
-  vertices[50] = points[11];
+  vertices.push_back(Vertex(points[4]));
+  vertices.push_back(Vertex(points[9]));
+  vertices.push_back(Vertex(points[5]));
 
-  vertices[51] = points[6];
-  vertices[52] = points[2];
-  vertices[53] = points[10];
+  vertices.push_back(Vertex(points[2]));
+  vertices.push_back(Vertex(points[4]));
+  vertices.push_back(Vertex(points[11]));
 
-  vertices[54] = points[8];
-  vertices[55] = points[6];
-  vertices[56] = points[7];
+  vertices.push_back(Vertex(points[6]));
+  vertices.push_back(Vertex(points[2]));
+  vertices.push_back(Vertex(points[10]));
 
-  vertices[57] = points[9];
-  vertices[58] = points[8];
-  vertices[59] = points[1];
+  vertices.push_back(Vertex(points[8]));
+  vertices.push_back(Vertex(points[6]));
+  vertices.push_back(Vertex(points[7]));
 
+  vertices.push_back(Vertex(points[9]));
+  vertices.push_back(Vertex(points[8]));
+  vertices.push_back(Vertex(points[1]));
+
+  std::vector<uint32_t> indices = {
+    0, 1, 2, 0, 2, 5, 0, 5, 8, 0, 8, 11, 0,
+    11, 1, 5, 2, 17, 2, 1, 20, 1, 11, 23, 11,
+    8, 26, 8, 5, 29, 30, 17, 20, 30, 20, 23,
+    30, 23, 26, 30, 26, 29, 30, 29, 17, 20,
+    17, 2, 23, 20, 1, 26, 23, 11, 29, 26, 8,
+    17, 29, 5
+  };
+
+  return new Mesh(vertices, indices);
 }
 
 void polygon(GL& gl, const float* xCoords, const float* yCoords, const float* zCoords, uint32_t count) {

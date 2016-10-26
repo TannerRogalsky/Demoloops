@@ -5,14 +5,15 @@
 #include "helpers.h"
 #include "hsl.h"
 using namespace std;
+using namespace Demoloop;
 
 float t = 0;
 const float PI = 3.1459;
 const float CYCLE_LENGTH = 3;
 
-class Loop2 : public Demoloop::DemoloopOpenGL {
+class Loop2 : public DemoloopOpenGL {
 public:
-  Loop2() : Demoloop::DemoloopOpenGL(150, 150, 150) {}
+  Loop2() : DemoloopOpenGL(150, 150, 150) {}
 
   void Update(float dt) {
     t += dt;

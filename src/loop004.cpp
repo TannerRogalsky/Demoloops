@@ -3,14 +3,15 @@
 #include "graphics/2d_primitives.h"
 #include "hsl.h"
 using namespace std;
+using namespace Demoloop;
 
 float t = 0;
 const float PI = 3.1459;
 const float CYCLE_LENGTH = 10;
 
-class Loop4 : public Demoloop::DemoloopOpenGL {
+class Loop4 : public DemoloopOpenGL {
 public:
-  Loop4() : Demoloop::DemoloopOpenGL(150, 150, 150) {
+  Loop4() : DemoloopOpenGL(150, 150, 150) {
     glDisable(GL_DEPTH_TEST);
   }
 

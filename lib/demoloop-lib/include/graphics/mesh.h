@@ -17,7 +17,7 @@ public:
 
   std::set<uint32_t> getIndexedVertices();
   uint32_t getVertexCount();
-  void draw(GL &gl);
+  void draw();
 
   std::vector<Vertex> mVertices;
   std::vector<uint32_t> mIndices;

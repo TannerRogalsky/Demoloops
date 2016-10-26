@@ -4,15 +4,16 @@
 #include "graphics/2d_primitives.h"
 #include "hsl.h"
 using namespace std;
+using namespace Demoloop;
 
 #define MAX_VERTS 6
 
 float t = 0;
 const float CYCLE_LENGTH = 6;
 
-class Loop12 : public Demoloop::DemoloopOpenGL {
+class Loop12 : public DemoloopOpenGL {
 public:
-  Loop12() : Demoloop::DemoloopOpenGL(150, 150, 150) {
+  Loop12() : DemoloopOpenGL(150, 150, 150) {
     glDisable(GL_DEPTH_TEST);
   }
 

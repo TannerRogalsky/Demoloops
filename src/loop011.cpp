@@ -1,4 +1,5 @@
 #include <iostream>
+#include <numeric>
 #include "demoloop_opengl.h"
 #include "graphics/3d_primitives.h"
 #include "hsl.h"
@@ -16,9 +17,8 @@ public:
     Matrix4 perspective = Matrix4::perspective(DEMOLOOP_M_PI / 4.0, (float)width / (float)height, 0.1, 100.0);
     gl.getProjection().copy(perspective);
 
-    Vertex points[12];
-    spherePoints(points, 0, 0, 0, RADIUS);
-    sphereTriangles(vertices, points);
+    mesh = sphere(0, 0, 0, RADIUS);
+    iota(mesh->mIndices.begin(), mesh->mIndices.end(), 0);
   }
 
   void Update(float dt) {
@@ -32,10 +32,11 @@ public:
       const float interval_cycle_ratio = fmod(t / NUM_VERTS + cycle_ratio, 1);
       auto color = hsl2rgb(interval_cycle_ratio, 1, 0.5);
 
-      vertices[i].r = color.r;
-      vertices[i].g = color.g;
-      vertices[i].b = color.b;
-      vertices[i].a = 255;
+      Vertex &v = mesh->mVertices[i];
+      v.r = color.r;
+      v.g = color.g;
+      v.b = color.b;
+      v.a = 255;
     }
 
     gl.pushTransform();
@@ -47,16 +48,16 @@ public:
     Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
     transform.copy(lookAt);
 
-    gl.triangles(vertices, NUM_VERTS);
+    mesh->draw();
     transform.translate(0, sin(cycle_ratio * DEMOLOOP_M_PI * 2) * RADIUS * 4, 0);
     transform.scale(0.5, 0.5, 0.5);
-    gl.triangles(vertices, NUM_VERTS);
+    mesh->draw();
 
     gl.popTransform();
   }
 
 private:
-  Vertex vertices[NUM_VERTS];
+  Mesh *mesh;
 };
 
 int main(int, char**){

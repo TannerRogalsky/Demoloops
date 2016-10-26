@@ -13,20 +13,6 @@ float t = 0;
 const float PI = 3.1459;
 const float CYCLE_LENGTH = 3;
 
-void setTriangleColor(Triangle &t, const RGB &color) {
-  t.a.r = color.r;
-  t.a.g = color.g;
-  t.a.b = color.b;
-
-  t.b.r = color.r;
-  t.b.g = color.g;
-  t.b.b = color.b;
-
-  t.c.r = color.r;
-  t.c.g = color.g;
-  t.c.b = color.b;
-}
-
 class Test4 : public DemoloopOpenGL {
 public:
   Test4() : DemoloopOpenGL(150, 150, 150) {
@@ -72,7 +58,7 @@ public:
     Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
     transform.copy(lookAt);
 
-    mesh->draw(gl);
+    mesh->draw();
 
     gl.popTransform();
   }

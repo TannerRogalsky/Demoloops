@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <numeric>
 #include "demoloop_opengl.h"
 #include "graphics/3d_primitives.h"
 #include "hsl.h"
@@ -18,8 +19,9 @@ public:
     Matrix4 perspective = Matrix4::perspective(DEMOLOOP_M_PI / 4.0, (float)width / (float)height, 0.1, 100.0);
     gl.getProjection().copy(perspective);
 
-    spherePoints(points, 0, 0, 0, RADIUS);
-    sphereTriangles(vertices, points);
+    mesh = sphere(0, 0, 0, RADIUS);
+    points = mesh->getIndexedVertices();
+    iota(mesh->mIndices.begin(), mesh->mIndices.end(), 0);
   }
 
   void Update(float dt) {
@@ -35,15 +37,15 @@ public:
 
     const float color_cycle = pow(sin(cycle_ratio * DEMOLOOP_M_PI), 2);
     for (int i = 0; i < NUM_VERTS; ++i) {
-      Vertex v = vertices[i];
+      Vertex &v = mesh->mVertices[i];
       // const float t = i;
       // const float interval_cycle_ratio = fmod(t / NUM_VERTS + cycle_ratio, 1);
       auto color = hsl2rgb(((v.z + RADIUS + v.x + RADIUS + v.y + RADIUS) / (RADIUS * 6) + color_cycle) / 2, 1, 0.5);
 
-      vertices[i].r = color.r;
-      vertices[i].g = color.g;
-      vertices[i].b = color.b;
-      vertices[i].a = 255;
+      v.r = color.r;
+      v.g = color.g;
+      v.b = color.b;
+      v.a = 255;
     }
 
     gl.pushTransform();
@@ -56,30 +58,28 @@ public:
     transform.copy(lookAt);
 
     setColor(255, 255, 255);
-    gl.triangles(vertices, NUM_VERTS);
+    mesh->draw();
 
     setColor(0, 0, 0);
 
+    Vertex lines[12 * 11 * 2];
+    uint32_t index = 0;
     for (int i = 0; i < 12; ++i) {
       for (int j = 0; j < 12; ++j) {
         if (i != j) {
-          Vertex v1 = points[i];
-          Vertex v2 = points[j];
-          line(gl, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z);
+          lines[index++] = mesh->mVertices[*std::next(points.begin(), i)];
+          lines[index++] = mesh->mVertices[*std::next(points.begin(), j)];
         }
       }
     }
+    gl.lines(lines, 12 * 11 * 2);
 
-    // transform.translate(0, sin(cycle_ratio * DEMOLOOP_M_PI * 2) * RADIUS * 4, 0);
-    // transform.scale(0.5, 0.5, 0.5);
-    // gl.triangles(vertices, NUM_VERTS);
-
-    // gl.popTransform();
+    gl.popTransform();
   }
 
 private:
-  Vertex points[12];
-  Vertex vertices[NUM_VERTS];
+  Mesh *mesh;
+  set<uint32_t> points;
 };
 
 int main(int, char**){

@@ -20,7 +20,7 @@ namespace Demoloop {
     return mVertices.size();
   }
 
-  void Mesh::draw(GL &gl) {
+  void Mesh::draw() {
     gl.triangles(&mVertices[0], &mIndices[0], mVertices.size());
   }
 }
