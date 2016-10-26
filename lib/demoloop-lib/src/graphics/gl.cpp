@@ -10,7 +10,7 @@ const std::string defaultFragShader = "vec4 effect(mediump vec4 vcolor, Image te
                                       "  return Texel(tex, texcoord) * vcolor;\n"
                                       "}\n";
 
-namespace Demoloop {
+namespace demoloop {
   GL::GL() {
     initMatrices();
   }

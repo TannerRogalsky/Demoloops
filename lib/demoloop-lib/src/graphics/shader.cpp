@@ -5,7 +5,7 @@
 #include <limits>
 #include <cstring> // memcpy
 
-namespace Demoloop {
+namespace demoloop {
 
 Shader *Shader::current = nullptr;
 Shader *Shader::defaultShader = nullptr;

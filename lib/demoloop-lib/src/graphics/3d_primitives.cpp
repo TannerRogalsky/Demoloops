@@ -2,7 +2,7 @@
 #include <cmath>
 #include <numeric>
 
-namespace Demoloop {
+namespace demoloop {
 
 Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
   static const GLfloat g_vertex_buffer_data[] = {

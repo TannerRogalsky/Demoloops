@@ -5,7 +5,7 @@
 #include "graphics/gl.h"
 #include "common/math.h"
 
-namespace Demoloop {
+namespace demoloop {
 
 class Mesh {
 public:

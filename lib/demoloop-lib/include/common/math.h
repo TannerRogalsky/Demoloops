@@ -59,7 +59,7 @@
 #define DEMOLOOP_TORAD(x) (float)(x*DEMOLOOP_M_TORAD)
 #define DEMOLOOP_TODEG(x) (float)(x*DEMOLOOP_M_TODEG)
 
-namespace Demoloop
+namespace demoloop
 {
 
 struct Vertex

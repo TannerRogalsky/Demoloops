@@ -6,7 +6,7 @@
 #include "common/string_map.h"
 #include "common/matrix.h"
 
-namespace Demoloop {
+namespace demoloop {
 struct ShaderSource
 {
   std::string vertex;

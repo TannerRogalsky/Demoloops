@@ -24,7 +24,7 @@
 #include <cstring> // memcpy
 #include <cmath>
 
-namespace Demoloop
+namespace demoloop
 {
 
 // | e0 e4 e8  e12 |
@@ -332,7 +332,7 @@ void Matrix3::setIdentity()
   e[8] = e[4] = e[0] = 1.0f;
 }
 
-Matrix3 Matrix3::operator * (const Demoloop::Matrix3 &m) const
+Matrix3 Matrix3::operator * (const Matrix3 &m) const
 {
   Matrix3 t;
 

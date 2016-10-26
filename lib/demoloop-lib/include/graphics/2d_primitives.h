@@ -2,7 +2,7 @@
 
 #include "graphics/gl.h"
 
-namespace Demoloop {
+namespace demoloop {
 
 void ellipse(GL& gl, const float x, const float y, const float radiusX, const float radiusY, int points = 10);
 void circle(GL& gl, const float x, const float y, const float radius, int points = 10);

@@ -1,19 +1,19 @@
 #include <iostream>
 #include <cmath>
-#include "demoloop_opengl.h"
+#include "demoloop.h"
 #include "graphics/2d_primitives.h"
 #include "hsl.h"
 using namespace std;
-using namespace Demoloop;
+using namespace demoloop;
 
 #define MAX_VERTS 6
 
 float t = 0;
 const float CYCLE_LENGTH = 6;
 
-class Loop7 : public DemoloopOpenGL {
+class Loop7 : public Demoloop {
 public:
-  Loop7() : DemoloopOpenGL(150, 150, 150) {
+  Loop7() : Demoloop(150, 150, 150) {
     glDisable(GL_DEPTH_TEST);
 
     int ox = width / 2, oy = height / 2;

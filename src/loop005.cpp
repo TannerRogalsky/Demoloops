@@ -1,16 +1,16 @@
 #include <iostream>
-#include "demoloop_opengl.h"
+#include "demoloop.h"
 #include "graphics/2d_primitives.h"
 #include "hsl.h"
 using namespace std;
-using namespace Demoloop;
+using namespace demoloop;
 
 float t = 0;
 const float CYCLE_LENGTH = 10;
 
-class Loop5 : public DemoloopOpenGL {
+class Loop5 : public Demoloop {
 public:
-  Loop5() : DemoloopOpenGL(150, 150, 150) {
+  Loop5() : Demoloop(150, 150, 150) {
     glDisable(GL_DEPTH_TEST);
   }
 

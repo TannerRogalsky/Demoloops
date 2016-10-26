@@ -1,19 +1,19 @@
 #include <iostream>
 #include <SDL.h>
-#include "demoloop_opengl.h"
+#include "demoloop.h"
 #include "graphics/2d_primitives.h"
 #include "helpers.h"
 #include "hsl.h"
 using namespace std;
-using namespace Demoloop;
+using namespace demoloop;
 
 float t = 0;
 const float PI = 3.1459;
 const float CYCLE_LENGTH = 3;
 
-class Loop1 : public DemoloopOpenGL {
+class Loop1 : public Demoloop {
 public:
-  Loop1() : DemoloopOpenGL(150, 150, 150) {
+  Loop1() : Demoloop(150, 150, 150) {
   }
 
   void Update(float dt) {

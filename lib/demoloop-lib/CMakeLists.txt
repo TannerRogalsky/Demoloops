@@ -6,7 +6,6 @@ set (PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(SRCS
   ${PROJECT_SOURCE_DIR}/demoloop.cpp
-  ${PROJECT_SOURCE_DIR}/demoloop_opengl.cpp
   ${PROJECT_SOURCE_DIR}/helpers.cpp
   ${PROJECT_SOURCE_DIR}/opengl_helpers.cpp
   ${PROJECT_SOURCE_DIR}/hsl.cpp

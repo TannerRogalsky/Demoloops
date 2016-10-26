@@ -21,7 +21,7 @@
 #ifndef LOVE_STRING_MAP_H
 #define LOVE_STRING_MAP_H
 
-namespace Demoloop
+namespace demoloop
 {
 
 template<typename T, unsigned int SIZE>

@@ -1,19 +1,19 @@
 #include <iostream>
 #include <numeric>
-#include "demoloop_opengl.h"
+#include "demoloop.h"
 #include "graphics/3d_primitives.h"
 #include "hsl.h"
 using namespace std;
-using namespace Demoloop;
+using namespace demoloop;
 
 static const uint16_t NUM_VERTS = 60;
 float t = 0;
 const float CYCLE_LENGTH = 3;
 static const float RADIUS = 0.3;
 
-class Loop11 : public DemoloopOpenGL {
+class Loop11 : public Demoloop {
 public:
-  Loop11() : DemoloopOpenGL(150, 150, 150) {
+  Loop11() : Demoloop(150, 150, 150) {
     Matrix4 perspective = Matrix4::perspective(DEMOLOOP_M_PI / 4.0, (float)width / (float)height, 0.1, 100.0);
     gl.getProjection().copy(perspective);
 

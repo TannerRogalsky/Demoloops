@@ -7,6 +7,7 @@
 #include "res_path.h"
 #include "cleanup.h"
 using namespace std;
+using namespace demoloop;
 
 float t = 0;
 

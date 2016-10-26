@@ -2,9 +2,11 @@
 
 #include <SDL.h>
 #include <chrono>
+#include "graphics/gl.h"
+#include "hsl.h"
 
-class Demoloop
-{
+namespace demoloop {
+class Demoloop {
 public:
   Demoloop();
   Demoloop(int r, int g, int b);
@@ -18,8 +20,12 @@ protected:
   SDL_Renderer *renderer;
   SDL_Window *window;
   std::chrono::time_point<std::chrono::high_resolution_clock> previous_frame;
+
+  void setColor(const RGB& rgb, uint8_t a = 255);
+  void setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
 private:
   int bg_r, bg_g, bg_b;
   void InternalUpdate();
   SDL_Event e;
 };
+}

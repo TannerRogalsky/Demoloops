@@ -4,7 +4,7 @@
 #include "graphics/3d_primitives.h"
 #include "common/math.h"
 
-namespace Demoloop {
+namespace demoloop {
 
 void ellipse(GL& gl, const float x, const float y, const float radiusX, const float radiusY, int points) {
   if (points <= 0) points = 1;

@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <iostream>
 
-namespace Demoloop {
+namespace demoloop {
   // Mesh::Mesh() : Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices) {}
   // Mesh::Mesh(std::vector<Vertex> vertices) : Mesh(vertices, std::vector<uint32_t> indices) {}
   Mesh::Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices)

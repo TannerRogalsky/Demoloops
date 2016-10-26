@@ -3,7 +3,7 @@
 // STD
 #include <cmath>
 
-namespace Demoloop
+namespace demoloop
 {
 
 class Vector3

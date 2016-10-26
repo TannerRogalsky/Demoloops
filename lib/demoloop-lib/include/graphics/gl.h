@@ -5,7 +5,7 @@
 #include "common/matrix.h"
 #include "graphics/shader.h"
 
-namespace Demoloop {
+namespace demoloop {
 class GL {
 public:
 

@@ -2,20 +2,20 @@
 #include <array>
 #include <cmath>
 #include <SDL.h>
-#include "demoloop_opengl.h"
+#include "demoloop.h"
 #include "graphics/3d_primitives.h"
 #include "graphics/mesh.h"
 #include "hsl.h"
 using namespace std;
-using namespace Demoloop;
+using namespace demoloop;
 
 float t = 0;
 const float PI = 3.1459;
 const float CYCLE_LENGTH = 3;
 
-class Test4 : public DemoloopOpenGL {
+class Test4 : public Demoloop {
 public:
-  Test4() : DemoloopOpenGL(150, 150, 150) {
+  Test4() : Demoloop(150, 150, 150) {
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     Matrix4& projection = gl.getProjection();

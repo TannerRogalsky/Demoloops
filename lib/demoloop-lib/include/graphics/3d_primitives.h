@@ -4,7 +4,7 @@
 #include "graphics/gl.h"
 #include "graphics/mesh.h"
 
-namespace Demoloop {
+namespace demoloop {
 
 Mesh* cube(const float cx, const float cy, const float cz, const float radius);
 Mesh* sphere(const float cx, const float cy, const float cz, const float radius);

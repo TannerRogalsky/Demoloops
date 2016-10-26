@@ -25,7 +25,7 @@
 #include "common/math.h"
 #include "common/vector.h"
 
-namespace Demoloop
+namespace demoloop
 {
 
 /**
