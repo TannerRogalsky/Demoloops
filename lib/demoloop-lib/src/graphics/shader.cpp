@@ -1,6 +1,9 @@
 #include "graphics/shader.h"
+#include "graphics/gl.h"
 #include "opengl_helpers.h"
 #include <iostream>
+#include <limits>
+#include <cstring> // memcpy
 
 namespace Demoloop {
 
@@ -10,6 +13,11 @@ Shader *Shader::defaultShader = nullptr;
 Shader::Shader(const ShaderSource &source) {
   mProgram = loadProgram(createVertexCode(source.vertex), createFragmentCode(source.fragment));
   mapActiveUniforms();
+
+  // Invalidate the cached matrices by setting some elements to NaN.
+  float nan = std::numeric_limits<float>::quiet_NaN();
+  lastProjectionMatrix.setTranslation(nan, nan);
+  lastTransformMatrix.setTranslation(nan, nan);
 }
 
 Shader::~Shader() {}
@@ -28,8 +36,8 @@ GLint Shader::getAttribLocation(const std::string &name) {
 void Shader::mapActiveUniforms()
 {
   // Built-in uniform locations default to -1 (nonexistant.)
-  // for (int i = 0; i < int(BUILTIN_MAX_ENUM); i++)
-  //   builtinUniforms[i] = -1;
+  for (int i = 0; i < int(BUILTIN_MAX_ENUM); i++)
+    builtinUniforms[i] = -1;
 
   mUniforms.clear();
 
@@ -70,9 +78,9 @@ void Shader::mapActiveUniforms()
     }
 
     // // If this is a built-in (LOVE-created) uniform, store the location.
-    // BuiltinUniform builtin;
-    // if (builtinNames.find(u.name.c_str(), builtin))
-    //   builtinUniforms[int(builtin)] = u.location;
+    BuiltinUniform builtin;
+    if (builtinNames.find(u.name.c_str(), builtin))
+      builtinUniforms[int(builtin)] = u.location;
 
     if (u.location != -1)
       mUniforms[u.name] = u;
@@ -93,7 +101,7 @@ const Shader::Uniform &Shader::getUniform(const std::string &name) const
   return it->second;
 }
 
-void Shader::attach(bool temporary) {
+void Shader::attach() {
   glUseProgram(mProgram);
   // if (current != this)
   // {
@@ -130,6 +138,60 @@ void Shader::detach() {
     glUseProgram(0);
 
   // current = nullptr;
+}
+
+void Shader::checkSetBuiltinUniforms()
+{
+  // checkSetScreenParams();
+  // checkSetPointSize(gl.getPointSize());
+
+  const Matrix4 &curxform = gl.matrices.transform.back();
+  const Matrix4 &curproj = gl.matrices.projection.back();
+
+  // TemporaryAttacher attacher(this);
+
+  bool tpmatrixneedsupdate = false;
+
+  // Only upload the matrices if they've changed.
+  if (memcmp(curxform.getElements(), lastTransformMatrix.getElements(), sizeof(float) * 16) != 0)
+  {
+    GLint location = builtinUniforms[BUILTIN_TRANSFORM_MATRIX];
+    if (location >= 0)
+      glUniformMatrix4fv(location, 1, GL_FALSE, curxform.getElements());
+
+    // Also upload the re-calculated normal matrix, if possible. The
+    // normal matrix is the transpose of the inverse of the rotation
+    // portion (top-left 3x3) of the transform matrix.
+    location = builtinUniforms[BUILTIN_NORMAL_MATRIX];
+    if (location >= 0)
+    {
+      Matrix3 normalmatrix = Matrix3(curxform).transposedInverse();
+      glUniformMatrix3fv(location, 1, GL_FALSE, normalmatrix.getElements());
+    }
+
+    tpmatrixneedsupdate = true;
+    lastTransformMatrix = curxform;
+  }
+
+  if (memcmp(curproj.getElements(), lastProjectionMatrix.getElements(), sizeof(float) * 16) != 0)
+  {
+    GLint location = builtinUniforms[BUILTIN_PROJECTION_MATRIX];
+    if (location >= 0)
+      glUniformMatrix4fv(location, 1, GL_FALSE, curproj.getElements());
+
+    tpmatrixneedsupdate = true;
+    lastProjectionMatrix = curproj;
+  }
+
+  if (tpmatrixneedsupdate)
+  {
+    GLint location = builtinUniforms[BUILTIN_TRANSFORM_PROJECTION_MATRIX];
+    if (location >= 0)
+    {
+      Matrix4 tp_matrix(curproj * curxform);
+      glUniformMatrix4fv(location, 1, GL_FALSE, tp_matrix.getElements());
+    }
+  }
 }
 
 void Shader::sendInt(const std::string &name, int size, const GLint *vec, int count)
@@ -289,5 +351,20 @@ Shader::UniformType Shader::getUniformBaseType(GLenum type) const {
     return UNIFORM_UNKNOWN;
   }
 }
+
+StringMap<Shader::BuiltinUniform, Shader::BUILTIN_MAX_ENUM>::Entry Shader::builtinNameEntries[] =
+{
+  {"TransformMatrix", Shader::BUILTIN_TRANSFORM_MATRIX},
+  {"ProjectionMatrix", Shader::BUILTIN_PROJECTION_MATRIX},
+  {"TransformProjectionMatrix", Shader::BUILTIN_TRANSFORM_PROJECTION_MATRIX},
+  {"NormalMatrix", Shader::BUILTIN_NORMAL_MATRIX},
+  {"demoloop_PointSize", Shader::BUILTIN_POINT_SIZE},
+  {"demoloop_ScreenSize", Shader::BUILTIN_SCREEN_SIZE},
+  {"demoloop_VideoYChannel", Shader::BUILTIN_VIDEO_Y_CHANNEL},
+  {"demoloop_VideoCbChannel", Shader::BUILTIN_VIDEO_CB_CHANNEL},
+  {"demoloop_VideoCrChannel", Shader::BUILTIN_VIDEO_CR_CHANNEL},
+};
+
+StringMap<Shader::BuiltinUniform, Shader::BUILTIN_MAX_ENUM> Shader::builtinNames(Shader::builtinNameEntries, sizeof(Shader::builtinNameEntries));
 
 }

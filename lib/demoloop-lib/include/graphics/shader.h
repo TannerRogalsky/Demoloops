@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 #include <GL/glew.h>
+#include "common/string_map.h"
+#include "common/matrix.h"
 
 namespace Demoloop {
 struct ShaderSource
@@ -20,6 +22,21 @@ public:
 
   // Pointer to the default Shader.
   static Shader *defaultShader;
+
+  // Built-in uniform (extern) variables.
+  enum BuiltinUniform
+  {
+    BUILTIN_TRANSFORM_MATRIX = 0,
+    BUILTIN_PROJECTION_MATRIX,
+    BUILTIN_TRANSFORM_PROJECTION_MATRIX,
+    BUILTIN_NORMAL_MATRIX,
+    BUILTIN_POINT_SIZE,
+    BUILTIN_SCREEN_SIZE,
+    BUILTIN_VIDEO_Y_CHANNEL,
+    BUILTIN_VIDEO_CB_CHANNEL,
+    BUILTIN_VIDEO_CR_CHANNEL,
+    BUILTIN_MAX_ENUM
+  };
 
   enum UniformType
   {
@@ -42,7 +59,7 @@ public:
    *
    * @param temporary True if we just want to send values to the shader with no intention of rendering.
    **/
-  void attach(bool temporary = false);
+  void attach();
 
   /**
    * Detach the currently bound Shader.
@@ -82,6 +99,8 @@ public:
    **/
   void sendMatrix(const std::string &name, int size, const GLfloat *m, int count);
 
+  void checkSetBuiltinUniforms();
+
 private:
 
   struct Uniform
@@ -92,6 +111,9 @@ private:
     UniformType baseType;
     std::string name;
   };
+
+  // Location values for any built-in uniform variables.
+  GLint builtinUniforms[BUILTIN_MAX_ENUM];
 
   const Uniform &getUniform(const std::string &name) const;
 
@@ -106,6 +128,13 @@ private:
 
   // Program identifier
   GLuint mProgram;
+
+  Matrix4 lastTransformMatrix;
+  Matrix4 lastProjectionMatrix;
+
+  // Names for the built-in uniform variables.
+  static StringMap<BuiltinUniform, BUILTIN_MAX_ENUM>::Entry builtinNameEntries[];
+  static StringMap<BuiltinUniform, BUILTIN_MAX_ENUM> builtinNames;
 };
 
 }

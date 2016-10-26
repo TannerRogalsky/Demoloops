@@ -20,7 +20,6 @@ protected:
   SDL_Renderer *renderer;
   SDL_Window *window;
   std::chrono::time_point<std::chrono::high_resolution_clock> previous_frame;
-  Demoloop::GL gl;
 
   void setColor(const RGB& rgb, uint8_t a = 255);
   void setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);

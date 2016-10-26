@@ -64,4 +64,6 @@ private:
   GLuint mIBO;
 
 };
+
+extern GL gl;
 }

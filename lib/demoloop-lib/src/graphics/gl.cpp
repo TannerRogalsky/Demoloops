@@ -87,6 +87,7 @@ namespace Demoloop {
   }
 
   void GL::prepareDraw() {
+    Shader::defaultShader->checkSetBuiltinUniforms();
     Matrix4 View = matrices.transform.back();
     Matrix4 Projection = matrices.projection.back();
     Matrix4 mvp = Projection * View; // * Model
@@ -186,4 +187,6 @@ namespace Demoloop {
 
     // bindTexture(curtexture);
   }
+
+  GL gl;
 }
