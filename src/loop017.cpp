@@ -4,15 +4,16 @@
 #include "graphics/2d_primitives.h"
 #include "hsl.h"
 using namespace std;
+using namespace Demoloop;
 
 #define NUM_VERTS 12
 
 float t = 0;
 const float CYCLE_LENGTH = 6;
 
-class Loop015 : public Demoloop::DemoloopOpenGL {
+class Loop015 : public DemoloopOpenGL {
 public:
-  Loop015() : Demoloop::DemoloopOpenGL(150, 150, 150), RADIUS(height / 6) {
+  Loop015() : DemoloopOpenGL(150, 150, 150), RADIUS(height / 6) {
     glDisable(GL_DEPTH_TEST);
 
     float phi = 0.0f;
@@ -28,7 +29,7 @@ public:
       vertices[i + 1].z = 1;
     }
 
-    Demoloop::Matrix4 &m = gl.getTransform();
+    Matrix4 &m = gl.getTransform();
     m.translate(width / 2, height / 2);
   }
 
@@ -47,7 +48,7 @@ public:
 
     for (int i = 0; i < 6; ++i) {
       gl.pushTransform();
-      Demoloop::Matrix4 &m = gl.getTransform();
+      Matrix4 &m = gl.getTransform();
 
       int current_vertex = fmod(floor(i + cycle_ratio * 6), 6);
       float phi = current_vertex * interval + DEMOLOOP_M_PI / 3 * 2;
@@ -64,7 +65,7 @@ public:
   }
 private:
   const float RADIUS;
-  Demoloop::Vertex vertices[NUM_VERTS];
+  Vertex vertices[NUM_VERTS];
 };
 
 int main(int, char**){

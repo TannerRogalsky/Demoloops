@@ -73,6 +73,8 @@ public:
     transform.copy(lookAt);
 
     mesh->draw(gl);
+
+    gl.popTransform();
   }
 
 private:
