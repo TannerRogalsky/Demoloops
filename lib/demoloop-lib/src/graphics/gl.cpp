@@ -3,12 +3,12 @@
 #include <iostream>
 #include <cstddef>
 
-const std::string defaultVertexShader = "vec4 position(mat4 transform_proj, vec4 vertpos) {\n"
-                                        "  return transform_proj * vertpos;\n"
-                                        "}\n";
-const std::string defaultFragShader = "vec4 effect(mediump vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord) {\n"
-                                      "  return Texel(tex, texcoord) * vcolor;\n"
-                                      "}\n";
+const static std::string defaultVertexShader = "vec4 position(mat4 transform_proj, vec4 vertpos) {\n"
+                                               "  return transform_proj * vertpos;\n"
+                                               "}\n";
+const static std::string defaultFragShader = "vec4 effect(mediump vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord) {\n"
+                                             "  return Texel(tex, texcoord) * vcolor;\n"
+                                             "}\n";
 
 namespace demoloop {
   GL::GL() {
@@ -34,8 +34,13 @@ namespace demoloop {
     createDefaultTexture();
 
     glBindTexture(GL_TEXTURE_2D, mDefaultTexture);
-    glVertexAttrib4f(Shader::defaultShader->getAttribLocation("ConstantColor"), 1, 1, 1, 1);
-    glVertexAttrib4f(Shader::defaultShader->getAttribLocation("VertexColor"), 1, 1, 1, 1);
+    glVertexAttrib4f(ATTRIB_CONSTANTCOLOR, 1, 1, 1, 1);
+    glVertexAttrib4f(ATTRIB_COLOR, 1, 1, 1, 1);
+
+    GLint maxvertexattribs = 1;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxvertexattribs);
+    state.enabledAttribArrays = (uint32_t) ((1ull << uint32_t(maxvertexattribs)) - 1);
+    useVertexAttribArrays(0);
 
     return true;
   }
@@ -86,6 +91,38 @@ namespace demoloop {
     return matrices.projection.back();
   }
 
+  void GL::useVertexAttribArrays(uint32_t arraybits)
+  {
+    uint32_t diff = arraybits ^ state.enabledAttribArrays;
+
+    if (diff == 0)
+      return;
+
+    // Max 32 attributes. As of when this was written, no GL driver exposes more
+    // than 32. Lets hope that doesn't change...
+    for (uint32_t i = 0; i < 32; i++)
+    {
+      uint32_t bit = 1 << i;
+
+      if (diff & bit)
+      {
+        if (arraybits & bit)
+          glEnableVertexAttribArray(i);
+        else
+          glDisableVertexAttribArray(i);
+      }
+    }
+
+    state.enabledAttribArrays = arraybits;
+
+    // glDisableVertexAttribArray will make the constant value for a vertex
+    // attribute undefined. We rely on the per-vertex color attribute being
+    // white when no per-vertex color is used, so we set it here.
+    // FIXME: Is there a better place to do this?
+    if ((diff & ATTRIBFLAG_COLOR) && !(arraybits & ATTRIBFLAG_COLOR))
+      glVertexAttrib4f(ATTRIB_COLOR, 1.0f, 1.0f, 1.0f, 1.0f);
+  }
+
   void GL::prepareDraw() {
     Shader::defaultShader->checkSetBuiltinUniforms();
   }
@@ -96,19 +133,12 @@ namespace demoloop {
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0].x, GL_DYNAMIC_DRAW);
 
-    GLint positionLocation = Shader::defaultShader->getAttribLocation("VertexPosition");
-    GLint colorLocation = Shader::defaultShader->getAttribLocation("VertexColor");
+    useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
 
-    glEnableVertexAttribArray(positionLocation);
-    glEnableVertexAttribArray(colorLocation);
-
-    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
-    glVertexAttribPointer(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
+    glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+    glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
     glDrawArrays(GL_LINES, 0, count);
-
-    glDisableVertexAttribArray(positionLocation);
-    glDisableVertexAttribArray(colorLocation);
   }
 
   void GL::triangles(const Vertex *coords, size_t count) {
@@ -117,19 +147,12 @@ namespace demoloop {
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0].x, GL_DYNAMIC_DRAW);
 
-    GLint positionLocation = Shader::defaultShader->getAttribLocation("VertexPosition");
-    GLint colorLocation = Shader::defaultShader->getAttribLocation("VertexColor");
+    useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
 
-    glEnableVertexAttribArray(positionLocation);
-    glEnableVertexAttribArray(colorLocation);
-
-    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
-    glVertexAttribPointer(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
+    glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+    glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
     glDrawArrays(GL_TRIANGLES, 0, count);
-
-    glDisableVertexAttribArray(positionLocation);
-    glDisableVertexAttribArray(colorLocation);
   }
 
   void GL::triangles(const Triangle *triangleVertices, size_t count) {
@@ -142,22 +165,15 @@ namespace demoloop {
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0], GL_DYNAMIC_DRAW);
 
-    GLint positionLocation = Shader::defaultShader->getAttribLocation("VertexPosition");
-    GLint colorLocation = Shader::defaultShader->getAttribLocation("VertexColor");
+    useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
 
-    glEnableVertexAttribArray(positionLocation);
-    glEnableVertexAttribArray(colorLocation);
-
-    glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
-    glVertexAttribPointer(colorLocation, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
+    glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+    glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), &indices[0], GL_DYNAMIC_DRAW);
 
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
-
-    glDisableVertexAttribArray(positionLocation);
-    glDisableVertexAttribArray(colorLocation);
   }
 
   void GL::createDefaultTexture()

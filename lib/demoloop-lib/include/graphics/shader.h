@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <GL/glew.h>
+#include "graphics/gl.h"
 #include "common/string_map.h"
 #include "common/matrix.h"
 
@@ -11,6 +12,24 @@ struct ShaderSource
 {
   std::string vertex;
   std::string fragment;
+};
+
+// Vertex attribute indices used in shaders. The values map to OpenGL generic vertex attribute indices.
+enum VertexAttribID
+{
+  ATTRIB_POS = 0,
+  ATTRIB_TEXCOORD,
+  ATTRIB_COLOR,
+  ATTRIB_CONSTANTCOLOR,
+  ATTRIB_MAX_ENUM
+};
+
+enum VertexAttribFlags
+{
+  ATTRIBFLAG_POS = 1 << ATTRIB_POS,
+  ATTRIBFLAG_TEXCOORD = 1 << ATTRIB_TEXCOORD,
+  ATTRIBFLAG_COLOR = 1 << ATTRIB_COLOR,
+  ATTRIBFLAG_CONSTANTCOLOR = 1 << ATTRIB_CONSTANTCOLOR
 };
 
 class Shader {
@@ -115,6 +134,9 @@ private:
   // Location values for any built-in uniform variables.
   GLint builtinUniforms[BUILTIN_MAX_ENUM];
 
+  // Location values for any generic vertex attribute variables.
+  GLint builtinAttributes[ATTRIB_MAX_ENUM];
+
   const Uniform &getUniform(const std::string &name) const;
 
   int getUniformTypeSize(GLenum type) const;
@@ -126,11 +148,17 @@ private:
   // Map active uniform names to their locations.
   void mapActiveUniforms();
 
+  bool loadVolatile(const std::string &vertexShaderSource, const std::string &fragmentShaderSource);
+
   // Program identifier
   GLuint mProgram;
 
   Matrix4 lastTransformMatrix;
   Matrix4 lastProjectionMatrix;
+
+  // Names for the generic vertex attributes.
+  static StringMap<VertexAttribID, ATTRIB_MAX_ENUM>::Entry attribNameEntries[];
+  static StringMap<VertexAttribID, ATTRIB_MAX_ENUM> attribNames;
 
   // Names for the built-in uniform variables.
   static StringMap<BuiltinUniform, BUILTIN_MAX_ENUM>::Entry builtinNameEntries[];

@@ -62,26 +62,6 @@ const char* FRAG_FOOTER = "void main() {\n"
                           "gl_FragColor = effect(VaryingColor, _tex0_, VaryingTexCoord.st, pixelcoord);\n"
                           "}\n";
 
-// const char* UNIFORMS =  "#ifdef GL_ES\n"
-//                         "  // According to the GLSL ES 1.0 spec, uniform precision must match between stages,\n"
-//                         "  // but we can't guarantee that highp is always supported in fragment shaders...\n"
-//                         "  // We *really* don't want to use mediump for these in vertex shaders though.\n"
-//                         "  #if defined(VERTEX) || defined(GL_FRAGMENT_PRECISION_HIGH)\n"
-//                         "    #define DEMOLOOP_UNIFORM_PRECISION highp\n"
-//                         "  #else\n"
-//                         "    #define DEMOLOOP_UNIFORM_PRECISION mediump\n"
-//                         "  #endif\n"
-//                         "  uniform DEMOLOOP_UNIFORM_PRECISION mat4 TransformMatrix;\n"
-//                         "  uniform DEMOLOOP_UNIFORM_PRECISION mat4 ProjectionMatrix;\n"
-//                         "  uniform DEMOLOOP_UNIFORM_PRECISION mat4 TransformProjectionMatrix;\n"
-//                         "  uniform DEMOLOOP_UNIFORM_PRECISION mat3 NormalMatrix;\n"
-//                         "#else\n"
-//                         "  #define TransformMatrix gl_ModelViewMatrix\n"
-//                         "  #define ProjectionMatrix gl_ProjectionMatrix\n"
-//                         "  #define TransformProjectionMatrix gl_ModelViewProjectionMatrix\n"
-//                         "  #define NormalMatrix gl_NormalMatrix\n"
-//                         "#endif\n"
-//                         "uniform mediump vec4 demoloop_ScreenSize;\n";
 const char* UNIFORMS =  "\n"
                         "  // According to the GLSL ES 1.0 spec, uniform precision must match between stages,\n"
                         "  // but we can't guarantee that highp is always supported in fragment shaders...\n"
@@ -113,64 +93,6 @@ std::string createFragmentCode(const std::string &fragmentShaderSource) {
   std::stringstream ss;
   ss << getVersionPragma() << SYNTAX << FRAG_HEADER << UNIFORMS << fragmentShaderSource << "\n" << FRAG_FOOTER;
   return ss.str();
-}
-
-GLuint loadProgram(const std::string &vertexShaderSource, const std::string &fragmentShaderSource) {
-  GLuint gProgramID = glCreateProgram();
-
-  GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  const char *vertexSrc = vertexShaderSource.c_str();
-  GLint vertexSrclen = (GLint) vertexShaderSource.length();
-  glShaderSource(vertexShader, 1, (const GLchar **)&vertexSrc, &vertexSrclen);
-  glCompileShader(vertexShader);
-  GLint vShaderCompiled = GL_FALSE;
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vShaderCompiled);
-  if (vShaderCompiled != GL_TRUE) {
-    printShaderLog(vertexShader);
-    return 0;
-  } else {
-    glAttachShader(gProgramID, vertexShader);
-  }
-
-  GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  const char *fragmentSrc = fragmentShaderSource.c_str();
-  GLint fragmentSrclen = (GLint) fragmentShaderSource.length();
-  glShaderSource(fragmentShader, 1, (const GLchar **)&fragmentSrc, &fragmentSrclen);
-  glCompileShader(fragmentShader);
-  GLint fShaderCompiled = GL_FALSE;
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fShaderCompiled);
-  if(fShaderCompiled != GL_TRUE) {
-    printShaderLog(fragmentShader);
-    return 0;
-  } else {
-    glAttachShader(gProgramID, fragmentShader);
-  }
-
-  glBindAttribLocation(gProgramID, 0, "VertexPosition");
-  glBindAttribLocation(gProgramID, 1, "VertexTexCoord");
-  glBindAttribLocation(gProgramID, 2, "VertexColor");
-  glBindAttribLocation(gProgramID, 3, "ConstantColor");
-
-  glLinkProgram(gProgramID);
-
-  //Check for errors
-  GLint programSuccess = GL_TRUE;
-  glGetProgramiv(gProgramID, GL_LINK_STATUS, &programSuccess);
-  if(programSuccess != GL_TRUE) {
-    printProgramLog(gProgramID);
-    return 0;
-  }
-
-  glValidateProgram(gProgramID);
-
-  GLint programValid = GL_TRUE;
-  glGetProgramiv(gProgramID, GL_VALIDATE_STATUS, &programValid);
-  if(programValid != GL_TRUE) {
-    printProgramLog(gProgramID);
-    return 0;
-  }
-
-  return gProgramID;
 }
 
 void printProgramLog(GLuint program) {

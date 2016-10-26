@@ -46,6 +46,15 @@ public:
   void popProjection();
   Matrix4 &getProjection();
 
+  /**
+   * Sets the enabled vertex attribute arrays based on the specified attribute
+   * bits. Each bit in the uint32_t represents an enabled attribute array index.
+   * For example, useVertexAttribArrays(1 << 0) will enable attribute index 0.
+   * See the VertexAttribFlags enum for the standard vertex attributes.
+   * This function *must* be used instead of glEnable/DisableVertexAttribArray.
+   **/
+  void useVertexAttribArrays(uint32_t arraybits);
+
   void prepareDraw();
 
   void triangles(const Vertex *coords, size_t count);
@@ -62,6 +71,31 @@ private:
 
   GLuint mVBO;
   GLuint mIBO;
+
+  // Tracked OpenGL state.
+  struct
+  {
+    // Texture unit state (currently bound texture for each texture unit.)
+    std::vector<GLuint> boundTextures;
+
+    // Currently active texture unit.
+    int curTextureUnit;
+
+    uint32_t enabledAttribArrays;
+
+    Viewport viewport;
+    Viewport scissor;
+
+    float pointSize;
+
+    bool framebufferSRGBEnabled;
+
+    GLuint defaultTexture;
+
+    Matrix4 lastProjectionMatrix;
+    Matrix4 lastTransformMatrix;
+
+  } state;
 
 };
 

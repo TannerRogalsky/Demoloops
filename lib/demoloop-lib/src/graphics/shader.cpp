@@ -11,8 +11,17 @@ Shader *Shader::current = nullptr;
 Shader *Shader::defaultShader = nullptr;
 
 Shader::Shader(const ShaderSource &source) {
-  mProgram = loadProgram(createVertexCode(source.vertex), createFragmentCode(source.fragment));
+  loadVolatile(createVertexCode(source.vertex), createFragmentCode(source.fragment));
   mapActiveUniforms();
+
+  for (int i = 0; i < int(ATTRIB_MAX_ENUM); i++)
+  {
+    const char *name = nullptr;
+    if (attribNames.find(VertexAttribID(i), name))
+      builtinAttributes[i] = glGetAttribLocation(mProgram, name);
+    else
+      builtinAttributes[i] = -1;
+  }
 
   // Invalidate the cached matrices by setting some elements to NaN.
   float nan = std::numeric_limits<float>::quiet_NaN();
@@ -87,6 +96,67 @@ void Shader::mapActiveUniforms()
   }
 
   glUseProgram(activeprogram);
+}
+
+bool Shader::loadVolatile(const std::string &vertexShaderSource, const std::string &fragmentShaderSource) {
+  mProgram = glCreateProgram();
+
+  GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+  const char *vertexSrc = vertexShaderSource.c_str();
+  GLint vertexSrclen = (GLint) vertexShaderSource.length();
+  glShaderSource(vertexShader, 1, (const GLchar **)&vertexSrc, &vertexSrclen);
+  glCompileShader(vertexShader);
+  GLint vShaderCompiled = GL_FALSE;
+  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vShaderCompiled);
+  if (vShaderCompiled != GL_TRUE) {
+    printShaderLog(vertexShader);
+    return false;
+  } else {
+    glAttachShader(mProgram, vertexShader);
+  }
+
+  GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  const char *fragmentSrc = fragmentShaderSource.c_str();
+  GLint fragmentSrclen = (GLint) fragmentShaderSource.length();
+  glShaderSource(fragmentShader, 1, (const GLchar **)&fragmentSrc, &fragmentSrclen);
+  glCompileShader(fragmentShader);
+  GLint fShaderCompiled = GL_FALSE;
+  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fShaderCompiled);
+  if(fShaderCompiled != GL_TRUE) {
+    printShaderLog(fragmentShader);
+    return false;
+  } else {
+    glAttachShader(mProgram, fragmentShader);
+  }
+
+  // Bind generic vertex attribute indices to names in the shader.
+  for (int i = 0; i < int(ATTRIB_MAX_ENUM); i++)
+  {
+    const char *name = nullptr;
+    if (attribNames.find((VertexAttribID) i, name))
+      glBindAttribLocation(mProgram, i, (const GLchar *) name);
+  }
+
+  glLinkProgram(mProgram);
+
+  //Check for errors
+  GLint programSuccess = GL_TRUE;
+  glGetProgramiv(mProgram, GL_LINK_STATUS, &programSuccess);
+  if(programSuccess != GL_TRUE) {
+    printProgramLog(mProgram);
+    return false;
+  }
+
+  glValidateProgram(mProgram);
+
+  GLint programValid = GL_TRUE;
+  glGetProgramiv(mProgram, GL_VALIDATE_STATUS, &programValid);
+  if(programValid != GL_TRUE) {
+    printProgramLog(mProgram);
+    return false;
+  }
+
+  return true;
 }
 
 const Shader::Uniform &Shader::getUniform(const std::string &name) const
@@ -351,6 +421,16 @@ Shader::UniformType Shader::getUniformBaseType(GLenum type) const {
     return UNIFORM_UNKNOWN;
   }
 }
+
+StringMap<VertexAttribID, ATTRIB_MAX_ENUM>::Entry Shader::attribNameEntries[] =
+{
+  {"VertexPosition", ATTRIB_POS},
+  {"VertexTexCoord", ATTRIB_TEXCOORD},
+  {"VertexColor", ATTRIB_COLOR},
+  {"ConstantColor", ATTRIB_CONSTANTCOLOR},
+};
+
+StringMap<VertexAttribID, ATTRIB_MAX_ENUM> Shader::attribNames(Shader::attribNameEntries, sizeof(Shader::attribNameEntries));
 
 StringMap<Shader::BuiltinUniform, Shader::BUILTIN_MAX_ENUM>::Entry Shader::builtinNameEntries[] =
 {
