@@ -24,6 +24,8 @@ set(LOOPS ${ASSET_LOOPS}
   loop016
   loop017
   loop018
+  loop019
+  loop020
   testopengl
 )
 
