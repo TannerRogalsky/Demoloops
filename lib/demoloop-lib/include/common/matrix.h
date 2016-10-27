@@ -47,6 +47,8 @@ public:
    **/
   Matrix4(float x, float y, float angle, float sx, float sy, float ox, float oy, float kx, float ky);
 
+  Matrix4(float *e);
+
   /**
    * Destructor.
    **/

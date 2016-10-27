@@ -42,6 +42,10 @@ Matrix4::Matrix4(float x, float y, float angle, float sx, float sy, float ox, fl
   setTransformation(x, y, angle, sx, sy, ox, oy, kx, ky);
 }
 
+Matrix4::Matrix4(float *o) {
+  memcpy(e, o, sizeof(float) * 16);
+}
+
 Matrix4::~Matrix4()
 {
 }
