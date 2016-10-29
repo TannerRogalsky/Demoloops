@@ -203,6 +203,8 @@ public:
    **/
   Matrix3(float x, float y, float angle, float sx, float sy, float ox, float oy, float kx, float ky);
 
+  Matrix3(float *e);
+
   ~Matrix3();
 
   /**

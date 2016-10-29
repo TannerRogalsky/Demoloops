@@ -176,16 +176,15 @@ class Quaternion {
      * Note that this is @e NOT the rotation matrix that may be
      * represented by a unit quaternion.
      */
-    // Matrix4 rightMatrix() const {
-    //   Matrix4 m;
-    //   m.e = {
-    //     +w(), -z(),  y(), -x(),
-    //     +z(),  w(), -x(), -y(),
-    //     -y(),  x(),  w(), -z(),
-    //     +x(),  y(),  z(),  w()
-    //   };
-    //   return m;
-    // }
+    Matrix4 rightMatrix() const {
+      float e[16] = {
+        static_cast<float>(+w()), static_cast<float>(-z()), static_cast<float>( y()), static_cast<float>(-x()),
+        static_cast<float>(+z()), static_cast<float>( w()), static_cast<float>(-x()), static_cast<float>(-y()),
+        static_cast<float>(-y()), static_cast<float>( x()), static_cast<float>( w()), static_cast<float>(-z()),
+        static_cast<float>(+x()), static_cast<float>( y()), static_cast<float>( z()), static_cast<float>( w())
+      };
+      return Matrix4(e);
+    }
 
     // *
     //  * @brief Returns this quaternion as a 4-vector.
@@ -209,15 +208,14 @@ class Quaternion {
      * It formulaically returns the matrix, which will not be a
      * rotation if the quaternion is non-unit.
      */
-    // Matrix3 rotationMatrix() const {
-    //   Matrix3 m;
-    //   m.e = {
-    //     1-2*y()*y()-2*z()*z(), 2*x()*y() - 2*z()*w(), 2*x()*z() + 2*y()*w(),
-    //     2*x()*y() + 2*z()*w(), 1-2*x()*x()-2*z()*z(), 2*y()*z() - 2*x()*w(),
-    //     2*x()*z() - 2*y()*w(), 2*y()*z() + 2*x()*w(), 1-2*x()*x()-2*y()*y()
-    //   };
-    //   return Matrix3(m);
-    // }
+    Matrix3 rotationMatrix() const {
+      float e[9] = {
+        static_cast<float>(1-2*y()*y()-2*z()*z()), static_cast<float>(2*x()*y() - 2*z()*w()), static_cast<float>(2*x()*z() + 2*y()*w()),
+        static_cast<float>(2*x()*y() + 2*z()*w()), static_cast<float>(1-2*x()*x()-2*z()*z()), static_cast<float>(2*y()*z() - 2*x()*w()),
+        static_cast<float>(2*x()*z() - 2*y()*w()), static_cast<float>(2*y()*z() + 2*x()*w()), static_cast<float>(1-2*x()*x()-2*y()*y())
+      };
+      return Matrix3(e);
+    }
 
     /**
      * @brief Returns the scaled-axis representation of this

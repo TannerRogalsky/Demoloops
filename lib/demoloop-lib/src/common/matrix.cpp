@@ -326,6 +326,10 @@ Matrix3::Matrix3(float x, float y, float angle, float sx, float sy, float ox, fl
   setTransformation(x, y, angle, sx, sy, ox, oy, kx, ky);
 }
 
+Matrix3::Matrix3(float *o) {
+  memcpy(e, o, sizeof(float) * 9);
+}
+
 Matrix3::~Matrix3()
 {
 }
