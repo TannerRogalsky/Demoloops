@@ -14,7 +14,6 @@
 namespace demoloop {
 
 const int SCREEN_WIDTH = 640, SCREEN_HEIGHT = 480;
-const int FRAMES_PER_SECOND = 60;
 
 Demoloop::Demoloop() : Demoloop(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0) {}
 Demoloop::Demoloop(int r, int g, int b) : Demoloop(SCREEN_WIDTH, SCREEN_HEIGHT, r, g, b) {}
@@ -130,11 +129,9 @@ void Demoloop::Run() {
     }, (void *)this, 0, 1);
   #else
     while (!quit) {
-      auto start = std::chrono::high_resolution_clock::now();
+      // auto start = std::chrono::high_resolution_clock::now();
       InternalUpdate();
-      // Delay to keep frame rate constant (using SDL)
-      SDL_Delay(1.0/FRAMES_PER_SECOND);
-      while((std::chrono::high_resolution_clock::now() - start).count() < 1.0f / FRAMES_PER_SECOND ){}
+      // while((std::chrono::high_resolution_clock::now() - start).count() < 1.0f / FRAMES_PER_SECOND ){}
     }
   #endif
 }
