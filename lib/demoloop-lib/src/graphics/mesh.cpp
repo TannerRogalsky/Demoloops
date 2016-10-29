@@ -20,6 +20,20 @@ namespace demoloop {
     return mVertices.size();
   }
 
+  std::vector<Vertex> Mesh::getLines() {
+    std::vector<Vertex> lines;
+    lines.reserve(mVertices.size() * 2);
+    for (uint32_t i = 0; i < mVertices.size() - 2; i+=3) {
+      lines.push_back(mVertices[i + 0]);
+      lines.push_back(mVertices[i + 1]);
+      lines.push_back(mVertices[i + 1]);
+      lines.push_back(mVertices[i + 2]);
+      lines.push_back(mVertices[i + 2]);
+      lines.push_back(mVertices[i + 0]);
+    }
+    return lines;
+  }
+
   void Mesh::draw() {
     gl.triangles(&mVertices[0], &mIndices[0], mVertices.size());
   }

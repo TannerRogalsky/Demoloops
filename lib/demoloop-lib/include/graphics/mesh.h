@@ -17,6 +17,7 @@ public:
 
   std::set<uint32_t> getIndexedVertices();
   uint32_t getVertexCount();
+  std::vector<Vertex> getLines();
   void draw();
 
   std::vector<Vertex> mVertices;
