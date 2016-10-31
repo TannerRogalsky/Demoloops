@@ -14,6 +14,9 @@ set(SRCS
   ${PROJECT_SOURCE_DIR}/graphics/gl.cpp
   ${PROJECT_SOURCE_DIR}/graphics/shader.cpp
   ${PROJECT_SOURCE_DIR}/graphics/mesh.cpp
+  ${PROJECT_SOURCE_DIR}/graphics/quad.cpp
+  ${PROJECT_SOURCE_DIR}/graphics/texture.cpp
+  ${PROJECT_SOURCE_DIR}/graphics/canvas.cpp
   ${PROJECT_SOURCE_DIR}/graphics/2d_primitives.cpp
   ${PROJECT_SOURCE_DIR}/graphics/3d_primitives.cpp
 )

@@ -5,6 +5,7 @@
 #include "demoloop.h"
 #include "graphics/3d_primitives.h"
 #include "graphics/mesh.h"
+#include "graphics/canvas.h"
 #include "hsl.h"
 using namespace std;
 using namespace demoloop;
@@ -15,7 +16,7 @@ const float CYCLE_LENGTH = 3;
 
 class Test4 : public Demoloop {
 public:
-  Test4() : Demoloop(150, 150, 150) {
+  Test4() : Demoloop(150, 150, 150), canvas(100, 100) {
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     Matrix4& projection = gl.getProjection();
@@ -35,6 +36,8 @@ public:
       v.g = color.g;
       v.b = color.b;
     }
+
+    gl.bindTexture(1);
   }
 
   ~Test4() {
@@ -65,6 +68,7 @@ public:
 
 private:
   Mesh *mesh;
+  Canvas canvas;
 };
 
 int main(int, char**){

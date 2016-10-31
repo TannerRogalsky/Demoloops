@@ -11,7 +11,14 @@ const static std::string defaultFragShader = "vec4 effect(mediump vec4 vcolor, I
                                              "}\n";
 
 namespace demoloop {
-  GL::GL() {
+  GL::GL()
+    : maxAnisotropy(1.0f)
+    , maxTextureSize(0)
+    , maxRenderTargets(1)
+    , maxRenderbufferSamples(0)
+    , maxTextureUnits(1)
+    , state()
+  {
     initMatrices();
   }
 
@@ -25,11 +32,25 @@ namespace demoloop {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
+    initMaxValues();
+
     Shader::defaultShader = new Shader({defaultVertexShader, defaultFragShader});
     Shader::defaultShader->attach();
 
     glGenBuffers(1, &mVBO);
     glGenBuffers(1, &mIBO);
+
+    state.boundTextures.clear();
+    state.boundTextures.resize(maxTextureUnits, 0);
+
+    for (int i = 0; i < (int) state.boundTextures.size(); i++)
+    {
+      glActiveTexture(GL_TEXTURE0 + i);
+      glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    glActiveTexture(GL_TEXTURE0);
+    state.curTextureUnit = 0;
 
     createDefaultTexture();
 
@@ -53,12 +74,50 @@ namespace demoloop {
     matrices.projection.push_back(Matrix4());
   }
 
+  void GL::initMaxValues()
+  {
+    // We'll need this value to clamp anisotropy.
+    // if (GLAD_EXT_texture_filter_anisotropic)
+    //   glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
+    // else
+      maxAnisotropy = 1.0f;
+
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+
+    int maxattachments = 1;
+    int maxdrawbuffers = 1;
+
+    // if (GLAD_ES_VERSION_3_0 || GLAD_VERSION_2_0)
+    // {
+    //   glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxattachments);
+    //   glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxdrawbuffers);
+    // }
+
+    maxRenderTargets = std::min(maxattachments, maxdrawbuffers);
+
+    // if (GLAD_ES_VERSION_3_0 || GLAD_VERSION_3_0 || GLAD_ARB_framebuffer_object
+    //   || GLAD_EXT_framebuffer_multisample || GLAD_APPLE_framebuffer_multisample
+    //   || GLAD_ANGLE_framebuffer_multisample)
+    // {
+    //   glGetIntegerv(GL_MAX_SAMPLES, &maxRenderbufferSamples);
+    // }
+    // else
+      maxRenderbufferSamples = 0;
+
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+  }
+
   void GL::setViewport(const GL::Viewport &v) {
     glViewport(v.x, v.y, v.w, v.h);
     GLfloat dimensions[4] = {(GLfloat)v.w, (GLfloat)v.h, 0, 0};
     Shader::defaultShader->sendFloat("demoloop_ScreenSize", 4, dimensions, 1);
     matrices.projection.back() = Matrix4::ortho(0, v.w, v.h, 0, 0.1, 100);
     matrices.transform.back() = Matrix4::lookAt({0, 0, 100}, {0, 0, 0}, {0, 1, 0});
+  }
+
+  GL::Viewport GL::getViewport() const
+  {
+    return state.viewport;
   }
 
   void GL::pushTransform()
@@ -123,6 +182,115 @@ namespace demoloop {
       glVertexAttrib4f(ATTRIB_COLOR, 1.0f, 1.0f, 1.0f, 1.0f);
   }
 
+  GLint GL::getGLWrapMode(Texture::WrapMode wmode)
+  {
+    switch (wmode)
+    {
+    case Texture::WRAP_CLAMP:
+    default:
+      return GL_CLAMP_TO_EDGE;
+    case Texture::WRAP_CLAMP_ZERO:
+      return GL_CLAMP_TO_BORDER;
+    case Texture::WRAP_REPEAT:
+      return GL_REPEAT;
+    case Texture::WRAP_MIRRORED_REPEAT:
+      return GL_MIRRORED_REPEAT;
+    }
+
+  }
+
+  void GL::drawArrays(GLenum mode, GLint first, GLsizei count)
+  {
+    glDrawArrays(mode, first, count);
+    // ++stats.drawCalls;
+  }
+
+  void GL::drawElements(GLenum mode, GLsizei count, GLenum type, const void *indices)
+  {
+    glDrawElements(mode, count, type, indices);
+    // ++stats.drawCalls;
+  }
+
+  void GL::deleteTexture(GLuint texture)
+  {
+    // glDeleteTextures binds texture 0 to all texture units the deleted texture
+    // was bound to before deletion.
+    for (GLuint &texid : state.boundTextures)
+    {
+      if (texid == texture)
+        texid = 0;
+    }
+
+    glDeleteTextures(1, &texture);
+  }
+
+  void GL::setTextureWrap(const Texture::Wrap &w)
+  {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getGLWrapMode(w.s));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getGLWrapMode(w.t));
+  }
+
+  void GL::bindFramebuffer(GLenum target, GLuint framebuffer) {
+    glBindFramebuffer(target, framebuffer);
+  }
+
+  void GL::setTextureFilter(Texture::Filter &f)
+  {
+    GLint gmin, gmag;
+
+    if (f.mipmap == Texture::FILTER_NONE)
+    {
+      if (f.min == Texture::FILTER_NEAREST)
+        gmin = GL_NEAREST;
+      else // f.min == Texture::FILTER_LINEAR
+        gmin = GL_LINEAR;
+    }
+    else
+    {
+      if (f.min == Texture::FILTER_NEAREST && f.mipmap == Texture::FILTER_NEAREST)
+        gmin = GL_NEAREST_MIPMAP_NEAREST;
+      else if (f.min == Texture::FILTER_NEAREST && f.mipmap == Texture::FILTER_LINEAR)
+        gmin = GL_NEAREST_MIPMAP_LINEAR;
+      else if (f.min == Texture::FILTER_LINEAR && f.mipmap == Texture::FILTER_NEAREST)
+        gmin = GL_LINEAR_MIPMAP_NEAREST;
+      else if (f.min == Texture::FILTER_LINEAR && f.mipmap == Texture::FILTER_LINEAR)
+        gmin = GL_LINEAR_MIPMAP_LINEAR;
+      else
+        gmin = GL_LINEAR;
+    }
+
+    switch (f.mag)
+    {
+    case Texture::FILTER_NEAREST:
+      gmag = GL_NEAREST;
+      break;
+    case Texture::FILTER_LINEAR:
+    default:
+      gmag = GL_LINEAR;
+      break;
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gmin);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gmag);
+
+    // if (GLAD_EXT_texture_filter_anisotropic)
+    // {
+    //   f.anisotropy = std::min(std::max(f.anisotropy, 1.0f), maxAnisotropy);
+    //   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, f.anisotropy);
+    // }
+    // else
+      f.anisotropy = 1.0f;
+  }
+
+  void GL::bindTexture(GLuint texture)
+  {
+    if (texture != state.boundTextures[state.curTextureUnit])
+    {
+      state.boundTextures[state.curTextureUnit] = texture;
+      glBindTexture(GL_TEXTURE_2D, texture);
+    }
+  }
+
   void GL::prepareDraw() {
     Shader::defaultShader->checkSetBuiltinUniforms();
   }
@@ -183,7 +351,7 @@ namespace demoloop {
     // primitives, which would create the need to use different "passthrough"
     // shaders for untextured primitives vs images.
 
-    // GLuint curtexture = state.boundTextures[state.curTextureUnit];
+    GLuint curtexture = state.boundTextures[state.curTextureUnit];
 
     glGenTextures(1, &mDefaultTexture);
     glBindTexture(GL_TEXTURE_2D, mDefaultTexture);
@@ -197,7 +365,7 @@ namespace demoloop {
     GLubyte pix[] = {255, 255, 255, 255};
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, pix);
 
-    // bindTexture(curtexture);
+    bindTexture(curtexture);
   }
 
   GL gl;

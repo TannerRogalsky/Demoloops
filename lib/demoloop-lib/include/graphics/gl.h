@@ -4,6 +4,7 @@
 #include <vector>
 #include "common/matrix.h"
 #include "graphics/shader.h"
+#include "graphics/texture.h"
 
 namespace demoloop {
 class GL {
@@ -27,6 +28,30 @@ public:
     std::vector<Matrix4> projection;
   } matrices;
 
+  class TempTransform
+  {
+  public:
+
+    TempTransform(GL &gl)
+      : gl(gl)
+    {
+      gl.pushTransform();
+    }
+
+    ~TempTransform()
+    {
+      gl.popTransform();
+    }
+
+    Matrix4 &get()
+    {
+      return gl.getTransform();
+    }
+
+  private:
+    GL &gl;
+  };
+
   GL();
   ~GL();
 
@@ -37,6 +62,11 @@ public:
    * The y-coordinate starts at the top.
    **/
   void setViewport(const Viewport &v);
+
+  /**
+   * Gets the current OpenGL rendering viewport rectangle.
+   **/
+  Viewport getViewport() const;
 
   void pushTransform();
   void popTransform();
@@ -57,6 +87,42 @@ public:
 
   void prepareDraw();
 
+  /**
+   * glDrawArrays and glDrawElements which increment the draw-call counter by
+   * themselves.
+   **/
+  void drawArrays(GLenum mode, GLint first, GLsizei count);
+  void drawElements(GLenum mode, GLsizei count, GLenum type, const void *indices);
+
+  /**
+   * Binds a Framebuffer Object to the specified target.
+   **/
+  void bindFramebuffer(GLenum target, GLuint framebuffer);
+
+  /**
+   * Helper for binding an OpenGL texture.
+   * Makes sure we aren't redundantly binding textures.
+   **/
+  void bindTexture(GLuint texture);
+
+  /**
+   * Helper for deleting an OpenGL texture.
+   * Cleans up if the texture is currently bound.
+   **/
+  void deleteTexture(GLuint texture);
+
+  /**
+   * Sets the texture filter mode for the currently bound texture.
+   * The anisotropy parameter of the argument is set to the actual amount of
+   * anisotropy that was used.
+   **/
+  void setTextureFilter(Texture::Filter &f);
+
+  /**
+   * Sets the texture wrap mode for the currently bound texture.
+   **/
+  void setTextureWrap(const Texture::Wrap &w);
+
   void triangles(const Vertex *coords, size_t count);
   void triangles(const Triangle* triangles, size_t count);
   void triangles(const Vertex* triangles, const uint32_t *indices, size_t count);
@@ -65,7 +131,16 @@ public:
 private:
 
   void initMatrices();
+  void initMaxValues();
   void createDefaultTexture();
+
+  GLfloat maxAnisotropy;
+  GLint maxTextureSize;
+  GLint maxRenderTargets;
+  GLint maxRenderbufferSamples;
+  GLint maxTextureUnits;
+
+  GLint getGLWrapMode(Texture::WrapMode wmode);
 
   GLuint mDefaultTexture;
 
