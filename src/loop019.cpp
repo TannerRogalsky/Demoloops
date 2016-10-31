@@ -19,14 +19,29 @@ public:
     gl.getProjection().copy(perspective);
 
     mesh = sphere(0, 0, 0, RADIUS);
-    auto indexedVertices = mesh->getIndexedVertices();
+    auto indices = mesh->getIndexedVertices();
+    Vertex *indexedVertices[12];
+    uint32_t index = 0;
+    for (auto i : indices) {
+      indexedVertices[index++] = &mesh->mVertices[i];
+    }
+    std::sort(&indexedVertices[0], &indexedVertices[11], [](Vertex* a, Vertex* b) {
+        return b->z < a->z;
+    });
+
     float t = 0;
-    for (auto i : indexedVertices) {
-      auto color = hsl2rgb(t++ / indexedVertices.size(), 1, 0.5);
-      Vertex &v = mesh->mVertices[i];
-      v.r = color.r;
-      v.g = color.g;
-      v.b = color.b;
+    for (Vertex *v : indexedVertices) {
+      auto color = hsl2rgb((v->z + RADIUS) / (RADIUS * 4), 1, 0.5);
+      v->r = color.r;
+      v->g = color.g;
+      v->b = color.b;
+    }
+
+    polygonLines = mesh->getLines();
+    for (Vertex &v : polygonLines) {
+      v.r = 0;
+      v.g = 0;
+      v.b = 0;
     }
   }
 
@@ -49,6 +64,8 @@ public:
 
     // setColor(255, 255, 255);
     mesh->draw();
+
+    gl.lines(polygonLines.data(), polygonLines.size());
 
     const uint32_t numLines = 12 * 2 * 2;
     Vertex lines[numLines];
@@ -94,6 +111,7 @@ public:
 
 private:
   Mesh *mesh;
+  vector<Vertex> polygonLines;
 };
 
 int main(int, char**){

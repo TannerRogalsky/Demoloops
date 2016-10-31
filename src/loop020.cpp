@@ -29,15 +29,7 @@ public:
       v.b = color.b;
     }
 
-    uint32_t index = 0;
-    for (int i = 0; i < 12; ++i) {
-      for (int j = 0; j < 12; ++j) {
-        if (i != j) {
-          lines[index++] = mesh->mVertices[*std::next(points.begin(), i)];
-          lines[index++] = mesh->mVertices[*std::next(points.begin(), j)];
-        }
-      }
-    }
+    lines = mesh->getLines();
   }
 
   void Update(float dt) {
@@ -49,10 +41,10 @@ public:
     gl.pushTransform();
     Matrix4& transform = gl.getTransform();
     const Vector3 camera = {
-      // 0,//-sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 3,
-      // -sinf(cycle_ratio * DEMOLOOP_M_PI * 2) * 3,
-      // cosf(cycle_ratio * DEMOLOOP_M_PI * 2) * 3,
-      0, 0, 3
+      0,//-sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 3,
+      -sinf(cycle_ratio * DEMOLOOP_M_PI * 2) * 3,
+      cosf(cycle_ratio * DEMOLOOP_M_PI * 2) * 3,
+      // 0, 0, 3
     };
     const float orientation = copysign(1, camera.z);
     const float lookX = 0;//cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
@@ -60,8 +52,9 @@ public:
     const float lookZ = 0;//sinf(cycle_ratio * DEMOLOOP_M_PI * 2) * 1;
     Matrix4 lookAt = Matrix4::lookAt(camera, {lookX, lookY, lookZ}, {0, orientation, 0});
 
-    Quaternion q(0, 0, 3, pow(sinf(cycle_ratio * DEMOLOOP_M_PI), 2) * 3);
-    lookAt *= q.matrix();
+    // Quaternion q(0, 1, 0, pow(sinf(cycle_ratio * DEMOLOOP_M_PI), 2) * 3);
+    // lookAt *= q.rightMatrix();
+    lookAt.rotate(cycle_ratio * DEMOLOOP_M_PI * 2);
 
     transform.copy(lookAt);
 
@@ -69,8 +62,7 @@ public:
     mesh->draw();
 
     setColor(0, 0, 0);
-    transform.translate(0, 0, 0.001);
-    gl.lines(lines, 12 * 11 * 2);
+    gl.lines(lines.data(), lines.size());
 
     gl.popTransform();
   }
@@ -78,7 +70,7 @@ public:
 private:
   Mesh *mesh;
   set<uint32_t> points;
-  Vertex lines[12 * 11 * 2];
+  vector<Vertex> lines;
 };
 
 int main(int, char**){
