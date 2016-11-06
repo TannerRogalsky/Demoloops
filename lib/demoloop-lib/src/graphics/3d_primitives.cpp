@@ -248,6 +248,7 @@ void polygon(GL& gl, const float* xCoords, const float* yCoords, const float* zC
     vertexIndex++;
   }
 
+  gl.bindTexture(gl.getDefaultTexture());
   gl.triangles(vertices, vertexIndex);
   delete[] vertices;
 }
@@ -261,6 +262,8 @@ void line(GL& gl, const float x1, const float y1, const float z1, const float x2
   vertices[1].x = x2;
   vertices[1].y = y2;
   vertices[1].z = z2;
+
+  gl.bindTexture(gl.getDefaultTexture());
   gl.lines(vertices, 2);
 }
 
