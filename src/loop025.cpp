@@ -41,9 +41,8 @@ public:
       const float x = i_cycle_ratio * width;
       const float y = sinf(i_cycle_ratio * DEMOLOOP_M_PI * 2 * 5) * height / 4 * i_cycle_ratio;
 
-      GL::TempTransform tempTransform(gl);
-      Matrix4 &m = tempTransform.get();
-      m.translate(x, y, i_cycle_ratio + 1);
+      GL::TempTransform transform(gl);
+      transform.get().translate(x, y, i_cycle_ratio + 1);
 
       setColor(hsl2rgb(t / num, 1, 0.5));
       gl.triangles(vertices, NUM_VERTS);
