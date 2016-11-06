@@ -86,6 +86,7 @@ public:
   void useVertexAttribArrays(uint32_t arraybits);
 
   void prepareDraw();
+  void prepareDraw(Matrix4 modelView);
 
   /**
    * glDrawArrays and glDrawElements which increment the draw-call counter by
@@ -123,6 +124,8 @@ public:
    **/
   void setTextureWrap(const Texture::Wrap &w);
 
+  GLuint getDefaultTexture() const;
+
   void triangles(const Vertex *coords, size_t count);
   void triangles(const Triangle* triangles, size_t count);
   void triangles(const Vertex* triangles, const uint32_t *indices, size_t count);
@@ -141,8 +144,6 @@ private:
   GLint maxTextureUnits;
 
   GLint getGLWrapMode(Texture::WrapMode wmode);
-
-  GLuint mDefaultTexture;
 
   GLuint mVBO;
   GLuint mIBO;

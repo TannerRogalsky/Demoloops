@@ -55,6 +55,9 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
     // return 1;
   }
 
+  states.reserve(10);
+  states.push_back(DisplayState());
+
   auto context = SDL_GL_CreateContext(window);
   if (context == NULL) {
       logSDLError(std::cerr, "SDL_GL_CreateContext");
@@ -67,7 +70,7 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
     }
 
     gl.initContext();
-    gl.setViewport({0, 0, width, height});
+    setViewportSize(width, height);
 
     //Use Vsync
     if (SDL_GL_SetSwapInterval(1) < 0) {
@@ -95,6 +98,88 @@ void Demoloop::setColor(const RGB& rgb, uint8_t a) {
 
 void Demoloop::setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
   glVertexAttrib4f(ATTRIB_CONSTANTCOLOR, r / 255.0, g / 255.0, b / 255.0, a / 255.0);
+}
+
+void Demoloop::setCanvas(Canvas *canvas)
+{
+  if (canvas == nullptr)
+    return setCanvas();
+
+  DisplayState &state = states.back();
+
+  canvas->startGrab();
+
+  std::vector<StrongRef<Canvas>> canvasref;
+  canvasref.push_back(canvas);
+
+  std::swap(state.canvases, canvasref);
+}
+
+// void Demoloop::setCanvas(const std::vector<Canvas *> &canvases)
+// {
+//   if (canvases.size() == 0)
+//     return setCanvas();
+//   else if (canvases.size() == 1)
+//     return setCanvas(canvases[0]);
+
+//   DisplayState &state = states.back();
+
+//   auto attachments = std::vector<Canvas *>(canvases.begin() + 1, canvases.end());
+//   canvases[0]->startGrab(attachments);
+
+//   std::vector<Canvas> canvasrefs;
+//   canvasrefs.reserve(canvases.size());
+
+//   for (Canvas *c : canvases)
+//     canvasrefs.push_back(c);
+
+//   std::swap(state.canvases, canvasrefs);
+// }
+
+void Demoloop::setCanvas()
+{
+  DisplayState &state = states.back();
+
+  if (Canvas::current != nullptr)
+    Canvas::current->stopGrab();
+
+  state.canvases.clear();
+}
+
+std::vector<Canvas *> Demoloop::getCanvas() const
+{
+  std::vector<Canvas *> canvases;
+  canvases.reserve(states.back().canvases.size());
+
+  for (const StrongRef<Canvas> &c : states.back().canvases)
+    canvases.push_back(c.get());
+
+  return canvases;
+}
+
+void Demoloop::setViewportSize(int width, int height)
+{
+  this->width = width;
+  this->height = height;
+
+  // We want to affect the main screen, not any Canvas that's currently active
+  // (not that any *should* be active when this is called.)
+  // std::vector<StrongRef<Canvas>> canvases = states.back().canvases;
+  // setCanvas();
+
+  // Set the viewport to top-left corner.
+  gl.setViewport({0, 0, width, height});
+
+  // If a canvas was bound before this function was called, it needs to be
+  // made aware of the new system viewport size.
+  Canvas::systemViewport = gl.getViewport();
+
+  // Set up the projection matrix
+  gl.matrices.projection.back() = Matrix4::ortho(0, (float) width, (float) height, 0, 0.1, 100);
+  gl.matrices.transform.back() = Matrix4::lookAt({0, 0, 100}, {0, 0, 0}, {0, 1, 0});
+
+  // Restore the previously active Canvas.
+  // setCanvas(canvases);
 }
 
 void Demoloop::InternalUpdate() {

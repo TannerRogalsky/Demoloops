@@ -91,12 +91,13 @@ int Canvas::canvasCount = 0;
 
 Canvas::Canvas(int width, int height, Format format, int msaa)
   : fbo(0)
-    , resolve_fbo(0)
+  , resolve_fbo(0)
+  , ibo(0)
   , texture(0)
-    , msaa_buffer(0)
+  , msaa_buffer(0)
   , depth_stencil(0)
   , format(format)
-    , requested_samples(msaa)
+  , requested_samples(msaa)
   , actual_samples(0)
   , texture_memory(0)
 {
@@ -114,12 +115,24 @@ Canvas::Canvas(int width, int height, Format format, int msaa)
   // world coordinates
   vertices[0].x = 0;
   vertices[0].y = 0;
+  vertices[0].r = 255;
+  vertices[0].g = 0;
+  vertices[0].b = 0;
   vertices[1].x = 0;
   vertices[1].y = h;
+  vertices[1].r = 255;
+  vertices[1].g = 0;
+  vertices[0].b = 0;
   vertices[2].x = w;
   vertices[2].y = 0;
+  vertices[2].r = 255;
+  vertices[2].g = 0;
+  vertices[0].b = 0;
   vertices[3].x = w;
   vertices[3].y = h;
+  vertices[3].r = 255;
+  vertices[3].g = 0;
+  vertices[0].b = 0;
 
   // texture coordinates
   vertices[0].s = 0;
@@ -197,6 +210,10 @@ bool Canvas::loadVolatile()
 {
   // GL::TempDebugGroup debuggroup("Canvas load");
 
+  glGenBuffers(1, &ibo);
+  glBindBuffer(GL_ARRAY_BUFFER, ibo);
+  glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), &vertices[0].x, GL_STATIC_DRAW);
+
   fbo = depth_stencil = texture = 0;
   resolve_fbo = msaa_buffer = 0;
   status = GL_FRAMEBUFFER_COMPLETE;
@@ -244,9 +261,9 @@ bool Canvas::loadVolatile()
 
   if (glGetError() != GL_NO_ERROR)
   {
-        gl.deleteTexture(texture);
-        texture = 0;
-        status = GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT;
+    gl.deleteTexture(texture);
+    texture = 0;
+    status = GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT;
     return false;
   }
 
@@ -255,15 +272,13 @@ bool Canvas::loadVolatile()
   if (!createMSAAFBO(internalformat))
     status = createFBO(fbo, texture);
 
-  if (status != GL_FRAMEBUFFER_COMPLETE)
-    {
-        if (fbo != 0)
-        {
+  if (status != GL_FRAMEBUFFER_COMPLETE) {
+    if (fbo != 0) {
       glDeleteFramebuffers(1, &fbo);
-            fbo = 0;
-        }
-    return false;
+      fbo = 0;
     }
+    return false;
+  }
 
   // size_t prevmemsize = texture_memory;
 
@@ -314,27 +329,29 @@ void Canvas::drawv(const Matrix4 &t, const Vertex *v)
 
   gl.bindTexture(texture);
 
-  gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_TEXCOORD);
+  glBindBuffer(GL_ARRAY_BUFFER, ibo);
 
-  glVertexAttribPointer(ATTRIB_POS, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &v[0].x);
-  glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &v[0].s);
+  // gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_TEXCOORD);
+  gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_TEXCOORD | ATTRIBFLAG_COLOR);
+
+  // glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &v[0].x);
+  // glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &v[0].s);
+  glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+  glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
+  glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
   gl.prepareDraw();
   gl.drawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-void Canvas::draw(float x, float y, float angle, float sx, float sy, float ox, float oy, float kx, float ky)
+void Canvas::draw(Matrix4 modelView)
 {
-  Matrix4 t(x, y, angle, sx, sy, ox, oy, kx, ky);
-
-  drawv(t, vertices);
+  drawv(modelView, vertices);
 }
 
-void Canvas::drawq(Quad *quad, float x, float y, float angle, float sx, float sy, float ox, float oy, float kx, float ky)
+void Canvas::drawq(Quad *quad, Matrix4 modelView)
 {
-  Matrix4 t(x, y, angle, sx, sy, ox, oy, kx, ky);
-
-  drawv(t, quad->getVertices());
+  drawv(modelView, quad->getVertices());
 }
 
 void Canvas::setFilter(const Texture::Filter &f)
@@ -408,101 +425,9 @@ void Canvas::setupGrab()
   gl.matrices.projection.push_back(Matrix4::ortho(0.0, (float) width, 0.0, (float) height));
 }
 
-void Canvas::startGrab(const std::vector<Canvas *> &canvases)
-{
-  // Whether the new canvas list is different from the old one.
-  // A more thorough check is done below.
-  bool canvaseschanged = canvases.size() != attachedCanvases.size();
-  bool hasSRGBcanvas = getSizedFormat(format) == FORMAT_SRGB;
-
-  if (canvases.size() > 0)
-  {
-    // if ((int) canvases.size() + 1 > gl.getMaxRenderTargets())
-    if ((int) canvases.size() + 1 > 1)
-      throw std::runtime_error("This system can't simultaneously render to that many canvases.");
-
-    if (actual_samples != 0)
-      throw std::runtime_error("Multi-canvas rendering is not supported with MSAA.");
-  }
-
-  bool multiformatsupported = isMultiFormatMultiCanvasSupported();
-
-  for (size_t i = 0; i < canvases.size(); i++)
-  {
-    if (canvases[i]->getWidth() != width || canvases[i]->getHeight() != height)
-      throw std::runtime_error("All canvases must have the same dimensions.");
-
-    Format otherformat = canvases[i]->getTextureFormat();
-
-    if (otherformat != format && !multiformatsupported)
-      throw std::runtime_error("This system doesn't support multi-canvas rendering with different canvas formats.");
-
-    if (canvases[i]->getMSAA() != 0)
-      throw std::runtime_error("Multi-canvas rendering is not supported with MSAA.");
-
-    if (!canvaseschanged && canvases[i] != attachedCanvases[i])
-      canvaseschanged = true;
-
-    if (getSizedFormat(otherformat) == FORMAT_SRGB)
-      hasSRGBcanvas = true;
-  }
-
-  // GL::TempDebugGroup debuggroup("Canvas set");
-
-  setupGrab();
-
-  // Make sure the correct sRGB setting is used when drawing to the canvases.
-  // if (GLAD_VERSION_1_0 || GLAD_EXT_sRGB_write_control)
-  // {
-  //   if (hasSRGBcanvas && !gl.hasFramebufferSRGB())
-  //     gl.setFramebufferSRGB(true);
-  //   else if (!hasSRGBcanvas && gl.hasFramebufferSRGB())
-  //     gl.setFramebufferSRGB(false);
-  // }
-
-  // Don't attach anything if there's nothing to change.
-  if (!canvaseschanged)
-    return;
-
-  // Attach the canvas textures to the active FBO and set up MRTs.
-  std::vector<GLenum> drawbuffers;
-  drawbuffers.reserve(canvases.size() + 1);
-
-  drawbuffers.push_back(GL_COLOR_ATTACHMENT0);
-
-  // Attach the canvas textures to the currently bound framebuffer.
-  for (int i = 0; i < (int) canvases.size(); i++)
-  {
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1 + i,
-                           GL_TEXTURE_2D, *(GLuint *) canvases[i]->getHandle(), 0);
-
-    drawbuffers.push_back(GL_COLOR_ATTACHMENT1 + i);
-  }
-
-  // set up multiple render targets
-  glDrawBuffers((int) drawbuffers.size(), &drawbuffers[0]);
-
-  // We want to avoid reference cycles, so we don't retain the attached
-  // Canvases here. The code in Graphics::setCanvas retains them.
-
-  attachedCanvases = canvases;
-}
-
 void Canvas::startGrab()
 {
-  // GL::TempDebugGroup debuggroup("Canvas set");
-
   setupGrab();
-
-  // Make sure the correct sRGB setting is used when drawing to the canvas.
-  // if (GLAD_VERSION_1_0 || GLAD_EXT_sRGB_write_control)
-  // {
-  //   bool isSRGB = getSizedFormat(format) == FORMAT_SRGB;
-  //   if (isSRGB && !gl.hasFramebufferSRGB())
-  //     gl.setFramebufferSRGB(true);
-  //   else if (!isSRGB && gl.hasFramebufferSRGB())
-  //     gl.setFramebufferSRGB(false);
-  // }
 
   if (attachedCanvases.size() == 0)
     return;

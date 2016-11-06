@@ -7,7 +7,7 @@
 
 namespace demoloop {
 
-class Mesh {
+class Mesh : public Drawable {
 public:
 
   // Mesh();
@@ -18,13 +18,31 @@ public:
   std::set<uint32_t> getIndexedVertices();
   uint32_t getVertexCount();
   std::vector<Vertex> getLines();
+
   void draw();
+  virtual void draw(Matrix4 modelView);
+
+  /**
+   * Sets the texture used when drawing the Mesh.
+   **/
+  void setTexture(Texture *texture);
+
+  /**
+   * Disables any texture from being used when drawing the Mesh.
+   **/
+  void setTexture();
+
+  /**
+   * Gets the texture used when drawing the Mesh. May return null if no
+   * texture is set.
+   **/
+  Texture *getTexture() const;
 
   std::vector<Vertex> mVertices;
   std::vector<uint32_t> mIndices;
 
 private:
-
+  Texture *mTexture;
 };
 
 }

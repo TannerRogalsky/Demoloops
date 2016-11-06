@@ -66,10 +66,10 @@ public:
   virtual void unloadVolatile();
 
   // Implements Drawable.
-  virtual void draw(float x, float y, float angle, float sx, float sy, float ox, float oy, float kx, float ky);
+  virtual void draw(Matrix4 modelView);
 
   // Implements Texture.
-  virtual void drawq(Quad *quad, float x, float y, float angle, float sx, float sy, float ox, float oy, float kx, float ky);
+  virtual void drawq(Quad *quad, Matrix4 modelView);
   virtual void setFilter(const Texture::Filter &f);
   virtual bool setWrap(const Texture::Wrap &w);
   virtual const void *getHandle() const;
@@ -78,7 +78,7 @@ public:
    * @param canvases A list of other canvases to temporarily attach to this one,
    * to allow drawing to multiple canvases at once.
    **/
-  void startGrab(const std::vector<Canvas *> &canvases);
+  // void startGrab(const std::vector<Canvas *> &canvases);
   void startGrab();
   void stopGrab(bool switchingToOtherCanvas = false);
 
@@ -141,6 +141,8 @@ private:
 
   GLuint fbo;
   GLuint resolve_fbo;
+
+  GLuint ibo;
 
   GLuint texture;
   GLuint msaa_buffer;

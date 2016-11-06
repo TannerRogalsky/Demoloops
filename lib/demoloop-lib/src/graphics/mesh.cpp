@@ -6,7 +6,7 @@ namespace demoloop {
   // Mesh::Mesh() : Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices) {}
   // Mesh::Mesh(std::vector<Vertex> vertices) : Mesh(vertices, std::vector<uint32_t> indices) {}
   Mesh::Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
-    : mVertices(vertices), mIndices(indices)
+    : mVertices(vertices), mIndices(indices), mTexture(nullptr)
   {
   }
 
@@ -34,7 +34,32 @@ namespace demoloop {
     return lines;
   }
 
+  void Mesh::setTexture(Texture *tex)
+  {
+    mTexture = tex;
+  }
+
+  void Mesh::setTexture()
+  {
+    mTexture = nullptr;
+  }
+
+  Texture *Mesh::getTexture() const
+  {
+    return mTexture;
+  }
+
   void Mesh::draw() {
+    Matrix4 modelView;
+    draw(modelView);
+  }
+
+  void Mesh::draw(Matrix4 modelView) {
+    if (mTexture)
+      gl.bindTexture(*(GLuint *) mTexture->getHandle());
+    else
+      gl.bindTexture(gl.getDefaultTexture());
+
     gl.triangles(&mVertices[0], &mIndices[0], mVertices.size());
   }
 }

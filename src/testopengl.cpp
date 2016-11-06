@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include "demoloop.h"
 #include "graphics/3d_primitives.h"
+#include "graphics/2d_primitives.h"
 #include "graphics/mesh.h"
 #include "graphics/canvas.h"
 #include "hsl.h"
@@ -16,28 +17,35 @@ const float CYCLE_LENGTH = 3;
 
 class Test4 : public Demoloop {
 public:
-  Test4() : Demoloop(150, 150, 150), canvas(100, 100) {
+  Test4() : Demoloop(150, 150, 150), canvas(100, 100), mesh(nullptr) {
     std::cout << glGetString(GL_VERSION) << std::endl;
 
-    Matrix4& projection = gl.getProjection();
-    Matrix4 perspective = Matrix4::perspective(PI / 4.0, (float)width / (float)height, 0.1, 100.0);
-    projection.copy(perspective);
+    // Matrix4& projection = gl.getProjection();
+    // Matrix4 perspective = Matrix4::perspective(PI / 4.0, (float)width / (float)height, 0.1, 100.0);
+    // projection.copy(perspective);
 
-    const float RADIUS = 1;
+    // const float RADIUS = 1;
 
-    mesh = cube(0, 0, 0, RADIUS);
-    auto indexedVertices = mesh->getIndexedVertices();
-    uint32_t count = indexedVertices.size();
-    float t = 0;
-    for (auto i : indexedVertices) {
-      auto color = hsl2rgb(t++ / count, 1, 0.5);
-      Vertex &v = mesh->mVertices[i];
-      v.r = color.r;
-      v.g = color.g;
-      v.b = color.b;
-    }
+    // mesh = cube(0, 0, 0, RADIUS);
+    // auto indexedVertices = mesh->getIndexedVertices();
+    // uint32_t count = indexedVertices.size();
+    // float t = 0;
+    // for (auto i : indexedVertices) {
+    //   auto color = hsl2rgb(t++ / count, 1, 0.5);
+    //   Vertex &v = mesh->mVertices[i];
+    //   v.r = color.r;
+    //   v.g = color.g;
+    //   v.b = color.b;
+    // }
 
-    gl.bindTexture(1);
+    setCanvas(&canvas);
+    rectangle(gl, 5, 5, 50, 50);
+    setCanvas();
+
+    // gl.bindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // mesh->setTexture(&canvas);
+    // mesh->setTexture();
   }
 
   ~Test4() {
@@ -49,21 +57,26 @@ public:
   void Update(float dt) {
     t += dt;
 
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+    // Matrix4 modelView;
+    // canvas.draw(modelView);
 
-    gl.pushTransform();
-    Matrix4& transform = gl.getTransform();
-    const float cameraX = sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 4;
-    // const float cameraY = pow(sin(cycle_ratio * DEMOLOOP_M_PI * 2), 2);
-    const float cameraY = 3;//cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
-    const float cameraZ = cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 4;
-    Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
-    transform.copy(lookAt);
+    rectangle(gl, height / 2, height / 2, 50, 50);
 
-    mesh->draw();
+    // const float cycle = fmod(t, CYCLE_LENGTH);
+    // const float cycle_ratio = cycle / CYCLE_LENGTH;
 
-    gl.popTransform();
+    // gl.pushTransform();
+    // Matrix4& transform = gl.getTransform();
+    // const float cameraX = sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 4;
+    // // const float cameraY = pow(sin(cycle_ratio * DEMOLOOP_M_PI * 2), 2);
+    // const float cameraY = 3;//cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
+    // const float cameraZ = cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 4;
+    // Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
+    // transform.copy(lookAt);
+
+    // mesh->draw();
+
+    // gl.popTransform();
   }
 
 private:

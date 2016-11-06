@@ -54,7 +54,7 @@ namespace demoloop {
 
     createDefaultTexture();
 
-    glBindTexture(GL_TEXTURE_2D, mDefaultTexture);
+    glBindTexture(GL_TEXTURE_2D, state.defaultTexture);
     glVertexAttrib4f(ATTRIB_CONSTANTCOLOR, 1, 1, 1, 1);
     glVertexAttrib4f(ATTRIB_COLOR, 1, 1, 1, 1);
 
@@ -77,9 +77,9 @@ namespace demoloop {
   void GL::initMaxValues()
   {
     // We'll need this value to clamp anisotropy.
-    // if (GLAD_EXT_texture_filter_anisotropic)
-    //   glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
-    // else
+    if (GLEW_EXT_texture_filter_anisotropic)
+      glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy);
+    else
       maxAnisotropy = 1.0f;
 
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
@@ -87,21 +87,20 @@ namespace demoloop {
     int maxattachments = 1;
     int maxdrawbuffers = 1;
 
-    // if (GLAD_ES_VERSION_3_0 || GLAD_VERSION_2_0)
-    // {
-    //   glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxattachments);
-    //   glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxdrawbuffers);
-    // }
+    if (GLEW_VERSION_2_0)
+    {
+      glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxattachments);
+      glGetIntegerv(GL_MAX_DRAW_BUFFERS, &maxdrawbuffers);
+    }
 
     maxRenderTargets = std::min(maxattachments, maxdrawbuffers);
 
-    // if (GLAD_ES_VERSION_3_0 || GLAD_VERSION_3_0 || GLAD_ARB_framebuffer_object
-    //   || GLAD_EXT_framebuffer_multisample || GLAD_APPLE_framebuffer_multisample
-    //   || GLAD_ANGLE_framebuffer_multisample)
-    // {
-    //   glGetIntegerv(GL_MAX_SAMPLES, &maxRenderbufferSamples);
-    // }
-    // else
+    if (GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object
+      || GLEW_EXT_framebuffer_multisample || GLEW_ANGLE_framebuffer_multisample)
+    {
+      glGetIntegerv(GL_MAX_SAMPLES, &maxRenderbufferSamples);
+    }
+    else
       maxRenderbufferSamples = 0;
 
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
@@ -109,10 +108,9 @@ namespace demoloop {
 
   void GL::setViewport(const GL::Viewport &v) {
     glViewport(v.x, v.y, v.w, v.h);
+    state.viewport = v;
     GLfloat dimensions[4] = {(GLfloat)v.w, (GLfloat)v.h, 0, 0};
     Shader::defaultShader->sendFloat("demoloop_ScreenSize", 4, dimensions, 1);
-    matrices.projection.back() = Matrix4::ortho(0, v.w, v.h, 0, 0.1, 100);
-    matrices.transform.back() = Matrix4::lookAt({0, 0, 100}, {0, 0, 0}, {0, 1, 0});
   }
 
   GL::Viewport GL::getViewport() const
@@ -292,6 +290,11 @@ namespace demoloop {
   }
 
   void GL::prepareDraw() {
+    Matrix4 modelView;
+    prepareDraw(modelView);
+  }
+
+  void GL::prepareDraw(Matrix4 modelView) {
     Shader::defaultShader->checkSetBuiltinUniforms();
   }
 
@@ -315,9 +318,10 @@ namespace demoloop {
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0].x, GL_DYNAMIC_DRAW);
 
-    useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
+    useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);
 
     glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
     glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
     glDrawArrays(GL_TRIANGLES, 0, count);
@@ -333,15 +337,20 @@ namespace demoloop {
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0], GL_DYNAMIC_DRAW);
 
-    useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
+    useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);
 
     glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
     glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), &indices[0], GL_DYNAMIC_DRAW);
 
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
+  }
+
+  GLuint GL::getDefaultTexture() const {
+    return state.defaultTexture;
   }
 
   void GL::createDefaultTexture()
@@ -353,8 +362,8 @@ namespace demoloop {
 
     GLuint curtexture = state.boundTextures[state.curTextureUnit];
 
-    glGenTextures(1, &mDefaultTexture);
-    glBindTexture(GL_TEXTURE_2D, mDefaultTexture);
+    glGenTextures(1, &state.defaultTexture);
+    glBindTexture(GL_TEXTURE_2D, state.defaultTexture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

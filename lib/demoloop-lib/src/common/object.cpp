@@ -18,28 +18,44 @@
  * 3. This notice may not be removed or altered from any source distribution.
  **/
 
-#pragma once
-
+// LOVE
 #include "common/object.h"
-#include "common/matrix.h"
 
 namespace demoloop
 {
 
-/**
- * A Drawable is anything that can be drawn on screen with a
- * position, scale and orientation.
- **/
-class Drawable : public Object
+Object::Object()
+  : count(1)
 {
-public:
+}
 
-  /**
-   * Destructor.
-   **/
-  virtual ~Drawable() {}
+Object::Object(const Object & /*other*/)
+  : count(1) // Always start with a reference count of 1.
+{
+}
 
-  virtual void draw(Matrix4 modelView) = 0;
-};
+Object::~Object()
+{
+}
 
-} // demoloop
+int Object::getReferenceCount() const
+{
+  return count;
+}
+
+void Object::retain()
+{
+  count.fetch_add(1, std::memory_order_relaxed);
+}
+
+void Object::release()
+{
+  // http://www.boost.org/doc/libs/1_56_0/doc/html/atomic/usage_examples.html
+  if (count.fetch_sub(1, std::memory_order_release) == 1)
+  {
+    std::atomic_thread_fence(std::memory_order_acquire);
+    delete this;
+  }
+}
+
+} // love
