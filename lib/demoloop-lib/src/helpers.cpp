@@ -75,3 +75,33 @@ char* filetobuf(char *file)
 
     return buf; /* Return the buffer */
 }
+
+void applyMatrix(demoloop::Vertex &v, const demoloop::Matrix4 &m) {
+  const float *e = m.getElements();
+
+  const float x = (v.x * e[0]) + (v.y * e[4]) + (v.z * e[8]) + e[12];
+  const float y = (v.x * e[1]) + (v.y * e[5]) + (v.z * e[9]) + e[13];
+  const float z = (v.x * e[2]) + (v.y * e[6]) + (v.z * e[10]) + e[14];
+
+  v.x = x;
+  v.y = y;
+  v.z = z;
+}
+
+void applyMatrix(demoloop::Triangle &t, const demoloop::Matrix4 &m) {
+  applyMatrix(t.a, m);
+  applyMatrix(t.b, m);
+  applyMatrix(t.c, m);
+}
+
+void applyColor(demoloop::Vertex &v, const RGB &c) {
+  v.r = c.r;
+  v.g = c.g;
+  v.b = c.b;
+}
+
+void applyColor(demoloop::Triangle &t, const RGB &c) {
+  applyColor(t.a, c);
+  applyColor(t.b, c);
+  applyColor(t.c, c);
+}

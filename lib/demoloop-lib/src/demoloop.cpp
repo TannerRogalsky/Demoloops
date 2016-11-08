@@ -3,7 +3,6 @@
 #include <GL/glew.h>
 #include <SDL_opengl.h>
 #include "demoloop.h"
-#include "helpers.h"
 #include "opengl_helpers.h"
 #include "cleanup.h"
 

@@ -5,6 +5,9 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include "common/math.h"
+#include "common/matrix.h"
+#include "hsl.h"
 
 /*
  * Log an SDL error with some error message to the output stream of our choice
@@ -62,3 +65,8 @@ TTF_Font* loadFont(const std::string &fontFile, int fontSize);
 SDL_Texture* renderText(const std::string &message, TTF_Font *font, SDL_Color color, SDL_Renderer *renderer);
 
 char* filetobuf(char *file);
+
+void applyMatrix(demoloop::Vertex &v, const demoloop::Matrix4 &m);
+void applyMatrix(demoloop::Triangle &t, const demoloop::Matrix4 &m);
+void applyColor(demoloop::Vertex &v, const RGB &c);
+void applyColor(demoloop::Triangle &t, const RGB &c);

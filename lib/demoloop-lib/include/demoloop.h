@@ -4,7 +4,7 @@
 #include <chrono>
 #include "graphics/gl.h"
 #include "graphics/canvas.h"
-#include "hsl.h"
+#include "helpers.h"
 
 namespace demoloop {
 class Demoloop {
