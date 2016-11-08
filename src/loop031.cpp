@@ -15,12 +15,12 @@ const Triangle triangle = {
 
 float t = 0;
 const float CYCLE_LENGTH = 10;
-const uint32_t arms = 5;
-const uint32_t num = arms * 20;
+const uint32_t arms = 8;
+const uint32_t num = arms * 40;
 
-class Loop030 : public Demoloop {
+class Loop031 : public Demoloop {
 public:
-  Loop030() : Demoloop(150, 150, 150), maxD(width / 4) {
+  Loop031() : Demoloop(150, 150, 150), maxD(width / 4) {
     Matrix4 &m = gl.getTransform();
     m.translate(width / 2, height / 2);
   }
@@ -38,9 +38,11 @@ public:
 
       float x = cosf(i_cycle_ratio * DEMOLOOP_M_PI * 2) * width / 4;
       x *= sinf(cycle_ratio * DEMOLOOP_M_PI * 2);
+      x *= sinf(i_cycle_ratio * DEMOLOOP_M_PI * 2);
       x += pow(sinf(i_cycle_ratio * DEMOLOOP_M_PI), 2) * width / 10;
       float y = sinf(i_cycle_ratio * DEMOLOOP_M_PI * 2) * width / 4;
       y *= cosf(cycle_ratio * DEMOLOOP_M_PI * 2);
+      y += pow(sinf(cycle_ratio * DEMOLOOP_M_PI), 2) * width / 10;
       float d = sqrt(x * x + y * y);
 
       Matrix4 m;
@@ -60,7 +62,7 @@ private:
 };
 
 int main(int, char**){
-  Loop030 loop;
+  Loop031 loop;
   loop.Run();
 
   return 0;
