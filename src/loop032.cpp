@@ -44,8 +44,8 @@ public:
         float x = ix * RADIUS * 2 + RADIUS;
         float y = iy * RADIUS * 2 + RADIUS;
 
-        Matrix4 m;
-        m.translate(x, y, 1);
+        glm::mat4 m;
+        m = glm::translate(m, {x, y, 1});
 
         const auto color = hsl2rgb(i_cycle_ratio, 1, 0.5);
 

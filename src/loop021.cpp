@@ -10,7 +10,7 @@ using namespace demoloop;
 #define NUM_VERTS 3
 
 float t = 0;
-const float CYCLE_LENGTH = 10;
+const float CYCLE_LENGTH = 6;
 const float rotation_offset = rotationOffset(NUM_VERTS);
 
 class Loop021 : public Demoloop {
@@ -31,8 +31,7 @@ public:
       vertices[i + 1].z = 0;
     }
 
-    Matrix4 &m = gl.getTransform();
-    m.translate(width / 2, height / 2);
+    gl.getTransform() = glm::translate(gl.getTransform(), glm::vec3(width / 2, height / 2, 0));
   }
 
   void Update(float dt) {
@@ -50,25 +49,26 @@ public:
     float side = 2 * apothem * tan(DEMOLOOP_M_PI / NUM_VERTS);
 
     for (int i = 0; i < NUM_VERTS; ++i) {
-      gl.pushTransform();
-      Matrix4 &m = gl.getTransform();
+      GL::TempTransform t1(gl);
 
       float internal_cycle_ratio = fmod(cycle_ratio * NUM_VERTS, 1);
       int current_vertex = fmod(floor(i + cycle_ratio * NUM_VERTS), NUM_VERTS);
-      float x = cosf(current_vertex * interval - rotation_offset) * RADIUS * 2;
-      float y = sinf(current_vertex * interval - rotation_offset) * RADIUS * 2;
+      float x = cosf(current_vertex * interval - rotation_offset) * RADIUS;
+      float y = sinf(current_vertex * interval - rotation_offset) * RADIUS;
       float phi = current_vertex * interval - rotation_offset + DEMOLOOP_M_PI * 2 / NUM_VERTS + DEMOLOOP_M_PI / 6;
 
-      x += side * cosf(phi) * internal_cycle_ratio;
-      y += side * sinf(phi) * internal_cycle_ratio;
+      float x1 = x + side / 2 * cosf(phi) * internal_cycle_ratio;
+      float y1 = y + side / 2 * sinf(phi) * internal_cycle_ratio;
 
-      m.translate(x, y);
-      m.rotate(DEMOLOOP_M_PI);
+      t1.get() = glm::translate(t1.get(), {x1, y1, 0});
+      t1.get() = glm::rotate(t1.get(), static_cast<float>(DEMOLOOP_M_PI), {0, 0, 1});
+
+      float rot = pow(internal_cycle_ratio, 4) * DEMOLOOP_M_PI * 2 / NUM_VERTS;
+      t1.get() = glm::rotate(t1.get(), rot, {0, 0, 1});
+      t1.get() = glm::translate(t1.get(), {-x, -y, 0});
 
       setColor(hsl2rgb(static_cast<float>(i) / NUM_VERTS, 1, 0.5));
       gl.lines(vertices, (NUM_VERTS * 2));
-
-      gl.popTransform();
     }
 
 
