@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include "demoloop.h"
+#include <glm/gtx/rotate_vector.hpp>
 using namespace std;
 using namespace demoloop;
 
@@ -21,8 +22,7 @@ const uint32_t num = arms * 40;
 class Loop031 : public Demoloop {
 public:
   Loop031() : Demoloop(150, 150, 150), maxD(width / 4) {
-    Matrix4 &m = gl.getTransform();
-    m.translate(width / 2, height / 2);
+    gl.getTransform() = glm::translate(gl.getTransform(), glm::vec3(width / 2, height / 2, 0));
   }
 
   void Update(float dt) {
@@ -45,10 +45,11 @@ public:
       y += pow(sinf(cycle_ratio * DEMOLOOP_M_PI), 2) * width / 10;
       float d = sqrt(x * x + y * y);
 
-      Matrix4 m;
-      m.rotate(-DEMOLOOP_M_PI / 2);
-      m.rotate(DEMOLOOP_M_PI * 2 / arms * armIndex);
-      m.translate(x, y, 1);
+      glm::mat4 m;
+      glm::vec3 twoDAxis = {0, 0 , 1};
+      m = glm::rotate(m, static_cast<float>(-DEMOLOOP_M_PI / 2), twoDAxis);
+      m = glm::rotate(m , static_cast<float>(DEMOLOOP_M_PI * 2 / arms * armIndex), twoDAxis);
+      m = glm::translate(m , glm::vec3(x, y, 1));
 
       triangles[i] = triangle;
       applyMatrix(triangles[i], m);
