@@ -4,6 +4,7 @@
 #include <vector>
 #include "graphics/gl.h"
 #include "common/math.h"
+#include "glm/glm.hpp"
 
 namespace demoloop {
 
@@ -20,7 +21,7 @@ public:
   std::vector<Vertex> getLines();
 
   void draw();
-  virtual void draw(Matrix4 modelView);
+  virtual void draw(glm::mat4 modelView);
 
   /**
    * Sets the texture used when drawing the Mesh.

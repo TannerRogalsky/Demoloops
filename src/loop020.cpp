@@ -2,23 +2,24 @@
 #include <cmath>
 #include <algorithm>
 #include <numeric>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 #include "demoloop.h"
-#include "common/quaternion.h"
 #include "graphics/3d_primitives.h"
 #include "hsl.h"
 using namespace std;
 using namespace demoloop;
 
 float t = 0;
-const float CYCLE_LENGTH = 6;
+const float CYCLE_LENGTH = 10;
 
 class Loop20 : public Demoloop {
 public:
   Loop20() : Demoloop(150, 150, 150) {
-    Matrix4 perspective = Matrix4::perspective(DEMOLOOP_M_PI / 4.0, (float)width / (float)height, 0.1, 100.0);
-    gl.getProjection().copy(perspective);
+    glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI / 4.0f), (float)width / (float)height, 0.1f, 100.0f);
+    gl.getProjection() = perspective;
 
-    mesh = sphere(0, 0, 0, 0.5);
+    mesh = sphere(0, 0, 0, 1.2);
     points = mesh->getIndexedVertices();
     float t = 0;
     for (auto i : points) {
@@ -38,33 +39,35 @@ public:
     const float cycle = fmod(t, CYCLE_LENGTH);
     const float cycle_ratio = cycle / CYCLE_LENGTH;
 
-    gl.pushTransform();
-    Matrix4& transform = gl.getTransform();
-    const Vector3 camera = {
-      0,//-sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 3,
-      -sinf(cycle_ratio * DEMOLOOP_M_PI * 2) * 3,
-      cosf(cycle_ratio * DEMOLOOP_M_PI * 2) * 3,
-      // 0, 0, 3
-    };
-    const float orientation = copysign(1, camera.z);
-    const float lookX = 0;//cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
-    const float lookY = 0;//cosf(cycle_ratio * DEMOLOOP_M_PI * 2) * 1;//cos(cycle_ratio * DEMOLOOP_M_PI * 2);
-    const float lookZ = 0;//sinf(cycle_ratio * DEMOLOOP_M_PI * 2) * 1;
-    Matrix4 lookAt = Matrix4::lookAt(camera, {lookX, lookY, lookZ}, {0, orientation, 0});
+    const float rad = cycle_ratio * DEMOLOOP_M_PI * 2;
 
-    // Quaternion q(0, 1, 0, pow(sinf(cycle_ratio * DEMOLOOP_M_PI), 2) * 3);
-    // lookAt *= q.rightMatrix();
-    lookAt.rotate(cycle_ratio * DEMOLOOP_M_PI * 2);
+    const glm::vec3 rotationAxis = glm::normalize(glm::vec3(-1, sinf(rad) / 3, 0));
+    const glm::vec3 eye = glm::rotate(glm::vec3(0, 0, 3 + pow(sinf(pow(cycle_ratio, 3) * DEMOLOOP_M_PI), 2) * 10), rad, rotationAxis);
+    const glm::vec3 up = glm::rotate(glm::vec3(0, 1, 0), rad, rotationAxis);
+    const glm::vec3 target = glm::rotate(glm::vec3(0, 2, 0), rad, rotationAxis);
+    glm::mat4 camera = glm::lookAt(eye, target, up);
 
-    transform.copy(lookAt);
+    GL::TempTransform t1(gl);
+    t1.get() = camera;
 
     setColor(255, 255, 255);
     mesh->draw();
-
     setColor(0, 0, 0);
     gl.lines(lines.data(), lines.size());
 
-    gl.popTransform();
+    for (auto i : points) {
+      Vertex &v = mesh->mVertices[i];
+
+      GL::TempTransform t2(gl);
+      t2.get() = glm::translate(t2.get(), glm::vec3(v.x * 1.1, v.y * 1.1, v.z * 1.1));
+      t2.get() = glm::scale(t2.get(), glm::vec3(0.1, 0.1, 0.1));
+      t2.get() = glm::rotate(t2.get(), rad * 2, glm::vec3(0, 1, 0));
+
+      setColor(255, 255, 255);
+      mesh->draw();
+      setColor(0, 0, 0);
+      gl.lines(lines.data(), lines.size());
+    }
   }
 
 private:

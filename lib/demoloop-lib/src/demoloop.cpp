@@ -5,6 +5,7 @@
 #include "demoloop.h"
 #include "opengl_helpers.h"
 #include "cleanup.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 #ifdef EMSCRIPTEN
   #include <emscripten.h>
@@ -174,8 +175,11 @@ void Demoloop::setViewportSize(int width, int height)
   Canvas::systemViewport = gl.getViewport();
 
   // Set up the projection matrix
-  gl.matrices.projection.back() = Matrix4::ortho(0, (float) width, (float) height, 0, 0.1, 100);
-  gl.matrices.transform.back() = Matrix4::lookAt({0, 0, 100}, {0, 0, 0}, {0, 1, 0});
+  gl.matrices.projection.back() = glm::ortho(0.0f, (float) width, (float) height, 0.0f, 0.1f, 100.0f);
+  const glm::vec3 eye = {0, 0, 100};
+  const glm::vec3 center = {0, 0, 0};
+  const glm::vec3 up = {0, 1, 0};
+  gl.matrices.transform.back() = glm::lookAt(eye, center, up);
 
   // Restore the previously active Canvas.
   // setCanvas(canvases);
@@ -212,36 +216,36 @@ void Demoloop::Run() {
       self->InternalUpdate();
     }, (void *)this, 0, 1);
   #else
-    const std::chrono::duration<float> interval(1.0f / 60.0f);
-    while (!quit) {
-      auto start = std::chrono::high_resolution_clock::now();
-      InternalUpdate();
-      while((std::chrono::high_resolution_clock::now() - start) < interval){}
-    }
-    // const std::chrono::seconds CYCLE_LENGTH(10);
-    // const std::chrono::duration<float> interval(1.0f / 30.0f);
-    // char* pixels = new char [3 * width * height];
-    // SDL_Surface* temp = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 24, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
-    // uint32_t index = 0;
-    // for (std::chrono::duration<float> elapsed(0); elapsed <= CYCLE_LENGTH; elapsed += interval) {
-    //   glClearColor( bg_r / 255.0, bg_g / 255.0, bg_b / 255.0, 1.f );
-    //   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //   Update(interval.count());
-
-    //   SDL_GL_SwapWindow(window);
-
-    //   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-
-    //   for (int i = 0 ; i < height ; i++)
-    //     std::memcpy( ((char *) temp->pixels) + temp->pitch * i, pixels + 3 * width * (height-i - 1), width*3 );
-
-    //   auto numString = std::to_string(index++);
-    //   numString = std::string(4 - numString.length(), '0') + numString;
-    //   SDL_SaveBMP(temp, ("frames/frame" +  numString + ".bmp").c_str());
+    // const std::chrono::duration<float> interval(1.0f / 60.0f);
+    // while (!quit) {
+    //   auto start = std::chrono::high_resolution_clock::now();
+    //   InternalUpdate();
+    //   while((std::chrono::high_resolution_clock::now() - start) < interval){}
     // }
-    // cleanup(temp);
-    // delete [] pixels;
+    const std::chrono::seconds CYCLE_LENGTH(10);
+    const std::chrono::duration<float> interval(1.0f / 30.0f);
+    char* pixels = new char [3 * width * height];
+    SDL_Surface* temp = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 24, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
+    uint32_t index = 0;
+    for (std::chrono::duration<float> elapsed(0); elapsed <= CYCLE_LENGTH; elapsed += interval) {
+      glClearColor( bg_r / 255.0, bg_g / 255.0, bg_b / 255.0, 1.f );
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      Update(interval.count());
+
+      SDL_GL_SwapWindow(window);
+
+      glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+      for (int i = 0 ; i < height ; i++)
+        std::memcpy( ((char *) temp->pixels) + temp->pitch * i, pixels + 3 * width * (height-i - 1), width*3 );
+
+      auto numString = std::to_string(index++);
+      numString = std::string(4 - numString.length(), '0') + numString;
+      SDL_SaveBMP(temp, ("frames/frame" +  numString + ".bmp").c_str());
+    }
+    cleanup(temp);
+    delete [] pixels;
   #endif
 }
 

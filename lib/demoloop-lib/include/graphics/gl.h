@@ -2,7 +2,6 @@
 
 #include <GL/glew.h>
 #include <vector>
-#include "common/matrix.h"
 #include "graphics/shader.h"
 #include "graphics/texture.h"
 
@@ -24,8 +23,8 @@ public:
 
   struct
   {
-    std::vector<Matrix4> transform;
-    std::vector<Matrix4> projection;
+    std::vector<glm::mat4> transform;
+    std::vector<glm::mat4> projection;
   } matrices;
 
   class TempTransform
@@ -43,7 +42,7 @@ public:
       gl.popTransform();
     }
 
-    Matrix4 &get()
+    glm::mat4 &get()
     {
       return gl.getTransform();
     }
@@ -70,11 +69,11 @@ public:
 
   void pushTransform();
   void popTransform();
-  Matrix4 &getTransform();
+  glm::mat4 &getTransform();
 
   void pushProjection();
   void popProjection();
-  Matrix4 &getProjection();
+  glm::mat4 &getProjection();
 
   /**
    * Sets the enabled vertex attribute arrays based on the specified attribute
@@ -86,7 +85,7 @@ public:
   void useVertexAttribArrays(uint32_t arraybits);
 
   void prepareDraw();
-  void prepareDraw(Matrix4 modelView);
+  void prepareDraw(glm::mat4 modelView);
 
   /**
    * glDrawArrays and glDrawElements which increment the draw-call counter by
@@ -168,8 +167,8 @@ private:
 
     GLuint defaultTexture;
 
-    Matrix4 lastProjectionMatrix;
-    Matrix4 lastTransformMatrix;
+    glm::mat4 lastProjectionMatrix;
+    glm::mat4 lastTransformMatrix;
 
   } state;
 

@@ -50,11 +50,11 @@ namespace demoloop {
   }
 
   void Mesh::draw() {
-    Matrix4 modelView;
+    glm::mat4 modelView;
     draw(modelView);
   }
 
-  void Mesh::draw(Matrix4 modelView) {
+  void Mesh::draw(glm::mat4 modelView) {
     if (mTexture)
       gl.bindTexture(*(GLuint *) mTexture->getHandle());
     else

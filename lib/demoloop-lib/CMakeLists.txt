@@ -9,8 +9,6 @@ set(SRCS
   ${PROJECT_SOURCE_DIR}/helpers.cpp
   ${PROJECT_SOURCE_DIR}/opengl_helpers.cpp
   ${PROJECT_SOURCE_DIR}/hsl.cpp
-  ${PROJECT_SOURCE_DIR}/common/matrix.cpp
-  ${PROJECT_SOURCE_DIR}/common/vector.cpp
   ${PROJECT_SOURCE_DIR}/common/object.cpp
   ${PROJECT_SOURCE_DIR}/graphics/gl.cpp
   ${PROJECT_SOURCE_DIR}/graphics/shader.cpp
@@ -51,6 +49,9 @@ else()
 
   include_directories(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIRS})
 endif(EMSCRIPTEN)
+
+# GLM
+include_directories(${PROJECT_SOURCE_DIR}/../../glm)
 
 # Bump up warning levels appropriately for clang, gcc & msvc
 # Also set debug/optimization flags depending on the build type. IDE users choose this when

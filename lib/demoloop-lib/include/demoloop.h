@@ -1,5 +1,6 @@
 #pragma once
 
+#include "glm/glm.hpp"
 #include <SDL.h>
 #include <chrono>
 #include "graphics/gl.h"

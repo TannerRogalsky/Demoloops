@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 #include "graphics/gl.h"
 #include "common/string_map.h"
-#include "common/matrix.h"
+#include "glm/glm.hpp"
 
 namespace demoloop {
 struct ShaderSource
@@ -153,8 +153,8 @@ private:
   // Program identifier
   GLuint mProgram;
 
-  Matrix4 lastTransformMatrix;
-  Matrix4 lastProjectionMatrix;
+  glm::mat4 lastTransformMatrix;
+  glm::mat4 lastProjectionMatrix;
 
   // Names for the generic vertex attributes.
   static StringMap<VertexAttribID, ATTRIB_MAX_ENUM>::Entry attribNameEntries[];

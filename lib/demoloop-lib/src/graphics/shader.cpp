@@ -4,6 +4,7 @@
 #include <iostream>
 #include <limits>
 #include <cstring> // memcpy
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace demoloop {
 
@@ -25,8 +26,8 @@ Shader::Shader(const ShaderSource &source) {
 
   // Invalidate the cached matrices by setting some elements to NaN.
   float nan = std::numeric_limits<float>::quiet_NaN();
-  lastProjectionMatrix.setTranslation(nan, nan);
-  lastTransformMatrix.setTranslation(nan, nan);
+  lastProjectionMatrix = glm::translate(lastProjectionMatrix, {nan, nan, nan});
+  lastTransformMatrix = glm::translate(lastTransformMatrix, {nan, nan, nan});
 }
 
 Shader::~Shader() {}
@@ -215,19 +216,18 @@ void Shader::checkSetBuiltinUniforms()
   // checkSetScreenParams();
   // checkSetPointSize(gl.getPointSize());
 
-  const Matrix4 &curxform = gl.matrices.transform.back();
-  const Matrix4 &curproj = gl.matrices.projection.back();
+  const glm::mat4 &curxform = gl.matrices.transform.back();
+  const glm::mat4 &curproj = gl.matrices.projection.back();
 
   // TemporaryAttacher attacher(this);
 
   bool tpmatrixneedsupdate = false;
 
   // Only upload the matrices if they've changed.
-  if (memcmp(curxform.getElements(), lastTransformMatrix.getElements(), sizeof(float) * 16) != 0)
-  {
+  if (curxform != lastTransformMatrix) {
     GLint location = builtinUniforms[BUILTIN_TRANSFORM_MATRIX];
     if (location >= 0)
-      glUniformMatrix4fv(location, 1, GL_FALSE, curxform.getElements());
+      glUniformMatrix4fv(location, 1, GL_FALSE, &curxform[0][0]);
 
     // Also upload the re-calculated normal matrix, if possible. The
     // normal matrix is the transpose of the inverse of the rotation
@@ -235,19 +235,19 @@ void Shader::checkSetBuiltinUniforms()
     location = builtinUniforms[BUILTIN_NORMAL_MATRIX];
     if (location >= 0)
     {
-      Matrix3 normalmatrix = Matrix3(curxform).transposedInverse();
-      glUniformMatrix3fv(location, 1, GL_FALSE, normalmatrix.getElements());
+      glm::mat3 normalmatrix = glm::inverse(glm::transpose(curxform));
+      glUniformMatrix3fv(location, 1, GL_FALSE, &normalmatrix[0][0]);
     }
 
     tpmatrixneedsupdate = true;
     lastTransformMatrix = curxform;
   }
 
-  if (memcmp(curproj.getElements(), lastProjectionMatrix.getElements(), sizeof(float) * 16) != 0)
+  if (curproj != lastProjectionMatrix)
   {
     GLint location = builtinUniforms[BUILTIN_PROJECTION_MATRIX];
     if (location >= 0)
-      glUniformMatrix4fv(location, 1, GL_FALSE, curproj.getElements());
+      glUniformMatrix4fv(location, 1, GL_FALSE, &curproj[0][0]);
 
     tpmatrixneedsupdate = true;
     lastProjectionMatrix = curproj;
@@ -258,8 +258,8 @@ void Shader::checkSetBuiltinUniforms()
     GLint location = builtinUniforms[BUILTIN_TRANSFORM_PROJECTION_MATRIX];
     if (location >= 0)
     {
-      Matrix4 tp_matrix(curproj * curxform);
-      glUniformMatrix4fv(location, 1, GL_FALSE, tp_matrix.getElements());
+      glm::mat4 tp_matrix(curproj * curxform);
+      glUniformMatrix4fv(location, 1, GL_FALSE, &tp_matrix[0][0]);
     }
   }
 }

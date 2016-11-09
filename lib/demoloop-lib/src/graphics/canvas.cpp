@@ -19,12 +19,11 @@
  **/
 
 #include "graphics/canvas.h"
-// #include "Graphics.h"
-// #include "common/Matrix.h"
 
 #include <stdexcept>
 #include <cstring> // For memcpy
 #include <algorithm> // For min/max
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace demoloop
 {
@@ -313,7 +312,7 @@ void Canvas::unloadVolatile()
   texture_memory = 0;
 }
 
-void Canvas::drawv(const Matrix4 &t, const Vertex *v)
+void Canvas::drawv(const glm::mat4 &t, const Vertex *v)
 {
   // FIXME: This doesn't handle cases where the Canvas is used as a texture
   // in a SpriteBatch, Mesh, or ParticleSystem, or when the Canvas is used in
@@ -344,12 +343,12 @@ void Canvas::drawv(const Matrix4 &t, const Vertex *v)
   gl.drawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-void Canvas::draw(Matrix4 modelView)
+void Canvas::draw(glm::mat4 modelView)
 {
   drawv(modelView, vertices);
 }
 
-void Canvas::drawq(Quad *quad, Matrix4 modelView)
+void Canvas::drawq(Quad *quad, glm::mat4 modelView)
 {
   drawv(modelView, quad->getVertices());
 }
@@ -422,7 +421,7 @@ void Canvas::setupGrab()
   gl.setViewport({0, 0, width, height});
 
   // Set up the projection matrix
-  gl.matrices.projection.push_back(Matrix4::ortho(0.0, (float) width, 0.0, (float) height));
+  gl.matrices.projection.push_back(glm::ortho(0.0f, (float) width, (float) height, 0.0f, 0.1f, 100.0f));
 }
 
 void Canvas::startGrab()

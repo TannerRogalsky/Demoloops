@@ -5,8 +5,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include "glm/glm.hpp"
 #include "common/math.h"
-#include "common/matrix.h"
 #include "hsl.h"
 
 /*
@@ -66,7 +66,7 @@ SDL_Texture* renderText(const std::string &message, TTF_Font *font, SDL_Color co
 
 char* filetobuf(char *file);
 
-void applyMatrix(demoloop::Vertex &v, const demoloop::Matrix4 &m);
-void applyMatrix(demoloop::Triangle &t, const demoloop::Matrix4 &m);
+void applyMatrix(demoloop::Vertex &v, const glm::mat4 &m);
+void applyMatrix(demoloop::Triangle &t, const glm::mat4 &m);
 void applyColor(demoloop::Vertex &v, const RGB &c);
 void applyColor(demoloop::Triangle &t, const RGB &c);

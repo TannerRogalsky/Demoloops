@@ -21,7 +21,7 @@
 #pragma once
 
 #include "common/object.h"
-#include "common/matrix.h"
+#include "glm/glm.hpp"
 
 namespace demoloop
 {
@@ -39,7 +39,7 @@ public:
    **/
   virtual ~Drawable() {}
 
-  virtual void draw(Matrix4 modelView) = 0;
+  virtual void draw(glm::mat4 modelView) = 0;
 };
 
 } // demoloop

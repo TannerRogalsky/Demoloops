@@ -85,6 +85,9 @@ endif()
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/demoloop-lib)
 include_directories(${PROJECT_SOURCE_DIR}/lib/demoloop-lib/include)
 
+# GLM
+include_directories(${PROJECT_SOURCE_DIR}/lib/glm)
+
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 foreach(LOOP ${LOOPS})

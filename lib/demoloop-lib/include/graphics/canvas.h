@@ -21,7 +21,6 @@
 #pragma once
 
 // #include "graphics/Color.h"
-#include "common/matrix.h"
 #include "common/string_map.h"
 // #include "common/int.h"
 #include "graphics/texture.h"
@@ -66,10 +65,10 @@ public:
   virtual void unloadVolatile();
 
   // Implements Drawable.
-  virtual void draw(Matrix4 modelView);
+  virtual void draw(glm::mat4 modelView);
 
   // Implements Texture.
-  virtual void drawq(Quad *quad, Matrix4 modelView);
+  virtual void drawq(Quad *quad, glm::mat4 modelView);
   virtual void setFilter(const Texture::Filter &f);
   virtual bool setWrap(const Texture::Wrap &w);
   virtual const void *getHandle() const;
@@ -134,7 +133,7 @@ private:
   bool createMSAAFBO(GLenum internalformat);
   bool resolveMSAA(bool restoreprev);
 
-  void drawv(const Matrix4 &t, const Vertex *v);
+  void drawv(const glm::mat4 &t, const Vertex *v);
 
   static void convertFormat(Format format, GLenum &internalformat, GLenum &externalformat, GLenum &type);
   static size_t getFormatBitsPerPixel(Format format);

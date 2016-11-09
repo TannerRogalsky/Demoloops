@@ -76,19 +76,17 @@ char* filetobuf(char *file)
     return buf; /* Return the buffer */
 }
 
-void applyMatrix(demoloop::Vertex &v, const demoloop::Matrix4 &m) {
-  const float *e = m.getElements();
-
-  const float x = (v.x * e[0]) + (v.y * e[4]) + (v.z * e[8]) + e[12];
-  const float y = (v.x * e[1]) + (v.y * e[5]) + (v.z * e[9]) + e[13];
-  const float z = (v.x * e[2]) + (v.y * e[6]) + (v.z * e[10]) + e[14];
+void applyMatrix(demoloop::Vertex &v, const glm::mat4 &m) {
+  const float x = (v.x * m[0][0]) + (v.y * m[1][0]) + (v.z * m[2][0]) + m[3][0];
+  const float y = (v.x * m[0][1]) + (v.y * m[1][1]) + (v.z * m[2][1]) + m[3][1];
+  const float z = (v.x * m[0][2]) + (v.y * m[1][2]) + (v.z * m[2][2]) + m[3][2];
 
   v.x = x;
   v.y = y;
   v.z = z;
 }
 
-void applyMatrix(demoloop::Triangle &t, const demoloop::Matrix4 &m) {
+void applyMatrix(demoloop::Triangle &t, const glm::mat4 &m) {
   applyMatrix(t.a, m);
   applyMatrix(t.b, m);
   applyMatrix(t.c, m);

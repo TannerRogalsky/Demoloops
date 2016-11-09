@@ -70,8 +70,8 @@ namespace demoloop {
     matrices.transform.clear();
     matrices.projection.clear();
 
-    matrices.transform.push_back(Matrix4());
-    matrices.projection.push_back(Matrix4());
+    matrices.transform.push_back(glm::mat4());
+    matrices.projection.push_back(glm::mat4());
   }
 
   void GL::initMaxValues()
@@ -128,7 +128,7 @@ namespace demoloop {
     matrices.transform.pop_back();
   }
 
-  Matrix4 &GL::getTransform()
+  glm::mat4 &GL::getTransform()
   {
     return matrices.transform.back();
   }
@@ -143,7 +143,7 @@ namespace demoloop {
     matrices.projection.pop_back();
   }
 
-  Matrix4 &GL::getProjection()
+  glm::mat4 &GL::getProjection()
   {
     return matrices.projection.back();
   }
@@ -290,11 +290,11 @@ namespace demoloop {
   }
 
   void GL::prepareDraw() {
-    Matrix4 modelView;
+    glm::mat4 modelView;
     prepareDraw(modelView);
   }
 
-  void GL::prepareDraw(Matrix4 modelView) {
+  void GL::prepareDraw(glm::mat4 modelView) {
     Shader::defaultShader->checkSetBuiltinUniforms();
   }
 

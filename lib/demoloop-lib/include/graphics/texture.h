@@ -25,6 +25,7 @@
 #include "common/math.h"
 #include "graphics/drawable.h"
 #include "graphics/quad.h"
+#include "glm/glm.hpp"
 
 namespace demoloop
 {
@@ -85,7 +86,7 @@ public:
    * @param kx Shear along the x-axis.
    * @param ky Shear along the y-axis.
    **/
-  virtual void drawq(Quad *quad, Matrix4 modelView) = 0;
+  virtual void drawq(Quad *quad, glm::mat4 modelView) = 0;
 
   virtual int getWidth() const;
   virtual int getHeight() const;
