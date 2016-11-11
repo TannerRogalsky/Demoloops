@@ -8,25 +8,25 @@
 #include "graphics/mesh.h"
 #include "graphics/canvas.h"
 #include "hsl.h"
+#include <glm/gtx/rotate_vector.hpp>
 using namespace std;
 using namespace demoloop;
 
 float t = 0;
-const float PI = 3.1459;
-const float CYCLE_LENGTH = 3;
+const float CYCLE_LENGTH = 10;
 
 class Test4 : public Demoloop {
 public:
-  Test4() : Demoloop(150, 150, 150), canvas(100, 100), mesh(nullptr) {
+  Test4() : Demoloop(150, 150, 150), mesh(nullptr), canvas(100, 100) {
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     // Matrix4& projection = gl.getProjection();
     // Matrix4 perspective = Matrix4::perspective(PI / 4.0, (float)width / (float)height, 0.1, 100.0);
     // projection.copy(perspective);
+    gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
-    // const float RADIUS = 1;
-
-    // mesh = cube(0, 0, 0, RADIUS);
+    const float RADIUS = 1;
+    mesh = cube(0, 0, 0, RADIUS);
     // auto indexedVertices = mesh->getIndexedVertices();
     // uint32_t count = indexedVertices.size();
     // float t = 0;
@@ -39,13 +39,17 @@ public:
     // }
 
     setCanvas(&canvas);
-    rectangle(gl, 5, 5, 50, 50);
+    setColor(255, 0, 0);
+    rectangle(gl, 0, 0, 50, 50);
+    setColor(0, 255, 0);
+    rectangle(gl, 0, 50, 50, 50);
+    setColor(0, 0, 255);
+    rectangle(gl, 50, 0, 50, 50);
+    setColor(255, 255, 255);
+    rectangle(gl, 50, 50, 50, 50);
     setCanvas();
 
-    // gl.bindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // mesh->setTexture(&canvas);
-    // mesh->setTexture();
+    mesh->setTexture(&canvas);
   }
 
   ~Test4() {
@@ -57,13 +61,14 @@ public:
   void Update(float dt) {
     t += dt;
 
-    // Matrix4 modelView;
+    // glm::mat4 modelView(1);
+    // // modelView = glm::translate(modelView, {20, 20, 0});
     // canvas.draw(modelView);
 
-    rectangle(gl, height / 2, height / 2, 50, 50);
+    // rectangle(gl, height / 2, height / 2, 50, 50);
 
-    // const float cycle = fmod(t, CYCLE_LENGTH);
-    // const float cycle_ratio = cycle / CYCLE_LENGTH;
+    const float cycle = fmod(t, CYCLE_LENGTH);
+    const float cycle_ratio = cycle / CYCLE_LENGTH;
 
     // gl.pushTransform();
     // Matrix4& transform = gl.getTransform();
@@ -74,7 +79,20 @@ public:
     // Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
     // transform.copy(lookAt);
 
-    // mesh->draw();
+    // const glm::vec3 rotationAxis = glm::normalize(glm::vec3(-1, sinf(rad) / 3, 0));
+    // const glm::vec3 eye = glm::rotate(glm::vec3(0, 0, 3 + pow(sinf(pow(cycle_ratio, 3) * DEMOLOOP_M_PI), 2) * 10), rad, rotationAxis);
+    // const glm::vec3 up = glm::rotate(glm::vec3(0, 1, 0), rad, rotationAxis);
+    // const glm::vec3 target = glm::rotate(glm::vec3(0, 2, 0), rad, rotationAxis);
+
+    const glm::vec3 eye = glm::rotate(glm::vec3(4, 0, 10), static_cast<float>(cycle_ratio * DEMOLOOP_M_PI * 2), glm::vec3(1, 1, 0));
+    const glm::vec3 target = {0, 0, 0};
+    const glm::vec3 up = {0, 1, 0};
+    glm::mat4 camera = glm::lookAt(eye, target, up);
+
+    GL::TempTransform t1(gl);
+    t1.get() = camera;
+
+    mesh->draw();
 
     // gl.popTransform();
   }
