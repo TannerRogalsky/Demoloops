@@ -70,6 +70,7 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
     }
 
     gl.initContext();
+    setBlendMode(BLEND_ALPHA, BLENDALPHA_MULTIPLY);
     setViewportSize(width, height);
 
     //Use Vsync
@@ -183,6 +184,86 @@ void Demoloop::setViewportSize(int width, int height)
 
   // Restore the previously active Canvas.
   // setCanvas(canvases);
+}
+
+void Demoloop::setBlendMode(BlendMode mode, BlendAlpha alphamode)
+{
+  GLenum func   = GL_FUNC_ADD;
+  GLenum srcRGB = GL_ONE;
+  GLenum srcA   = GL_ONE;
+  GLenum dstRGB = GL_ZERO;
+  GLenum dstA   = GL_ZERO;
+
+  // if (mode == BLEND_LIGHTEN || mode == BLEND_DARKEN)
+  // {
+  //   if (!isSupported(SUPPORT_LIGHTEN))
+  //     throw love::Exception("The 'lighten' and 'darken' blend modes are not supported on this system.");
+  // }
+
+  // if (alphamode != BLENDALPHA_PREMULTIPLIED)
+  // {
+  //   const char *modestr = "unknown";
+  //   switch (mode)
+  //   {
+  //   case BLEND_LIGHTEN:
+  //   case BLEND_DARKEN:
+  //   /*case BLEND_MULTIPLY:*/ // FIXME: Uncomment for 0.11.0
+  //     getConstant(mode, modestr);
+  //     throw love::Exception("The '%s' blend mode must be used with premultiplied alpha.", modestr);
+  //     break;
+  //   default:
+  //     break;
+  //   }
+  // }
+
+  switch (mode)
+  {
+  case BLEND_ALPHA:
+    srcRGB = srcA = GL_ONE;
+    dstRGB = dstA = GL_ONE_MINUS_SRC_ALPHA;
+    break;
+  case BLEND_MULTIPLY:
+    srcRGB = srcA = GL_DST_COLOR;
+    dstRGB = dstA = GL_ZERO;
+    break;
+  case BLEND_SUBTRACT:
+    func = GL_FUNC_REVERSE_SUBTRACT;
+  case BLEND_ADD:
+    srcRGB = GL_ONE;
+    srcA = GL_ZERO;
+    dstRGB = dstA = GL_ONE;
+    break;
+  case BLEND_LIGHTEN:
+    func = GL_MAX;
+    break;
+  case BLEND_DARKEN:
+    func = GL_MIN;
+    break;
+  case BLEND_SCREEN:
+    srcRGB = srcA = GL_ONE;
+    dstRGB = dstA = GL_ONE_MINUS_SRC_COLOR;
+    break;
+  case BLEND_REPLACE:
+  default:
+    srcRGB = srcA = GL_ONE;
+    dstRGB = dstA = GL_ZERO;
+    break;
+  }
+
+  // We can only do alpha-multiplication when srcRGB would have been unmodified.
+  if (srcRGB == GL_ONE && alphamode == BLENDALPHA_MULTIPLY)
+    srcRGB = GL_SRC_ALPHA;
+
+  glBlendEquation(func);
+  glBlendFuncSeparate(srcRGB, dstRGB, srcA, dstA);
+
+  states.back().blendMode = mode;
+  states.back().blendAlphaMode = alphamode;
+}
+
+Demoloop::BlendMode Demoloop::getBlendMode(BlendAlpha &alphamode) const {
+  alphamode = states.back().blendAlphaMode;
+  return states.back().blendMode;
 }
 
 void Demoloop::InternalUpdate() {

@@ -28,8 +28,6 @@ namespace demoloop {
     glEnable(GL_MULTISAMPLE); // TODO: is this doing anything?
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
     initMaxValues();
@@ -329,24 +327,6 @@ namespace demoloop {
 
   void GL::triangles(const Triangle *triangleVertices, size_t count) {
     triangles((Vertex *)triangleVertices, count * 3);
-  }
-
-  void GL::triangles(const Vertex *coords, const uint32_t *indices, size_t count) {
-    prepareDraw();
-
-    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0], GL_DYNAMIC_DRAW);
-
-    useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);
-
-    glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
-    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
-    glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), &indices[0], GL_DYNAMIC_DRAW);
-
-    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
   }
 
   GLuint GL::getDefaultTexture() const {

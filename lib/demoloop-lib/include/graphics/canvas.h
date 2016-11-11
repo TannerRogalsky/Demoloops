@@ -141,7 +141,7 @@ private:
   GLuint fbo;
   GLuint resolve_fbo;
 
-  GLuint ibo;
+  GLuint vbo;
 
   GLuint texture;
   GLuint msaa_buffer;

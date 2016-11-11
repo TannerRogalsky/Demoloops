@@ -39,11 +39,15 @@ public:
    **/
   Texture *getTexture() const;
 
+  void buffer();
+
   std::vector<Vertex> mVertices;
   std::vector<uint32_t> mIndices;
 
 private:
   Texture *mTexture;
+  GLuint mIBO;
+  GLuint mVBO;
 };
 
 }

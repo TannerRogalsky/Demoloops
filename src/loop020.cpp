@@ -29,6 +29,7 @@ public:
       v.g = color.g;
       v.b = color.b;
     }
+    mesh->buffer();
 
     lines = mesh->getLines();
   }

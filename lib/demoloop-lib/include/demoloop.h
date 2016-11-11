@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 #include <SDL.h>
 #include <chrono>
 #include "graphics/gl.h"
@@ -11,6 +12,27 @@
 namespace demoloop {
 class Demoloop {
 public:
+
+  enum BlendMode
+  {
+    BLEND_ALPHA,
+    BLEND_ADD,
+    BLEND_SUBTRACT,
+    BLEND_MULTIPLY,
+    BLEND_LIGHTEN,
+    BLEND_DARKEN,
+    BLEND_SCREEN,
+    BLEND_REPLACE,
+    BLEND_MAX_ENUM
+  };
+
+  enum BlendAlpha
+  {
+    BLENDALPHA_MULTIPLY,
+    BLENDALPHA_PREMULTIPLIED,
+    BLENDALPHA_MAX_ENUM
+  };
+
   Demoloop();
   Demoloop(int r, int g, int b);
   Demoloop(int width, int height, int r, int g, int b);
@@ -33,6 +55,16 @@ protected:
   // void setCanvas(const std::vector<Canvas *> &canvases);
   void setCanvas();
 
+  /**
+   * Sets the current blend mode.
+   **/
+  void setBlendMode(BlendMode mode, BlendAlpha alphamode);
+
+  /**
+   * Gets the current blend mode.
+   **/
+  BlendMode getBlendMode(BlendAlpha &alphamode) const;
+
   std::vector<Canvas *> getCanvas() const;
 private:
   int bg_r, bg_g, bg_b;
@@ -44,8 +76,8 @@ private:
     // Colorf color = Colorf(255.0, 255.0, 255.0, 255.0);
     // Colorf backgroundColor = Colorf(0.0, 0.0, 0.0, 255.0);
 
-    // BlendMode blendMode = BLEND_ALPHA;
-    // BlendAlpha blendAlphaMode = BLENDALPHA_MULTIPLY;
+    BlendMode blendMode = BLEND_ALPHA;
+    BlendAlpha blendAlphaMode = BLENDALPHA_MULTIPLY;
 
     // float lineWidth = 1.0f;
     // LineStyle lineStyle = LINE_SMOOTH;

@@ -20,6 +20,7 @@
 
 #include "graphics/canvas.h"
 
+#include <iostream>
 #include <stdexcept>
 #include <cstring> // For memcpy
 #include <algorithm> // For min/max
@@ -91,7 +92,7 @@ int Canvas::canvasCount = 0;
 Canvas::Canvas(int width, int height, Format format, int msaa)
   : fbo(0)
   , resolve_fbo(0)
-  , ibo(0)
+  , vbo(0)
   , texture(0)
   , msaa_buffer(0)
   , depth_stencil(0)
@@ -114,24 +115,16 @@ Canvas::Canvas(int width, int height, Format format, int msaa)
   // world coordinates
   vertices[0].x = 0;
   vertices[0].y = 0;
-  vertices[0].r = 255;
-  vertices[0].g = 0;
-  vertices[0].b = 0;
+  vertices[0].z = 1;
   vertices[1].x = 0;
   vertices[1].y = h;
-  vertices[1].r = 255;
-  vertices[1].g = 0;
-  vertices[0].b = 0;
+  vertices[1].z = 1;
   vertices[2].x = w;
   vertices[2].y = 0;
-  vertices[2].r = 255;
-  vertices[2].g = 0;
-  vertices[0].b = 0;
+  vertices[2].z = 1;
   vertices[3].x = w;
   vertices[3].y = h;
-  vertices[3].r = 255;
-  vertices[3].g = 0;
-  vertices[0].b = 0;
+  vertices[3].z = 1;
 
   // texture coordinates
   vertices[0].s = 0;
@@ -209,8 +202,8 @@ bool Canvas::loadVolatile()
 {
   // GL::TempDebugGroup debuggroup("Canvas load");
 
-  glGenBuffers(1, &ibo);
-  glBindBuffer(GL_ARRAY_BUFFER, ibo);
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), &vertices[0].x, GL_STATIC_DRAW);
 
   fbo = depth_stencil = texture = 0;
@@ -246,6 +239,8 @@ bool Canvas::loadVolatile()
   GLenum textype = GL_UNSIGNED_BYTE;
 
   convertFormat(format, internalformat, externalformat, textype);
+
+  std::cout << (externalformat == GL_RGBA8) << std::endl;
 
   // in GLES2, the internalformat and format params of TexImage have to match.
   // GLint iformat = (GLint) internalformat;
@@ -328,16 +323,16 @@ void Canvas::drawv(const glm::mat4 &t, const Vertex *v)
 
   gl.bindTexture(texture);
 
-  glBindBuffer(GL_ARRAY_BUFFER, ibo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-  // gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_TEXCOORD);
-  gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_TEXCOORD | ATTRIBFLAG_COLOR);
+  gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_TEXCOORD);
+  // gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
 
   // glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &v[0].x);
   // glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &v[0].s);
   glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
   glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
-  glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
+  // glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
   gl.prepareDraw();
   gl.drawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -421,7 +416,7 @@ void Canvas::setupGrab()
   gl.setViewport({0, 0, width, height});
 
   // Set up the projection matrix
-  gl.matrices.projection.push_back(glm::ortho(0.0f, (float) width, (float) height, 0.0f, 0.1f, 100.0f));
+  gl.matrices.projection.push_back(glm::ortho(0.0f, (float) width, 0.0f, (float) height, 0.1f, 100.0f));
 }
 
 void Canvas::startGrab()
@@ -431,8 +426,8 @@ void Canvas::startGrab()
   if (attachedCanvases.size() == 0)
     return;
 
-  // Make sure the FBO is only using a single draw buffer.
-  glDrawBuffer(GL_COLOR_ATTACHMENT0);
+  // // Make sure the FBO is only using a single draw buffer.
+  // glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
   attachedCanvases.clear();
 }
@@ -493,9 +488,9 @@ bool Canvas::checkCreateStencil()
   glGenRenderbuffers(1, &depth_stencil);
   glBindRenderbuffer(GL_RENDERBUFFER, depth_stencil);
 
-  if (requested_samples > 1)
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, requested_samples, format, width, height);
-  else
+  // if (requested_samples > 1)
+  //   glRenderbufferStorageMultisample(GL_RENDERBUFFER, requested_samples, format, width, height);
+  // else
     glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
 
   // Attach the stencil buffer to the framebuffer object.
@@ -597,13 +592,7 @@ Canvas::Format Canvas::getSizedFormat(Canvas::Format format)
   switch (format)
   {
   case FORMAT_NORMAL:
-    // if (isGammaCorrect())
-    //   return FORMAT_SRGB;
-    // else if (GLAD_ES_VERSION_2_0 && !(GLAD_ES_VERSION_3_0 || GLAD_OES_rgb8_rgba8 || GLAD_ARM_rgba8))
-    //   // 32-bit render targets don't have guaranteed support on GLES2.
-      return FORMAT_RGBA4;
-    // else
-    //   return FORMAT_RGBA8;
+    return FORMAT_RGBA8;
   case FORMAT_HDR:
     return FORMAT_RGBA16F;
   default:
@@ -622,88 +611,55 @@ void Canvas::convertFormat(Canvas::Format format, GLenum &internalformat, GLenum
     internalformat = GL_RGBA4;
     type = GL_UNSIGNED_SHORT_4_4_4_4;
     break;
-  // case FORMAT_RGB5A1:
-  //   internalformat = GL_RGB5_A1;
-  //   type = GL_UNSIGNED_SHORT_5_5_5_1;
-  //   break;
-  // case FORMAT_RGB565:
-  //   internalformat = GL_RGB565;
-  //   externalformat = GL_RGB;
-  //   type = GL_UNSIGNED_SHORT_5_6_5;
-  //   break;
-  // case FORMAT_R8:
-  //   internalformat = GL_R8;
-  //   externalformat = GL_RED;
-  //   type = GL_UNSIGNED_BYTE;
-  //   break;
-  // case FORMAT_RG8:
-  //   internalformat = GL_RG8;
-  //   externalformat = GL_RG;
-  //   type = GL_UNSIGNED_BYTE;
-  //   break;
-  // case FORMAT_RGBA8:
-  // default:
-  //   internalformat = GL_RGBA8;
-  //   type = GL_UNSIGNED_BYTE;
-  //   break;
-  // case FORMAT_RGB10A2:
-  //   internalformat = GL_RGB10_A2;
-  //   type = GL_UNSIGNED_INT_2_10_10_10_REV;
-  //   break;
-  // case FORMAT_RG11B10F:
-  //   internalformat = GL_R11F_G11F_B10F;
-  //   externalformat = GL_RGB;
-  //   type = GL_UNSIGNED_INT_10F_11F_11F_REV;
-  //   break;
-  // case FORMAT_R16F:
-  //   internalformat = GL_R16F;
-  //   externalformat = GL_RED;
-  //   if (GLAD_OES_texture_half_float)
-  //     type = GL_HALF_FLOAT_OES;
-  //   else if (GLAD_VERSION_1_0)
-  //     type = GL_FLOAT;
-  //   else
-  //     type = GL_HALF_FLOAT;
-  //   break;
-  // case FORMAT_RG16F:
-  //   internalformat = GL_RG16F;
-  //   externalformat = GL_RG;
-  //   if (GLAD_OES_texture_half_float)
-  //     type = GL_HALF_FLOAT_OES;
-  //   else if (GLAD_VERSION_1_0)
-  //     type = GL_FLOAT;
-  //   else
-  //     type = GL_HALF_FLOAT;
-  //   break;
-  // case FORMAT_RGBA16F:
-  //   internalformat = GL_RGBA16F;
-  //   if (GLAD_OES_texture_half_float)
-  //     type = GL_HALF_FLOAT_OES;
-  //   else if (GLAD_VERSION_1_0)
-  //     type = GL_FLOAT;
-  //   else
-  //     type = GL_HALF_FLOAT;
-  //   break;
-  // case FORMAT_R32F:
-  //   internalformat = GL_R32F;
-  //   externalformat = GL_RED;
-  //   type = GL_FLOAT;
-  //   break;
-  // case FORMAT_RG32F:
-  //   internalformat = GL_RG32F;
-  //   externalformat = GL_RG;
-  //   type = GL_FLOAT;
-  //   break;
-  // case FORMAT_RGBA32F:
-  //   internalformat = GL_RGBA32F;
-  //   type = GL_FLOAT;
-  //   break;
-  // case FORMAT_SRGB:
-  //   internalformat = GL_SRGB8_ALPHA8;
-  //   type = GL_UNSIGNED_BYTE;
-  //   if (GLAD_ES_VERSION_2_0 && !GLAD_ES_VERSION_3_0)
-  //     externalformat = GL_SRGB_ALPHA;
-  //   break;
+  case FORMAT_RGB5A1:
+    internalformat = GL_RGB5_A1;
+    type = GL_UNSIGNED_SHORT_5_5_5_1;
+    break;
+  case FORMAT_R8:
+    internalformat = GL_R8;
+    externalformat = GL_RED;
+    type = GL_UNSIGNED_BYTE;
+    break;
+  case FORMAT_RG8:
+    internalformat = GL_RG8;
+    externalformat = GL_RG;
+    type = GL_UNSIGNED_BYTE;
+    break;
+  case FORMAT_RGBA8:
+  default:
+    internalformat = GL_RGBA8;
+    type = GL_UNSIGNED_BYTE;
+    break;
+  case FORMAT_RGB10A2:
+    internalformat = GL_RGB10_A2;
+    type = GL_UNSIGNED_INT_2_10_10_10_REV;
+    break;
+  case FORMAT_RG11B10F:
+    internalformat = GL_R11F_G11F_B10F;
+    externalformat = GL_RGB;
+    type = GL_UNSIGNED_INT_10F_11F_11F_REV;
+    break;
+  case FORMAT_R32F:
+    internalformat = GL_R32F;
+    externalformat = GL_RED;
+    type = GL_FLOAT;
+    break;
+  case FORMAT_RG32F:
+    internalformat = GL_RG32F;
+    externalformat = GL_RG;
+    type = GL_FLOAT;
+    break;
+  case FORMAT_RGBA32F:
+    internalformat = GL_RGBA32F;
+    type = GL_FLOAT;
+    break;
+  case FORMAT_SRGB:
+    internalformat = GL_SRGB8_ALPHA8;
+    type = GL_UNSIGNED_BYTE;
+    #ifdef EMSCRIPTEN
+      externalformat = GL_SRGB_ALPHA;
+    #endif
+    break;
   }
 }
 
@@ -774,9 +730,10 @@ bool Canvas::isFormatSupported(Canvas::Format format)
   //   else if (GLAD_ES_VERSION_2_0)
   //     supported = GLAD_ES_VERSION_3_0 || GLAD_EXT_texture_rg;
   //   break;
-  // case FORMAT_RGBA8:
-  //   supported = GLAD_VERSION_1_0 || GLAD_ES_VERSION_3_0 || GLAD_OES_rgb8_rgba8 || GLAD_ARM_rgba8;
-  //   break;
+  case FORMAT_RGBA8:
+    // supported = GLAD_VERSION_1_0 || GLAD_ES_VERSION_3_0 || GLAD_OES_rgb8_rgba8 || GLAD_ARM_rgba8;
+    supported = true;
+    break;
   // case FORMAT_RGB10A2:
   //   supported = GLAD_ES_VERSION_3_0 || GLAD_VERSION_1_0;
   //   break;
@@ -835,7 +792,9 @@ bool Canvas::isFormatSupported(Canvas::Format format)
 
   // in GLES2, the internalformat and format params of TexImage have to match.
   // if (GLAD_ES_VERSION_2_0 && !GLAD_ES_VERSION_3_0)
+  #ifdef EMSCRIPTEN
     internalformat = externalformat;
+  #endif
 
   GLuint texture = 0;
   glGenTextures(1, &texture);

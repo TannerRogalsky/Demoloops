@@ -5,70 +5,129 @@
 namespace demoloop {
 
 Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
+  // static const GLfloat g_vertex_buffer_data[] = {
+  //     -1.0f,-1.0f,-1.0f,
+  //     -1.0f,-1.0f, 1.0f,
+  //     -1.0f, 1.0f, 1.0f,
+
+  //     1.0f, 1.0f,-1.0f,
+  //     -1.0f,-1.0f,-1.0f,
+  //     -1.0f, 1.0f,-1.0f,
+
+  //     1.0f,-1.0f, 1.0f,
+  //     -1.0f,-1.0f,-1.0f,
+  //     1.0f,-1.0f,-1.0f,
+
+  //     1.0f, 1.0f,-1.0f,
+  //     1.0f,-1.0f,-1.0f,
+  //     -1.0f,-1.0f,-1.0f,
+
+  //     -1.0f,-1.0f,-1.0f,
+  //     -1.0f, 1.0f, 1.0f,
+  //     -1.0f, 1.0f,-1.0f,
+
+  //     1.0f,-1.0f, 1.0f,
+  //     -1.0f,-1.0f, 1.0f,
+  //     -1.0f,-1.0f,-1.0f,
+
+  //     -1.0f, 1.0f, 1.0f,
+  //     -1.0f,-1.0f, 1.0f,
+  //     1.0f,-1.0f, 1.0f,
+
+  //     1.0f, 1.0f, 1.0f,
+  //     1.0f,-1.0f,-1.0f,
+  //     1.0f, 1.0f,-1.0f,
+
+  //     1.0f,-1.0f,-1.0f,
+  //     1.0f, 1.0f, 1.0f,
+  //     1.0f,-1.0f, 1.0f,
+
+  //     1.0f, 1.0f, 1.0f,
+  //     1.0f, 1.0f,-1.0f,
+  //     -1.0f, 1.0f,-1.0f,
+
+  //     1.0f, 1.0f, 1.0f,
+  //     -1.0f, 1.0f,-1.0f,
+  //     -1.0f, 1.0f, 1.0f,
+
+  //     1.0f, 1.0f, 1.0f,
+  //     -1.0f, 1.0f, 1.0f,
+  //     1.0f,-1.0f, 1.0f
+  // };
+
   static const GLfloat g_vertex_buffer_data[] = {
-      -1.0f,-1.0f,-1.0f,
-      -1.0f,-1.0f, 1.0f,
-      -1.0f, 1.0f, 1.0f,
+    // Top face
+     1.0f, 1.0f, -1.0f , 1.0f, 0.0f,  // Top-right of top face
+    -1.0f, 1.0f, -1.0f , 0.0f, 0.0f,  // Top-left of top face
+    -1.0f, 1.0f,  1.0f , 0.0f, 1.0f,  // Bottom-left of top face
+     1.0f, 1.0f,  1.0f , 1.0f, 1.0f,  // Bottom-right of top face
 
-      1.0f, 1.0f,-1.0f,
-      -1.0f,-1.0f,-1.0f,
-      -1.0f, 1.0f,-1.0f,
+    // Bottom face
+     1.0f, -1.0f, -1.0f, 1.0f, 0.0f,  // Top-right of bottom face
+    -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,  // Top-left of bottom face
+    -1.0f, -1.0f,  1.0f, 0.0f, 1.0f,  // Bottom-left of bottom face
+     1.0f, -1.0f,  1.0f, 1.0f, 1.0f,  // Bottom-right of bottom face
 
-      1.0f,-1.0f, 1.0f,
-      -1.0f,-1.0f,-1.0f,
-      1.0f,-1.0f,-1.0f,
+    // Front face
+     1.0f,  1.0f, 1.0f , 1.0f, 0.0f,  // Top-Right of front face
+    -1.0f,  1.0f, 1.0f , 0.0f, 0.0f,  // Top-left of front face
+    -1.0f, -1.0f, 1.0f , 0.0f, 1.0f,  // Bottom-left of front face
+     1.0f, -1.0f, 1.0f , 1.0f, 1.0f,  // Bottom-right of front face
 
-      1.0f, 1.0f,-1.0f,
-      1.0f,-1.0f,-1.0f,
-      -1.0f,-1.0f,-1.0f,
+    // Back face
+    -1.0f,  1.0f, -1.0f, 1.0f, 0.0f,  // Top-Right of back face
+     1.0f,  1.0f, -1.0f, 0.0f, 0.0f,  // Top-Left of back face
+     1.0f, -1.0f, -1.0f, 0.0f, 1.0f,  // Bottom-Left of back face
+    -1.0f, -1.0f, -1.0f, 1.0f, 1.0f,  // Bottom-Right of back face
 
-      -1.0f,-1.0f,-1.0f,
-      -1.0f, 1.0f, 1.0f,
-      -1.0f, 1.0f,-1.0f,
+    // Left face
+    -1.0f,  1.0f,  1.0f, 1.0f, 0.0f,  // Top-Right of left face
+    -1.0f,  1.0f, -1.0f, 0.0f, 0.0f,  // Top-Left of left face
+    -1.0f, -1.0f, -1.0f, 0.0f, 1.0f,  // Bottom-Left of left face
+    -1.0f, -1.0f,  1.0f, 1.0f, 1.0f,  // Bottom-Right of left face
 
-      1.0f,-1.0f, 1.0f,
-      -1.0f,-1.0f, 1.0f,
-      -1.0f,-1.0f,-1.0f,
-
-      -1.0f, 1.0f, 1.0f,
-      -1.0f,-1.0f, 1.0f,
-      1.0f,-1.0f, 1.0f,
-
-      1.0f, 1.0f, 1.0f,
-      1.0f,-1.0f,-1.0f,
-      1.0f, 1.0f,-1.0f,
-
-      1.0f,-1.0f,-1.0f,
-      1.0f, 1.0f, 1.0f,
-      1.0f,-1.0f, 1.0f,
-
-      1.0f, 1.0f, 1.0f,
-      1.0f, 1.0f,-1.0f,
-      -1.0f, 1.0f,-1.0f,
-
-      1.0f, 1.0f, 1.0f,
-      -1.0f, 1.0f,-1.0f,
-      -1.0f, 1.0f, 1.0f,
-
-      1.0f, 1.0f, 1.0f,
-      -1.0f, 1.0f, 1.0f,
-      1.0f,-1.0f, 1.0f
+    // Right face
+     1.0f,  1.0f,  1.0f, 1.0f, 0.0f,  // Top-Right of left face
+     1.0f,  1.0f, -1.0f, 0.0f, 0.0f,  // Top-Left of left face
+     1.0f, -1.0f, -1.0f, 0.0f, 1.0f,  // Bottom-Left of left face
+     1.0f, -1.0f,  1.0f, 1.0f, 1.0f,  // Bottom-Right of left face
   };
 
+  // std::vector<uint32_t> indices = {
+  //   0, 1, 2, 3, 0, 5, 6, 0, 8, 3, 8,
+  //   0, 0, 2, 5, 6, 1, 0, 2, 1, 6, 21,
+  //   8, 3, 8, 21, 6, 21, 3, 5, 21, 5, 2, 21, 2, 6
+  // };
   std::vector<uint32_t> indices = {
-    0, 1, 2, 3, 0, 5, 6, 0, 8, 3, 8,
-    0, 0, 2, 5, 6, 1, 0, 2, 1, 6, 21,
-    8, 3, 8, 21, 6, 21, 3, 5, 21, 5, 2, 21, 2, 6
+    0+0, 1+0, 2+0,
+    3+0, 2+0, 0+0,
+
+    0+4, 1+4, 2+4,
+    3+4, 2+4, 0+4,
+
+    0+8, 1+8, 2+8,
+    3+8, 2+8, 0+8,
+
+    0+12, 1+12, 2+12,
+    3+12, 2+12, 0+12,
+
+    0+16, 1+16, 2+16,
+    3+16, 2+16, 0+16,
+
+    0+20, 1+20, 2+20,
+    3+20, 2+20, 0+20
   };
 
   std::vector<Vertex> vertices;
-  vertices.reserve(36);
-  for (int i = 0; i < 36; ++i)
+  vertices.reserve(24);
+  for (int i = 0; i < 24; ++i)
   {
     Vertex v;
-    v.x = g_vertex_buffer_data[i * 3 + 0] * radius + cx;
-    v.y = g_vertex_buffer_data[i * 3 + 1] * radius + cy;
-    v.z = g_vertex_buffer_data[i * 3 + 2] * radius + cz;
+    v.x = g_vertex_buffer_data[i * 5 + 0] * radius + cx;
+    v.y = g_vertex_buffer_data[i * 5 + 1] * radius + cy;
+    v.z = g_vertex_buffer_data[i * 5 + 2] * radius + cz;
+    v.s = g_vertex_buffer_data[i * 5 + 3];
+    v.t = g_vertex_buffer_data[i * 5 + 4];
     vertices.push_back(v);
   }
 
