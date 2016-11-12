@@ -5,56 +5,6 @@
 namespace demoloop {
 
 Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
-  // static const GLfloat g_vertex_buffer_data[] = {
-  //     -1.0f,-1.0f,-1.0f,
-  //     -1.0f,-1.0f, 1.0f,
-  //     -1.0f, 1.0f, 1.0f,
-
-  //     1.0f, 1.0f,-1.0f,
-  //     -1.0f,-1.0f,-1.0f,
-  //     -1.0f, 1.0f,-1.0f,
-
-  //     1.0f,-1.0f, 1.0f,
-  //     -1.0f,-1.0f,-1.0f,
-  //     1.0f,-1.0f,-1.0f,
-
-  //     1.0f, 1.0f,-1.0f,
-  //     1.0f,-1.0f,-1.0f,
-  //     -1.0f,-1.0f,-1.0f,
-
-  //     -1.0f,-1.0f,-1.0f,
-  //     -1.0f, 1.0f, 1.0f,
-  //     -1.0f, 1.0f,-1.0f,
-
-  //     1.0f,-1.0f, 1.0f,
-  //     -1.0f,-1.0f, 1.0f,
-  //     -1.0f,-1.0f,-1.0f,
-
-  //     -1.0f, 1.0f, 1.0f,
-  //     -1.0f,-1.0f, 1.0f,
-  //     1.0f,-1.0f, 1.0f,
-
-  //     1.0f, 1.0f, 1.0f,
-  //     1.0f,-1.0f,-1.0f,
-  //     1.0f, 1.0f,-1.0f,
-
-  //     1.0f,-1.0f,-1.0f,
-  //     1.0f, 1.0f, 1.0f,
-  //     1.0f,-1.0f, 1.0f,
-
-  //     1.0f, 1.0f, 1.0f,
-  //     1.0f, 1.0f,-1.0f,
-  //     -1.0f, 1.0f,-1.0f,
-
-  //     1.0f, 1.0f, 1.0f,
-  //     -1.0f, 1.0f,-1.0f,
-  //     -1.0f, 1.0f, 1.0f,
-
-  //     1.0f, 1.0f, 1.0f,
-  //     -1.0f, 1.0f, 1.0f,
-  //     1.0f,-1.0f, 1.0f
-  // };
-
   static const GLfloat g_vertex_buffer_data[] = {
     // Top face
      1.0f, 1.0f, -1.0f , 1.0f, 0.0f,  // Top-right of top face
@@ -87,34 +37,29 @@ Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
     -1.0f, -1.0f,  1.0f, 1.0f, 1.0f,  // Bottom-Right of left face
 
     // Right face
-     1.0f,  1.0f,  1.0f, 1.0f, 0.0f,  // Top-Right of left face
-     1.0f,  1.0f, -1.0f, 0.0f, 0.0f,  // Top-Left of left face
-     1.0f, -1.0f, -1.0f, 0.0f, 1.0f,  // Bottom-Left of left face
-     1.0f, -1.0f,  1.0f, 1.0f, 1.0f,  // Bottom-Right of left face
+     1.0f,  1.0f,  1.0f, 0.0f, 0.0f,  // Top-Left of left face
+     1.0f,  1.0f, -1.0f, 1.0f, 0.0f,  // Top-Right of left face
+     1.0f, -1.0f, -1.0f, 1.0f, 1.0f,  // Bottom-Right of left face
+     1.0f, -1.0f,  1.0f, 0.0f, 1.0f,  // Bottom-Left of left face
   };
 
-  // std::vector<uint32_t> indices = {
-  //   0, 1, 2, 3, 0, 5, 6, 0, 8, 3, 8,
-  //   0, 0, 2, 5, 6, 1, 0, 2, 1, 6, 21,
-  //   8, 3, 8, 21, 6, 21, 3, 5, 21, 5, 2, 21, 2, 6
-  // };
   std::vector<uint32_t> indices = {
     0+0, 1+0, 2+0,
-    3+0, 2+0, 0+0,
+    0+0, 2+0, 3+0,
 
     0+4, 1+4, 2+4,
-    3+4, 2+4, 0+4,
+    0+4, 2+4, 3+4,
 
     0+8, 1+8, 2+8,
-    3+8, 2+8, 0+8,
+    0+8, 2+8, 3+8,
 
     0+12, 1+12, 2+12,
-    3+12, 2+12, 0+12,
+    0+12, 2+12, 3+12,
 
     0+16, 1+16, 2+16,
-    3+16, 2+16, 0+16,
+    0+16, 2+16, 3+16,
 
-    0+20, 1+20, 2+20,
+    2+20, 1+20, 0+20,
     3+20, 2+20, 0+20
   };
 
