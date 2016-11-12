@@ -240,8 +240,6 @@ bool Canvas::loadVolatile()
 
   convertFormat(format, internalformat, externalformat, textype);
 
-  std::cout << (externalformat == GL_RGBA8) << std::endl;
-
   // in GLES2, the internalformat and format params of TexImage have to match.
   // GLint iformat = (GLint) internalformat;
   // if (GLAD_ES_VERSION_2_0 && !GLAD_ES_VERSION_3_0)
