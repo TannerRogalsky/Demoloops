@@ -51,6 +51,30 @@ public:
     GL &gl;
   };
 
+  class TempProjection
+  {
+  public:
+
+    TempProjection(GL &gl)
+      : gl(gl)
+    {
+      gl.pushProjection();
+    }
+
+    ~TempProjection()
+    {
+      gl.popProjection();
+    }
+
+    glm::mat4 &get()
+    {
+      return gl.getProjection();
+    }
+
+  private:
+    GL &gl;
+  };
+
   GL();
   ~GL();
 
