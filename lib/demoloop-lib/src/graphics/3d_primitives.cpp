@@ -47,8 +47,8 @@ Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
     0+0, 1+0, 2+0,
     0+0, 2+0, 3+0,
 
-    0+4, 1+4, 2+4,
-    0+4, 2+4, 3+4,
+    2+4, 1+4, 0+4,
+    3+4, 2+4, 0+4,
 
     0+8, 1+8, 2+8,
     0+8, 2+8, 3+8,
