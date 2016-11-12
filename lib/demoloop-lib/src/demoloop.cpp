@@ -304,7 +304,7 @@ void Demoloop::Run() {
       while((std::chrono::high_resolution_clock::now() - start) < interval){}
     }
     // const std::chrono::seconds CYCLE_LENGTH(10);
-    // const std::chrono::duration<float> interval(1.0f / 30.0f);
+    // const std::chrono::duration<float> interval(1.0f / 50.0f);
     // char* pixels = new char [3 * width * height];
     // SDL_Surface* temp = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 24, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
     // uint32_t index = 0;
