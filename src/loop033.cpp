@@ -8,21 +8,28 @@
 using namespace std;
 using namespace demoloop;
 
-#define MAX_VERTS 15
-#define MIN_VERTS 3
-#define RADIUS 1
 float t = 0;
 const float CYCLE_LENGTH = 10;
+const uint32_t arms = 5;
+const uint32_t trisPerArm = 20;
+const uint32_t numTris = arms * trisPerArm;
+
+const float RADIUS = 10;
+const float interval = DEMOLOOP_M_PI * 2 / 3;
+const Triangle defaultTriangle = {
+  {RADIUS * cosf(interval * 0), RADIUS * sinf(interval * 0), 1},
+  {RADIUS * cosf(interval * 1), RADIUS * sinf(interval * 1), 1},
+  {RADIUS * cosf(interval * 2), RADIUS * sinf(interval * 2), 1}
+};
+
 
 class Loop033 : public Demoloop {
 public:
-  Loop033() : Demoloop(150, 150, 150), mesh(nullptr), canvas(width, height)  {
-    // gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
-    glDisable(GL_DEPTH_TEST);
+  Loop033() : Demoloop(150, 150, 150), mesh(nullptr), canvas(height, height)  {
+    gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
+    glEnable(GL_CULL_FACE);
 
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_FRONT_AND_BACK);
-    mesh = cube(0, 0, 0, RADIUS);
+    mesh = cube(0, 0, 0, 1);
     mesh->setTexture(&canvas);
   }
 
@@ -35,44 +42,64 @@ public:
 
     {
       setCanvas(&canvas);
-      // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      // glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-      // glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-      // glClear(GL_COLOR_BUFFER_BIT);
 
+      glClearColor(0.0f, 0.0f, 0.0f, 0.1f);
+      glClear(GL_COLOR_BUFFER_BIT);
 
       setBlendMode(BLEND_ALPHA, BLENDALPHA_PREMULTIPLIED);
-      // setColor(255, 255, 255, 1);
-      // rectangle(gl, 0, 0, width, height);
 
       GL::TempTransform t1(gl);
       t1.get() = glm::translate(t1.get(), {canvas.getWidth() / 2, canvas.getHeight() / 2, 0});
+      glm::vec3 twoDAxis = {0, 0 , 1};
 
-      const float x = cosf(tau_cycle) * canvas.getWidth() / 4;
-      const float y = sinf(tau_cycle) * canvas.getHeight() / 4;
-      setColor(hsl2rgb(cycle_ratio, 1, 0.5), 100);
-      circle(gl, x, y, 20, 20);
+      const uint32_t width = canvas.getWidth() * 1.3;
+
+      for (uint32_t i = 0; i < numTris; ++i) {
+        const float t = i;
+        const float armIndex = i % arms;
+        const float i_cycle_ratio = fmod(t / numTris + cycle_ratio, 1);
+
+        float x = cosf(i_cycle_ratio * DEMOLOOP_M_PI * 2) * width / 4;
+        x *= sinf(cycle_ratio * DEMOLOOP_M_PI * 2);
+        x += pow(sinf(i_cycle_ratio * DEMOLOOP_M_PI), 2) * width / 10;
+        float y = sinf(i_cycle_ratio * DEMOLOOP_M_PI * 2) * width / 4;
+        y *= cosf(cycle_ratio * DEMOLOOP_M_PI * 2);
+        float d = sqrt(x * x + y * y);
+
+        glm::mat4 m;
+        m = glm::rotate(m, (float)(-DEMOLOOP_M_PI) / 2, twoDAxis);
+        m = glm::rotate(m, (float)DEMOLOOP_M_PI * 2 / arms * armIndex, twoDAxis);
+        m = glm::translate(m, glm::vec3(x, y, 1));
+
+        triangles[i] = defaultTriangle;
+        applyMatrix(triangles[i], m);
+        applyColor(triangles[i], hsl2rgb(fmod(cycle_ratio + d / (width / 2) * 0.65, 1), 1, 0.5));
+        triangles[i].a.a = 150;
+        triangles[i].b.a = 150;
+        triangles[i].c.a = 150;
+      }
+
+      gl.bindTexture(gl.getDefaultTexture());
+      gl.triangles(triangles, numTris);
+
       setCanvas();
     }
 
-    // const glm::vec3 eye = glm::rotate(glm::vec3(4, 3, 10), tau_cycle, glm::vec3(0, 1, 0));
-    // const glm::vec3 target = {0, 0, 0};
-    // const glm::vec3 up = {0, 1, 0};
-    // glm::mat4 camera = glm::lookAt(eye, target, up);
+    const glm::vec3 eye = glm::rotate(glm::vec3(4, 3, 1), tau_cycle, glm::vec3(0, 1, 0));
+    const glm::vec3 target = {0, 0, 0};
+    const glm::vec3 up = {0, 1, 0};
+    glm::mat4 camera = glm::lookAt(eye, target, up);
 
-    // GL::TempTransform t1(gl);
-    // t1.get() = camera;
-
-    // setColor(255, 255, 255);
-    // mesh->draw();
+    GL::TempTransform t1(gl);
+    t1.get() = camera;
 
     setBlendMode(BLEND_ALPHA, BLENDALPHA_MULTIPLY);
-    setColor(255, 255, 255);
-    canvas.draw(glm::mat4());
+    mesh->draw();
   }
 private:
   Mesh *mesh;
   Canvas canvas;
+  Triangle triangles[numTris];
 };
 
 int main(int, char**){
