@@ -324,13 +324,9 @@ void Canvas::drawv(const glm::mat4 &t, const Vertex *v)
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
   gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_TEXCOORD);
-  // gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
 
-  // glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &v[0].x);
-  // glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &v[0].s);
   glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
   glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
-  // glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
   gl.prepareDraw();
   gl.drawArrays(GL_TRIANGLE_STRIP, 0, 4);

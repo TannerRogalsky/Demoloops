@@ -65,7 +65,8 @@ public:
   virtual void unloadVolatile();
 
   // Implements Drawable.
-  virtual void draw(glm::mat4 modelView);
+  void draw(glm::mat4 modelView) override;
+  using Drawable::draw;
 
   // Implements Texture.
   virtual void drawq(Quad *quad, glm::mat4 modelView);

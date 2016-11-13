@@ -39,6 +39,9 @@ public:
    **/
   virtual ~Drawable() {}
 
+  inline void draw() {
+    draw(glm::mat4());
+  }
   virtual void draw(glm::mat4 modelView) = 0;
 };
 

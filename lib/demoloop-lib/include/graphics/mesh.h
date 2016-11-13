@@ -20,8 +20,8 @@ public:
   uint32_t getVertexCount();
   std::vector<Vertex> getLines();
 
-  void draw();
-  virtual void draw(glm::mat4 modelView);
+  void draw(glm::mat4 modelView) override;
+  using Drawable::draw;
 
   /**
    * Sets the texture used when drawing the Mesh.

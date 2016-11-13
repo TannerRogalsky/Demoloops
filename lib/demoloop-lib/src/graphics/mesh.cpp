@@ -60,11 +60,6 @@ namespace demoloop {
     return mTexture;
   }
 
-  void Mesh::draw() {
-    glm::mat4 modelView;
-    draw(modelView);
-  }
-
   void Mesh::draw(glm::mat4 modelView) {
     if (mTexture)
       gl.bindTexture(*(GLuint *) mTexture->getHandle());
