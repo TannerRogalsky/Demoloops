@@ -15,15 +15,28 @@ using namespace demoloop;
 float t = 0;
 const float CYCLE_LENGTH = 10;
 
+const static std::string shaderCode = R"===(
+#ifdef VERTEX
+vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {
+  return transform_proj * model * vertpos;
+}
+#endif
+
+#ifdef PIXEL
+vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+  vec4 texturecolor = Texel(texture, texture_coords);
+  return texturecolor * color;
+}
+#endif
+)===";
+
 class Test4 : public Demoloop {
 public:
-  Test4() : Demoloop(150, 150, 150), mesh(nullptr), canvas(100, 100) {
+  Test4() : Demoloop(150, 150, 150), mesh(nullptr), canvas(100, 100), shader({shaderCode, shaderCode}) {
     std::cout << glGetString(GL_VERSION) << std::endl;
-
-    // Matrix4& projection = gl.getProjection();
-    // Matrix4 perspective = Matrix4::perspective(PI / 4.0, (float)width / (float)height, 0.1, 100.0);
-    // projection.copy(perspective);
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
+
+    glEnable(GL_CULL_FACE);
 
     const float RADIUS = 1;
     mesh = cube(0, 0, 0, RADIUS);
@@ -61,28 +74,8 @@ public:
   void Update(float dt) {
     t += dt;
 
-    // glm::mat4 modelView(1);
-    // // modelView = glm::translate(modelView, {20, 20, 0});
-    // canvas.draw(modelView);
-
-    // rectangle(gl, height / 2, height / 2, 50, 50);
-
     const float cycle = fmod(t, CYCLE_LENGTH);
     const float cycle_ratio = cycle / CYCLE_LENGTH;
-
-    // gl.pushTransform();
-    // Matrix4& transform = gl.getTransform();
-    // const float cameraX = sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 4;
-    // // const float cameraY = pow(sin(cycle_ratio * DEMOLOOP_M_PI * 2), 2);
-    // const float cameraY = 3;//cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
-    // const float cameraZ = cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 4;
-    // Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
-    // transform.copy(lookAt);
-
-    // const glm::vec3 rotationAxis = glm::normalize(glm::vec3(-1, sinf(rad) / 3, 0));
-    // const glm::vec3 eye = glm::rotate(glm::vec3(0, 0, 3 + pow(sinf(pow(cycle_ratio, 3) * DEMOLOOP_M_PI), 2) * 10), rad, rotationAxis);
-    // const glm::vec3 up = glm::rotate(glm::vec3(0, 1, 0), rad, rotationAxis);
-    // const glm::vec3 target = glm::rotate(glm::vec3(0, 2, 0), rad, rotationAxis);
 
     const glm::vec3 eye = glm::rotate(glm::vec3(4, 0, 10), static_cast<float>(-cycle_ratio * DEMOLOOP_M_PI * 2), glm::vec3(0, 1, 0));
     // const glm::vec3 eye = glm::vec3(4, 0, 10);
@@ -93,7 +86,12 @@ public:
     GL::TempTransform t1(gl);
     t1.get() = camera;
 
-    mesh->draw(glm::rotate(glm::mat4(), cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(1, 1, 0)));
+    glm::mat4 m = glm::rotate(glm::mat4(), cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(1, 1, 0));
+
+    shader.attach();
+    mesh->draw(m);
+    mesh->draw(glm::translate(m, {1, 0, 0.5}) * glm::rotate(m, (float) DEMOLOOP_M_PI / 2, glm::vec3(1, 0, 1)));
+    shader.detach();
 
     // gl.popTransform();
   }
@@ -101,6 +99,7 @@ public:
 private:
   Mesh *mesh;
   Canvas canvas;
+  Shader shader;
 };
 
 int main(int, char**){

@@ -68,6 +68,7 @@ public:
     UNIFORM_MAX_ENUM
   };
 
+  Shader();
   Shader(const ShaderSource &source);
   ~Shader();
 

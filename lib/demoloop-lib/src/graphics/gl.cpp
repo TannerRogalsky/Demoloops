@@ -3,13 +3,6 @@
 #include <iostream>
 #include <cstddef>
 
-const static std::string defaultVertexShader = "vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {\n"
-                                               "  return transform_proj * model * vertpos;\n"
-                                               "}\n";
-const static std::string defaultFragShader = "vec4 effect(mediump vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord) {\n"
-                                             "  return Texel(tex, texcoord) * vcolor;\n"
-                                             "}\n";
-
 namespace demoloop {
   GL::GL()
     : maxAnisotropy(1.0f)
@@ -32,7 +25,7 @@ namespace demoloop {
 
     initMaxValues();
 
-    Shader::defaultShader = new Shader({defaultVertexShader, defaultFragShader});
+    Shader::defaultShader = new Shader();
     Shader::defaultShader->attach();
 
     glGenBuffers(1, &mVBO);
@@ -108,7 +101,7 @@ namespace demoloop {
     glViewport(v.x, v.y, v.w, v.h);
     state.viewport = v;
     GLfloat dimensions[4] = {(GLfloat)v.w, (GLfloat)v.h, 0, 0};
-    Shader::defaultShader->sendFloat("demoloop_ScreenSize", 4, dimensions, 1);
+    Shader::current->sendFloat("demoloop_ScreenSize", 4, dimensions, 1);
   }
 
   GL::Viewport GL::getViewport() const
@@ -293,7 +286,7 @@ namespace demoloop {
   }
 
   void GL::prepareDraw(glm::mat4 modelView) {
-    Shader::defaultShader->checkSetBuiltinUniforms(modelView);
+    Shader::current->checkSetBuiltinUniforms(modelView);
   }
 
   void GL::lines(const Vertex *coords, size_t count) {

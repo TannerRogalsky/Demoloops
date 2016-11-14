@@ -6,10 +6,19 @@
 #include <cstring> // memcpy
 #include <glm/gtc/matrix_transform.hpp>
 
+const static std::string defaultVertexShader = "vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {\n"
+                                               "  return transform_proj * model * vertpos;\n"
+                                               "}\n";
+const static std::string defaultFragShader = "vec4 effect(mediump vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord) {\n"
+                                             "  return Texel(tex, texcoord) * vcolor;\n"
+                                             "}\n";
+
 namespace demoloop {
 
 Shader *Shader::current = nullptr;
 Shader *Shader::defaultShader = nullptr;
+
+Shader::Shader() : Shader({defaultVertexShader, defaultFragShader}) {}
 
 Shader::Shader(const ShaderSource &source) {
   loadVolatile(createVertexCode(source.vertex), createFragmentCode(source.fragment));
@@ -174,13 +183,12 @@ const Shader::Uniform &Shader::getUniform(const std::string &name) const
 }
 
 void Shader::attach() {
-  glUseProgram(mProgram);
-  // if (current != this)
-  // {
-  //   glUseProgram(program);
-  //   current = this;
-  //   // retain/release happens in Graphics::setShader.
-  // }
+  if (current != this)
+  {
+    glUseProgram(mProgram);
+    current = this;
+    // retain/release happens in Graphics::setShader.
+  }
 
   // if (!temporary)
   // {
@@ -198,18 +206,17 @@ void Shader::attach() {
 }
 
 void Shader::detach() {
-  // if (defaultShader)
-  // {
-  //   if (current != defaultShader)
-  //     defaultShader->attach();
+  if (defaultShader) {
+    if (current != defaultShader)
+      defaultShader->attach();
 
-  //   return;
-  // }
+    return;
+  }
 
-  // if (current != nullptr)
+  if (current != nullptr)
     glUseProgram(0);
 
-  // current = nullptr;
+  current = nullptr;
 }
 
 void Shader::checkSetBuiltinUniforms(const glm::mat4 &curModel)
