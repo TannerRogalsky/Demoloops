@@ -204,7 +204,7 @@ bool Canvas::loadVolatile()
 
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), &vertices[0].x, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), &vertices[0].x, GL_DYNAMIC_DRAW);
 
   fbo = depth_stencil = texture = 0;
   resolve_fbo = msaa_buffer = 0;
@@ -305,7 +305,7 @@ void Canvas::unloadVolatile()
   texture_memory = 0;
 }
 
-void Canvas::drawv(const glm::mat4 &t, const Vertex *v)
+void Canvas::drawv(const glm::mat4 &modelTransform, const Vertex *v)
 {
   // FIXME: This doesn't handle cases where the Canvas is used as a texture
   // in a SpriteBatch, Mesh, or ParticleSystem, or when the Canvas is used in
@@ -316,30 +316,28 @@ void Canvas::drawv(const glm::mat4 &t, const Vertex *v)
 
   // GL::TempDebugGroup debuggroup("Canvas draw");
 
-  GL::TempTransform transform(gl);
-  transform.get() *= t;
-
   gl.bindTexture(texture);
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(Vertex), &v[0].x, GL_DYNAMIC_DRAW);
 
   gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_TEXCOORD);
 
   glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
   glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
 
-  gl.prepareDraw();
+  gl.prepareDraw(modelTransform);
   gl.drawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-void Canvas::draw(glm::mat4 modelView)
+void Canvas::draw(glm::mat4 curModel)
 {
-  drawv(modelView, vertices);
+  drawv(curModel, vertices);
 }
 
-void Canvas::drawq(Quad *quad, glm::mat4 modelView)
+void Canvas::drawq(Quad *quad, glm::mat4 curModel)
 {
-  drawv(modelView, quad->getVertices());
+  drawv(curModel, quad->getVertices());
 }
 
 void Canvas::setFilter(const Texture::Filter &f)

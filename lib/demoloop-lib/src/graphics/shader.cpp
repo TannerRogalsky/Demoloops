@@ -28,6 +28,7 @@ Shader::Shader(const ShaderSource &source) {
   float nan = std::numeric_limits<float>::quiet_NaN();
   lastProjectionMatrix = glm::translate(lastProjectionMatrix, {nan, nan, nan});
   lastTransformMatrix = glm::translate(lastTransformMatrix, {nan, nan, nan});
+  lastModelMatrix = glm::translate(lastModelMatrix, {nan, nan, nan});
 }
 
 Shader::~Shader() {}
@@ -211,7 +212,7 @@ void Shader::detach() {
   // current = nullptr;
 }
 
-void Shader::checkSetBuiltinUniforms()
+void Shader::checkSetBuiltinUniforms(const glm::mat4 &curModel)
 {
   // checkSetScreenParams();
   // checkSetPointSize(gl.getPointSize());
@@ -222,6 +223,15 @@ void Shader::checkSetBuiltinUniforms()
   // TemporaryAttacher attacher(this);
 
   bool tpmatrixneedsupdate = false;
+
+  if (curModel != lastModelMatrix) {
+    GLint location = builtinUniforms[BUILTIN_MODEL_MATRIX];
+    if (location >= 0) {
+      glUniformMatrix4fv(location, 1, GL_FALSE, &curModel[0][0]);
+    }
+
+    lastModelMatrix = curModel;
+  }
 
   // Only upload the matrices if they've changed.
   if (curxform != lastTransformMatrix) {
@@ -437,6 +447,7 @@ StringMap<Shader::BuiltinUniform, Shader::BUILTIN_MAX_ENUM>::Entry Shader::built
   {"TransformMatrix", Shader::BUILTIN_TRANSFORM_MATRIX},
   {"ProjectionMatrix", Shader::BUILTIN_PROJECTION_MATRIX},
   {"TransformProjectionMatrix", Shader::BUILTIN_TRANSFORM_PROJECTION_MATRIX},
+  {"ModelMatrix", Shader::BUILTIN_MODEL_MATRIX},
   {"NormalMatrix", Shader::BUILTIN_NORMAL_MATRIX},
   {"demoloop_PointSize", Shader::BUILTIN_POINT_SIZE},
   {"demoloop_ScreenSize", Shader::BUILTIN_SCREEN_SIZE},

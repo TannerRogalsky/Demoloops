@@ -66,7 +66,7 @@ namespace demoloop {
     else
       gl.bindTexture(gl.getDefaultTexture());
 
-    gl.prepareDraw();
+    gl.prepareDraw(modelView);
 
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);

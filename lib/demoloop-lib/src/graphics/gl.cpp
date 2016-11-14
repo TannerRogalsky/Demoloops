@@ -3,8 +3,8 @@
 #include <iostream>
 #include <cstddef>
 
-const static std::string defaultVertexShader = "vec4 position(mat4 transform_proj, vec4 vertpos) {\n"
-                                               "  return transform_proj * vertpos;\n"
+const static std::string defaultVertexShader = "vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {\n"
+                                               "  return transform_proj * model * vertpos;\n"
                                                "}\n";
 const static std::string defaultFragShader = "vec4 effect(mediump vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord) {\n"
                                              "  return Texel(tex, texcoord) * vcolor;\n"
@@ -293,7 +293,7 @@ namespace demoloop {
   }
 
   void GL::prepareDraw(glm::mat4 modelView) {
-    Shader::defaultShader->checkSetBuiltinUniforms();
+    Shader::defaultShader->checkSetBuiltinUniforms(modelView);
   }
 
   void GL::lines(const Vertex *coords, size_t count) {

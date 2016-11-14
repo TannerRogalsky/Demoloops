@@ -48,6 +48,7 @@ public:
     BUILTIN_TRANSFORM_MATRIX = 0,
     BUILTIN_PROJECTION_MATRIX,
     BUILTIN_TRANSFORM_PROJECTION_MATRIX,
+    BUILTIN_MODEL_MATRIX,
     BUILTIN_NORMAL_MATRIX,
     BUILTIN_POINT_SIZE,
     BUILTIN_SCREEN_SIZE,
@@ -118,7 +119,7 @@ public:
    **/
   void sendMatrix(const std::string &name, int size, const GLfloat *m, int count);
 
-  void checkSetBuiltinUniforms();
+  void checkSetBuiltinUniforms(const glm::mat4 &curModel);
 
 private:
 
@@ -155,6 +156,7 @@ private:
 
   glm::mat4 lastTransformMatrix;
   glm::mat4 lastProjectionMatrix;
+  glm::mat4 lastModelMatrix;
 
   // Names for the generic vertex attributes.
   static StringMap<VertexAttribID, ATTRIB_MAX_ENUM>::Entry attribNameEntries[];

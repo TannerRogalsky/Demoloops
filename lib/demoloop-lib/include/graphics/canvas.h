@@ -65,11 +65,11 @@ public:
   virtual void unloadVolatile();
 
   // Implements Drawable.
-  void draw(glm::mat4 modelView) override;
+  void draw(glm::mat4 modelTransform) override;
   using Drawable::draw;
 
   // Implements Texture.
-  virtual void drawq(Quad *quad, glm::mat4 modelView) override;
+  virtual void drawq(Quad *quad, glm::mat4 modelTransform) override;
   virtual void setFilter(const Texture::Filter &f) override;
   virtual bool setWrap(const Texture::Wrap &w) override;
   virtual const void *getHandle() const override;

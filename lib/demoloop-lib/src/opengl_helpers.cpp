@@ -36,7 +36,7 @@ const char* VERTEX_FOOTER = "void main() {\n"
                             "#ifdef GL_ES\n"
                             "gl_PointSize = demoloop_PointSize;\n"
                             "#endif\n"
-                            "gl_Position = position(TransformProjectionMatrix, VertexPosition);\n"
+                            "gl_Position = position(TransformProjectionMatrix, ModelMatrix, VertexPosition);\n"
                             "}\n";
 
 const char* FRAG_HEADER = "#define PIXEL\n"
@@ -74,6 +74,7 @@ const char* UNIFORMS =  "\n"
                         "  uniform DEMOLOOP_UNIFORM_PRECISION mat4 TransformMatrix;\n"
                         "  uniform DEMOLOOP_UNIFORM_PRECISION mat4 ProjectionMatrix;\n"
                         "  uniform DEMOLOOP_UNIFORM_PRECISION mat4 TransformProjectionMatrix;\n"
+                        "  uniform DEMOLOOP_UNIFORM_PRECISION mat4 ModelMatrix;\n"
                         "  uniform DEMOLOOP_UNIFORM_PRECISION mat3 NormalMatrix;\n"
                         "uniform mediump vec4 demoloop_ScreenSize;\n";
 

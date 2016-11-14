@@ -84,7 +84,8 @@ public:
     // const glm::vec3 up = glm::rotate(glm::vec3(0, 1, 0), rad, rotationAxis);
     // const glm::vec3 target = glm::rotate(glm::vec3(0, 2, 0), rad, rotationAxis);
 
-    const glm::vec3 eye = glm::rotate(glm::vec3(4, 0, 10), static_cast<float>(cycle_ratio * DEMOLOOP_M_PI * 2), glm::vec3(1, 1, 0));
+    const glm::vec3 eye = glm::rotate(glm::vec3(4, 0, 10), static_cast<float>(-cycle_ratio * DEMOLOOP_M_PI * 2), glm::vec3(0, 1, 0));
+    // const glm::vec3 eye = glm::vec3(4, 0, 10);
     const glm::vec3 target = {0, 0, 0};
     const glm::vec3 up = {0, 1, 0};
     glm::mat4 camera = glm::lookAt(eye, target, up);
@@ -92,7 +93,7 @@ public:
     GL::TempTransform t1(gl);
     t1.get() = camera;
 
-    mesh->draw();
+    mesh->draw(glm::rotate(glm::mat4(), cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(1, 1, 0)));
 
     // gl.popTransform();
   }
