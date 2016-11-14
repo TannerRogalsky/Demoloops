@@ -69,10 +69,10 @@ public:
   using Drawable::draw;
 
   // Implements Texture.
-  virtual void drawq(Quad *quad, glm::mat4 modelView);
-  virtual void setFilter(const Texture::Filter &f);
-  virtual bool setWrap(const Texture::Wrap &w);
-  virtual const void *getHandle() const;
+  virtual void drawq(Quad *quad, glm::mat4 modelView) override;
+  virtual void setFilter(const Texture::Filter &f) override;
+  virtual bool setWrap(const Texture::Wrap &w) override;
+  virtual const void *getHandle() const override;
 
   /**
    * @param canvases A list of other canvases to temporarily attach to this one,
