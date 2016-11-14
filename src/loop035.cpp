@@ -30,8 +30,6 @@ public:
     const float cycle = fmod(t, CYCLE_LENGTH);
     const float cycle_ratio = cycle / CYCLE_LENGTH;
 
-    const float rad = cycle_ratio * DEMOLOOP_M_PI * 2;
-
     const glm::vec3 eye = glm::vec3(0, 0, 2);
     const glm::vec3 up = glm::vec3(0, 1, 0);
     const glm::vec3 target = glm::vec3(0, 0, 0);

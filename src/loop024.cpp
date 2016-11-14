@@ -27,8 +27,7 @@ public:
       vertices[i].z = 1;
     }
 
-    Matrix4 &m = gl.getTransform();
-    m.translate(width / 2, height / 2);
+    gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
   void Update(float dt) {
@@ -41,8 +40,8 @@ public:
     const uint32_t num = 10 * arms;
 
     gl.pushTransform();
-    Matrix4 &m = gl.getTransform();
-    m.rotate(cycle_ratio * DEMOLOOP_M_PI * 2);
+    glm::mat4 &m = gl.getTransform();
+    m = glm::rotate(m, cycle_ratio * (float)DEMOLOOP_M_PI * 2, {0, 0, 1});
 
     for (uint32_t i = 0; i < num; ++i) {
       const float t = i;
@@ -54,10 +53,10 @@ public:
       const float y = pow(i_cycle_ratio, 2) * -height / 2;
 
       gl.pushTransform();
-      Matrix4 &m = gl.getTransform();
-      m.rotate(t * (DEMOLOOP_M_PI * 2 / arms));
-      m.translate(x, y, i_cycle_ratio);
-      m.rotate(-DEMOLOOP_M_PI / 2);
+      glm::mat4 &m = gl.getTransform();
+      m = glm::rotate(m, t * ((float)DEMOLOOP_M_PI * 2 / arms), {0, 0, 1});
+      m = glm::translate(m, {x, y, i_cycle_ratio});
+      m = glm::rotate(m, -(float)DEMOLOOP_M_PI / 2, {0, 0, 1});
 
       setColor(hsl2rgb(t / num, 1, 0.5), 255 - pow(i_cycle_ratio, 3) * 255);
       gl.triangles(vertices, NUM_VERTS);

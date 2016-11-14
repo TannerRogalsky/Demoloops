@@ -15,8 +15,8 @@ static const float RADIUS = 0.3;
 class Loop13 : public Demoloop {
 public:
   Loop13() : Demoloop(150, 150, 150) {
-    Matrix4 perspective = Matrix4::perspective(DEMOLOOP_M_PI / 4.0, (float)width / (float)height, 0.1, 100.0);
-    gl.getProjection().copy(perspective);
+    glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
+    gl.getProjection() = perspective;
 
     mesh = sphere(0, 0, 0, RADIUS);
     iota(mesh->mIndices.begin(), mesh->mIndices.end(), 0);
@@ -41,22 +41,20 @@ public:
     }
 
     gl.pushTransform();
-    Matrix4& transform = gl.getTransform();
     const float cameraX = sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     // const float cameraY = pow(sin(cycle_ratio * DEMOLOOP_M_PI * 2), 2);
     const float cameraY = 0;//cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     const float cameraZ = cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
-    Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
-    transform.copy(lookAt);
+    gl.getTransform() = glm::lookAt(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
+    mesh->buffer();
     mesh->draw();
 
     static const float SCALE = 0.2;
-    transform.scale(SCALE, SCALE, SCALE);
+    gl.getTransform() = glm::scale(gl.getTransform(), {SCALE, SCALE, SCALE});
     const uint16_t numPoints = 50;
     for (int i = 0; i < numPoints; ++i) {
       gl.pushTransform();
-      Matrix4& transform = gl.getTransform();
       const float t = i;
       const float interval_cycle_ratio = fmod(t / numPoints + cycle_ratio, 1);
 
@@ -64,7 +62,7 @@ public:
       const float y = sin(interval_cycle_ratio * DEMOLOOP_M_PI * 2) * RADIUS * 3 / SCALE;
       // const float y = sin(t / numPoints * DEMOLOOP_M_PI * 2 * interval_cycle_ratio) * RADIUS * 3 / SCALE;
       const float z = cos(interval_cycle_ratio * DEMOLOOP_M_PI * 6) * RADIUS * 3 / SCALE;
-      transform.translate(x, y, z);
+      gl.getTransform() = glm::translate(gl.getTransform(), {x, y, z});
       mesh->draw();
       gl.popTransform();
     }

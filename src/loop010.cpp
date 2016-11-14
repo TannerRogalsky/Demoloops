@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <numeric>
 #include "demoloop.h"
 #include "graphics/3d_primitives.h"
@@ -12,11 +13,17 @@ const float CYCLE_LENGTH = 3;
 class Loop10 : public Demoloop {
 public:
   Loop10() : Demoloop(150, 150, 150) {
-    Matrix4 perspective = Matrix4::perspective(DEMOLOOP_M_PI / 4.0, (float)width / (float)height, 0.1, 100.0);
-    gl.getProjection().copy(perspective);
+    gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     mesh = cube(0, 0, 0, 1);
+    vector<Vertex> vertices;
+    vertices.reserve(36);
+    for (auto i : mesh->mIndices) {
+      vertices.push_back(mesh->mVertices[i]);
+    }
+    mesh->mVertices = vertices;
     iota(mesh->mIndices.begin(), mesh->mIndices.end(), 0);
+    mesh->buffer();
   }
 
   void Update(float dt) {
@@ -40,13 +47,12 @@ public:
     }
 
     gl.pushTransform();
-    Matrix4& transform = gl.getTransform();
     const float cameraX = sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 4;
     const float cameraY = pow(sin(cycle_ratio * DEMOLOOP_M_PI * 2), 2) * 3;
     const float cameraZ = cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
-    Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
-    transform.copy(lookAt);
+    gl.getTransform() = glm::lookAt(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
+    mesh->buffer();
     mesh->draw();
 
     gl.popTransform();

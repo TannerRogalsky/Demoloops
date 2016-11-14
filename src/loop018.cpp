@@ -29,8 +29,7 @@ public:
       vertices[i + 1].z = 1;
     }
 
-    Matrix4 &m = gl.getTransform();
-    m.translate(width / 2, height / 2);
+    gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
   void Update(float dt) {
@@ -49,7 +48,7 @@ public:
 
     for (int i = 0; i < 6; ++i) {
       gl.pushTransform();
-      Matrix4 &m = gl.getTransform();
+      glm::mat4 &m = gl.getTransform();
 
       int current_vertex = fmod(floor(i + cycle_ratio * 6), 6);
       float x1 = cosf(current_vertex * interval) * RADIUS;
@@ -59,7 +58,7 @@ public:
       float x = x1 + side * cosf(phi) * fmod(cycle_ratio * 6, 1);
       float y = y1 + side * sinf(phi) * fmod(cycle_ratio * 6, 1);
 
-      m.translate(x, y);
+      m = glm::translate(m, {x, y, 0});
 
       gl.lines(vertices, NUM_VERTS);
 

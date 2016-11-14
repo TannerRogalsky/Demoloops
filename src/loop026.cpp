@@ -22,8 +22,7 @@ public:
       vertices[i].z = 1;
     }
 
-    Matrix4 &m = gl.getTransform();
-    m.translate(width / 2, height / 2);
+    gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
   void Update(float dt) {
@@ -45,8 +44,8 @@ public:
       const float d = sqrt(x * x + y * y);
 
       GL::TempTransform transform(gl);
-      transform.get().rotate(DEMOLOOP_M_PI * 2 / arms * armIndex);
-      transform.get().translate(x, y, i_cycle_ratio + 1);
+      transform.get() = glm::rotate(transform.get(), (float)DEMOLOOP_M_PI * 2 / arms * armIndex, {0, 0, 1});
+      transform.get() = glm::translate(transform.get(), {x, y, i_cycle_ratio + 1});
 
       setColor(hsl2rgb(d / maxD * 0.65, 1, 0.5));
       gl.triangles(vertices, NUM_VERTS);

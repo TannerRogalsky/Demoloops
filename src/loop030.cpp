@@ -21,8 +21,7 @@ const uint32_t num = arms * 20;
 class Loop030 : public Demoloop {
 public:
   Loop030() : Demoloop(150, 150, 150), maxD(width / 4) {
-    Matrix4 &m = gl.getTransform();
-    m.translate(width / 2, height / 2);
+    gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
   void Update(float dt) {
@@ -31,6 +30,7 @@ public:
     float cycle = fmod(t, CYCLE_LENGTH);
     float cycle_ratio = cycle / CYCLE_LENGTH;
 
+    glm::vec3 twoDAxis = {0, 0 , 1};
     for (uint32_t i = 0; i < num; ++i) {
       const float t = i;
       const float armIndex = i % arms;
@@ -43,10 +43,10 @@ public:
       y *= cosf(cycle_ratio * DEMOLOOP_M_PI * 2);
       float d = sqrt(x * x + y * y);
 
-      Matrix4 m;
-      m.rotate(-DEMOLOOP_M_PI / 2);
-      m.rotate(DEMOLOOP_M_PI * 2 / arms * armIndex);
-      m.translate(x, y, 1);
+      glm::mat4 m;
+      m = glm::rotate(m, -(float)DEMOLOOP_M_PI / 2, twoDAxis);
+      m = glm::rotate(m, (float)DEMOLOOP_M_PI * 2 / arms * armIndex, twoDAxis);
+      m = glm::translate(m, {x, y, 1});
 
       triangles[i] = triangle;
       applyMatrix(triangles[i], m);

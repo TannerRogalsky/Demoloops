@@ -14,8 +14,7 @@ static const float RADIUS = 0.3;
 class Loop11 : public Demoloop {
 public:
   Loop11() : Demoloop(150, 150, 150) {
-    Matrix4 perspective = Matrix4::perspective(DEMOLOOP_M_PI / 4.0, (float)width / (float)height, 0.1, 100.0);
-    gl.getProjection().copy(perspective);
+    gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     mesh = sphere(0, 0, 0, RADIUS);
     iota(mesh->mIndices.begin(), mesh->mIndices.end(), 0);
@@ -40,18 +39,18 @@ public:
     }
 
     gl.pushTransform();
-    Matrix4& transform = gl.getTransform();
     const float cameraX = 0;//sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     // const float cameraY = pow(sin(cycle_ratio * DEMOLOOP_M_PI * 2), 2);
     const float cameraY = cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     const float cameraZ = 3;//cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
-    Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
-    transform.copy(lookAt);
+    gl.getTransform() = glm::lookAt(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
+    mesh->buffer();
     mesh->draw();
-    transform.translate(0, sin(cycle_ratio * DEMOLOOP_M_PI * 2) * RADIUS * 4, 0);
-    transform.scale(0.5, 0.5, 0.5);
-    mesh->draw();
+    glm::mat4 m;
+    m = glm::translate(m, {0, sinf(cycle_ratio * DEMOLOOP_M_PI * 2) * RADIUS * 4, 0});
+    m = glm::scale(m, {0.5, 0.5, 0.5});
+    mesh->draw(m);
 
     gl.popTransform();
   }

@@ -22,8 +22,7 @@ public:
       vertices[i].z = 1;
     }
 
-    Matrix4 &m = gl.getTransform();
-    m.translate(width / 2, height / 2);
+    gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
   void Update(float dt) {
@@ -36,7 +35,7 @@ public:
     const uint32_t num = arms * 10;
 
     GL::TempTransform outsideTransform(gl);
-    outsideTransform.get().rotate(-cycle_ratio * DEMOLOOP_M_PI * 2);
+    outsideTransform.get() = glm::rotate(outsideTransform.get(), -cycle_ratio * (float)DEMOLOOP_M_PI * 2, {0, 0, 1});
 
     for (uint32_t i = 0; i < num; ++i) {
       const float t = i;
@@ -48,8 +47,8 @@ public:
       float d = sqrt(x * x + y * y);
 
       GL::TempTransform transform(gl);
-      transform.get().rotate(DEMOLOOP_M_PI * 2 / arms * armIndex);
-      transform.get().translate(x, y, i_cycle_ratio + 1);
+      transform.get() = glm::rotate(transform.get(), (float)DEMOLOOP_M_PI * 2 / arms * armIndex, {0, 0, 1});
+      transform.get() = glm::translate(transform.get(), {x, y, i_cycle_ratio + 1});
       // transform.get().rotate(i_cycle_ratio * DEMOLOOP_M_PI * 2);
 
       setColor(hsl2rgb(fmod(cycle_ratio + d / maxD * 0.65, 1), 1, 0.5));

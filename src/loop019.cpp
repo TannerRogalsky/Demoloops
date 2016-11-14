@@ -15,8 +15,7 @@ static const float RADIUS = 0.3;
 class Loop19 : public Demoloop {
 public:
   Loop19() : Demoloop(150, 150, 150) {
-    Matrix4 perspective = Matrix4::perspective(DEMOLOOP_M_PI / 4.0, (float)width / (float)height, 0.1, 100.0);
-    gl.getProjection().copy(perspective);
+    gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     mesh = sphere(0, 0, 0, RADIUS);
     auto indices = mesh->getIndexedVertices();
@@ -29,7 +28,6 @@ public:
         return b->z < a->z;
     });
 
-    float t = 0;
     for (Vertex *v : indexedVertices) {
       auto color = hsl2rgb((v->z + RADIUS) / (RADIUS * 4), 1, 0.5);
       v->r = color.r;
@@ -43,6 +41,7 @@ public:
       v.g = 0;
       v.b = 0;
     }
+    mesh->buffer();
   }
 
   void Update(float dt) {
@@ -52,15 +51,13 @@ public:
     const float cycle_ratio = cycle / CYCLE_LENGTH;
 
     gl.pushTransform();
-    Matrix4& transform = gl.getTransform();
     const float lookX = sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     const float lookY = 0;//cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     const float lookZ = cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     const float cameraX = 0;//pow(sin(cycle_ratio * DEMOLOOP_M_PI), 2) * 3;
     const float cameraY = 0;
     const float cameraZ = 0;
-    Matrix4 lookAt = Matrix4::lookAt({lookX, lookY, lookZ}, {cameraX, cameraY, cameraZ}, {0, 1, 0});
-    transform.copy(lookAt);
+    gl.getTransform() = glm::lookAt(glm::vec3(lookX, lookY, lookZ), glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 1, 0));
 
     // setColor(255, 255, 255);
     mesh->draw();
@@ -103,7 +100,7 @@ public:
       index++;
     }
 
-    transform.rotate(cycle_ratio * DEMOLOOP_M_PI * 2);
+    gl.getTransform() = glm::rotate(gl.getTransform(), cycle_ratio * (float)DEMOLOOP_M_PI * 2, {0, 0, 1});
     gl.lines(lines, numLines);
 
     gl.popTransform();

@@ -51,8 +51,8 @@ public:
         const float x1 = cos(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
         const float y1 = sin(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2 + angularOffset) * interval_cycle_ratio * RADIUS;
 
-        Matrix4 m;
-        m.translate(x1 + ox, y1 + oy);
+        glm::mat4 m;
+        m = glm::translate(m, {x1 + ox, y1 + oy, 0});
         for (uint32_t i = 0; i < num_circle_verts - 1; ++i) {
           circleVerts[count].x = cosf(0) * 3;
           circleVerts[count].y = sinf(0) * 3;
@@ -99,8 +99,8 @@ public:
       const float x1 = cos(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2) * RADIUS;
       const float y1 = sin(interval_cycle_ratio * DEMOLOOP_M_PI * 2 - DEMOLOOP_M_PI / 2) * RADIUS;
 
-      Matrix4 m;
-      m.translate(x1 + ox, y1 + oy);
+      glm::mat4 m;
+      m = glm::translate(m, {x1 + ox, y1 + oy, 0});
       for (uint32_t i = 0; i < num_circle_verts - 1; ++i) {
         circleVerts[count].x = cosf(0) * 3;
         circleVerts[count].y = sinf(0) * 3;

@@ -22,8 +22,7 @@ public:
       vertices[i].z = 1;
     }
 
-    Matrix4 &m = gl.getTransform();
-    m.translate(0, height / 2);
+    gl.getTransform() = glm::translate(gl.getTransform(), {0, height / 2, 0});
   }
 
   void Update(float dt) {
@@ -42,7 +41,7 @@ public:
       const float y = sinf(i_cycle_ratio * DEMOLOOP_M_PI * 2 * 5) * height / 4 * i_cycle_ratio;
 
       GL::TempTransform transform(gl);
-      transform.get().translate(x, y, i_cycle_ratio + 1);
+      transform.get() = glm::translate(transform.get(), {x, y, i_cycle_ratio + 1});
 
       setColor(hsl2rgb(t / num, 1, 0.5));
       gl.triangles(vertices, NUM_VERTS);

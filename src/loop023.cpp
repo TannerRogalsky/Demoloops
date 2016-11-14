@@ -14,7 +14,7 @@ const float CYCLE_LENGTH = 5;
 class Loop021 : public Demoloop {
 public:
   Loop021() : Demoloop(150, 150, 150), RADIUS(10) {
-    glDisable(GL_DEPTH_TEST);
+    // glDisable(GL_DEPTH_TEST);
 
     float phi = 0.0f;
     const float interval = DEMOLOOP_M_PI * 2 / NUM_VERTS;
@@ -25,8 +25,7 @@ public:
       vertices[i].z = 0;
     }
 
-    Matrix4 &m = gl.getTransform();
-    m.translate(width / 2, height);
+    gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height, 0});
   }
 
   void Update(float dt) {
@@ -49,9 +48,9 @@ public:
       const float y = pow(i_cycle_ratio, 2) * -height;
 
       gl.pushTransform();
-      Matrix4 &m = gl.getTransform();
-      m.translate(x, y);
-      m.rotate(-DEMOLOOP_M_PI / 2);
+      glm::mat4 &m = gl.getTransform();
+      m = glm::translate(m, {x, y, i_cycle_ratio});
+      m = glm::rotate(m, -(float)DEMOLOOP_M_PI / 2, {0, 0, 1});
 
       setColor(hsl2rgb(t / num, 1, 0.5));
       gl.triangles(vertices, NUM_VERTS);

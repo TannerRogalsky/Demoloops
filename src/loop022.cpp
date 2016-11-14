@@ -29,8 +29,7 @@ public:
       vertices[i].z = 0;
     }
 
-    Matrix4 &m = gl.getTransform();
-    m.translate(width / 2, height / 2);
+    gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
   void Update(float dt) {
@@ -51,9 +50,9 @@ public:
       const float y = sinf(-phi) * ratio * height * 0.4;
 
       gl.pushTransform();
-      Matrix4 &m = gl.getTransform();
-      m.translate(x, y);
-      m.rotate(phi);
+      glm::mat4 &m = gl.getTransform();
+      m = glm::translate(m, {x, y, 0});
+      m = glm::rotate(m, phi, {0, 0, 1});
 
       setColor(hsl2rgb(t / num, 1, 0.5), inQuint(ratio, 0, 1, 1) * 255);
       gl.triangles(vertices, NUM_VERTS);

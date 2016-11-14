@@ -16,8 +16,7 @@ static const float RADIUS = 0.3;
 class Loop14 : public Demoloop {
 public:
   Loop14() : Demoloop(150, 150, 150) {
-    Matrix4 perspective = Matrix4::perspective(DEMOLOOP_M_PI / 4.0, (float)width / (float)height, 0.1, 100.0);
-    gl.getProjection().copy(perspective);
+    gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     mesh = sphere(0, 0, 0, RADIUS);
     points = mesh->getIndexedVertices();
@@ -47,15 +46,14 @@ public:
       v.b = color.b;
       v.a = 255;
     }
+    mesh->buffer();
 
     gl.pushTransform();
-    Matrix4& transform = gl.getTransform();
     const float cameraX = sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     // const float cameraY = pow(sin(cycle_ratio * DEMOLOOP_M_PI * 2), 2);
     const float cameraY = 0;//cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     const float cameraZ = cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
-    Matrix4 lookAt = Matrix4::lookAt({cameraX, cameraY, cameraZ}, {0, 0, 0}, {0, 1, 0});
-    transform.copy(lookAt);
+    gl.getTransform() = glm::lookAt(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
     setColor(255, 255, 255);
     mesh->draw();

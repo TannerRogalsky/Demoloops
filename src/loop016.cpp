@@ -29,9 +29,8 @@ public:
       vertices[i + 1].z = 1;
     }
 
-    Matrix4 &m = gl.getTransform();
-    m.translate(width / 2, height / 2);
-    m.rotate(DEMOLOOP_M_PI / 6);
+    gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
+    gl.getTransform() = glm::rotate(gl.getTransform(), (float)DEMOLOOP_M_PI / 6, {0, 0, 1});
   }
 
   void Update(float dt) {
@@ -47,9 +46,9 @@ public:
 
     for (int i = 0; i < 6; ++i) {
       gl.pushTransform();
-      Matrix4 &m = gl.getTransform();
-      m.rotate(interval * i - cycle_ratio * DEMOLOOP_M_PI * 2);
-      m.translate(RADIUS * 2, 0);
+      glm::mat4 &m = gl.getTransform();
+      m = glm::rotate(m, interval * i - cycle_ratio * (float)DEMOLOOP_M_PI * 2, {0, 0, 1});
+      m = glm::translate(m, {RADIUS * 2, 0, 0});
 
       gl.lines(vertices, NUM_VERTS);
 
@@ -58,9 +57,9 @@ public:
 
     for (int i = 0; i < 6; ++i) {
       gl.pushTransform();
-      Matrix4 &m = gl.getTransform();
-      m.rotate(interval * i + cycle_ratio * DEMOLOOP_M_PI * 2);
-      m.translate(RADIUS * 4, 0);
+      glm::mat4 &m = gl.getTransform();
+      m = glm::rotate(m, interval * i + cycle_ratio * (float)DEMOLOOP_M_PI * 2, {0, 0, 1});
+      m = glm::translate(m, {RADIUS * 4, 0, 0});
 
       gl.lines(vertices, NUM_VERTS);
 

@@ -16,9 +16,7 @@ public:
   Loop7() : Demoloop(150, 150, 150) {
     glDisable(GL_DEPTH_TEST);
 
-    int ox = width / 2, oy = height / 2;
-    Matrix4& transform = gl.getTransform();
-    transform.translate(ox, oy);
+    gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
   void Update(float dt) {
