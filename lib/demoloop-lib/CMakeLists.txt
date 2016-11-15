@@ -70,6 +70,7 @@ endif()
 
 if (EMSCRIPTEN)
   add_library(${PROJECT_NAME} STATIC ${SRCS})
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 else ()
   add_library(${PROJECT_NAME} SHARED ${SRCS})
 endif (EMSCRIPTEN)

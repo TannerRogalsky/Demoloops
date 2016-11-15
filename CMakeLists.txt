@@ -97,6 +97,11 @@ include_directories(${PROJECT_SOURCE_DIR}/lib/glm)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
+if(EMSCRIPTEN)
+  add_definitions("-s NO_EXIT_RUNTIME=1")
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+endif()
+
 foreach(LOOP ${LOOPS})
   add_executable(${LOOP} ${PROJECT_SOURCE_DIR}/src/${LOOP}.cpp)
 
