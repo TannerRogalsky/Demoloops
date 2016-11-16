@@ -1,4 +1,6 @@
 #include "helpers.h"
+#include "graphics/gl.h"
+#include "res_path.h"
 
 void logSDLError(std::ostream &os, const std::string &msg){
   os << msg << " error: " << SDL_GetError() << std::endl;
@@ -12,6 +14,21 @@ SDL_Texture* loadTexture(const std::string &file, SDL_Renderer *ren){
   return texture;
 }
 
+GLuint loadTexture(const std::string &path) {
+  GLuint texture;
+
+  SDL_Surface *surf = IMG_Load((getResourcePath() + path).c_str());
+  glGenTextures(1,&texture);
+  glBindTexture(GL_TEXTURE_2D,texture);
+  auto fmt = surf->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB;
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surf->w,surf->h, 0, fmt, GL_UNSIGNED_BYTE,surf->pixels);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+  SDL_FreeSurface(surf);
+
+  return texture;
+}
+
 void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, int w, int h){
   //Setup the destination rectangle to be at the position we want
   SDL_Rect dst;
@@ -20,6 +37,48 @@ void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, int w, int
   dst.w = w;
   dst.h = h;
   SDL_RenderCopy(ren, tex, NULL, &dst);
+}
+
+void renderTexture(GLuint texture, int x, int y, int w, int h) {
+  renderTexture(texture, x, y, 0, w, h);
+}
+
+void renderTexture(GLuint texture, int x, int y, int z, int w, int h) {
+  demoloop::Vertex vertices[6];
+  vertices[0].x = x + 0;
+  vertices[0].y = y + 0;
+  vertices[0].z = z + 0;
+  vertices[1].x = x + 0;
+  vertices[1].y = y + h;
+  vertices[1].z = z + 0;
+  vertices[2].x = x + w;
+  vertices[2].y = y + 0;
+  vertices[2].z = z + 0;
+  vertices[3].x = x + w;
+  vertices[3].y = y + h;
+  vertices[3].z = z + 0;
+  vertices[4].x = x + 0;
+  vertices[4].y = y + h;
+  vertices[4].z = z + 0;
+  vertices[5].x = x + w;
+  vertices[5].y = y + 0;
+  vertices[5].z = z + 0;
+
+  vertices[0].s = 0;
+  vertices[0].t = 0;
+  vertices[1].s = 0;
+  vertices[1].t = 1;
+  vertices[2].s = 1;
+  vertices[2].t = 0;
+  vertices[3].s = 1;
+  vertices[3].t = 1;
+  vertices[4].s = 0;
+  vertices[4].t = 1;
+  vertices[5].s = 1;
+  vertices[5].t = 0;
+
+  demoloop::gl.bindTexture(texture);
+  demoloop::gl.triangles(vertices, 6);
 }
 
 void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y){

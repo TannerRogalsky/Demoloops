@@ -5,9 +5,14 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <GL/glew.h>
 #include "glm/glm.hpp"
 #include "common/math.h"
 #include "hsl.h"
+
+GLuint loadTexture(const std::string &path);
+void renderTexture(GLuint texture, int x, int y, int w, int h);
+void renderTexture(GLuint texture, int x, int y, int z, int w, int h);
 
 /*
  * Log an SDL error with some error message to the output stream of our choice
