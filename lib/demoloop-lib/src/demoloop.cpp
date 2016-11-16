@@ -88,7 +88,6 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
 
 Demoloop::~Demoloop() {
   cleanup(renderer, window);
-  IMG_Quit();
   TTF_Quit();
   SDL_Quit();
 }

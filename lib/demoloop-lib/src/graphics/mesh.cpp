@@ -75,6 +75,6 @@ namespace demoloop {
     glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+    gl.drawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
   }
 }
