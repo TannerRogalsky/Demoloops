@@ -3,6 +3,7 @@ project(demoloops)
 
 set(ASSET_LOOPS
   asset_test
+  profile_pic
 )
 
 set(LOOPS ${ASSET_LOOPS}
