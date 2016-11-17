@@ -24,28 +24,28 @@ vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {
 
 #ifdef PIXEL
 vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-  vec4 texturecolor = Texel(texture, texture_coords);
-  return texturecolor * color;
+  vec4 tc = Texel(texture, texture_coords);
+  float albedo = dot(tc.rgb, vec3(0.3, 0.59, 0.11));
+  tc.rgb = vec3(albedo, albedo, albedo);
+  return tc;
 }
 #endif
 )===";
 
 class Test4 : public Demoloop {
 public:
-  Test4() : Demoloop(150, 150, 150), mesh(nullptr), canvas(100, 100), shader({shaderCode, shaderCode}) {
+  Test4() : Demoloop(150, 150, 150), mesh(*cube(0, 0, 0, 1)), canvas(100, 100), shader({shaderCode, shaderCode}) {
     std::cout << glGetString(GL_VERSION) << std::endl;
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     glEnable(GL_CULL_FACE);
 
-    const float RADIUS = 1;
-    mesh = cube(0, 0, 0, RADIUS);
-    // auto indexedVertices = mesh->getIndexedVertices();
+    // auto indexedVertices = mesh.getIndexedVertices();
     // uint32_t count = indexedVertices.size();
     // float t = 0;
     // for (auto i : indexedVertices) {
     //   auto color = hsl2rgb(t++ / count, 1, 0.5);
-    //   Vertex &v = mesh->mVertices[i];
+    //   Vertex &v = mesh.mVertices[i];
     //   v.r = color.r;
     //   v.g = color.g;
     //   v.b = color.b;
@@ -62,13 +62,10 @@ public:
     rectangle(gl, 50, 50, 50, 50);
     setCanvas();
 
-    mesh->setTexture(&canvas);
+    mesh.setTexture(&canvas);
   }
 
   ~Test4() {
-    if (mesh) {
-      delete mesh;
-    }
   }
 
   void Update(float dt) {
@@ -89,15 +86,13 @@ public:
     glm::mat4 m = glm::rotate(glm::mat4(), cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(1, 1, 0));
 
     shader.attach();
-    mesh->draw(m);
-    mesh->draw(glm::translate(m, {1, 0, 0.5}) * glm::rotate(m, (float) DEMOLOOP_M_PI / 2, glm::vec3(1, 0, 1)));
+    mesh.draw(m);
+    mesh.draw(glm::translate(m, {1, 0, 0.5}) * glm::rotate(m, (float) DEMOLOOP_M_PI / 2, glm::vec3(1, 0, 1)));
     shader.detach();
-
-    // gl.popTransform();
   }
 
 private:
-  Mesh *mesh;
+  Mesh mesh;
   Canvas canvas;
   Shader shader;
 };
