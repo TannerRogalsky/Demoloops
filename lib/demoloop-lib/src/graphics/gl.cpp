@@ -194,6 +194,12 @@ namespace demoloop {
     // ++stats.drawCalls;
   }
 
+  void GL::drawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei primcount)
+  {
+    glDrawArraysInstanced(mode, first, count, primcount);
+    // ++stats.drawCalls;
+  }
+
   void GL::drawElements(GLenum mode, GLsizei count, GLenum type, const void *indices)
   {
     glDrawElements(mode, count, type, indices);

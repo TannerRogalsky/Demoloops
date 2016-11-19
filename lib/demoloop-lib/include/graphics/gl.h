@@ -116,6 +116,7 @@ public:
    * themselves.
    **/
   void drawArrays(GLenum mode, GLint first, GLsizei count);
+  void drawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei primcount);
   void drawElements(GLenum mode, GLsizei count, GLenum type, const void *indices);
 
   /**
