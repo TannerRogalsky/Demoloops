@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <cmath>
 #include "hsl.h"
-#include <iostream>
+#include <glm/vec4.hpp>
 
 float hue2rgb(float p, float q, float t) {
   if (t < 0) { t += 1; }
@@ -29,6 +29,25 @@ RGB hsl2rgb(float h, float s, float l) {
   }
 
   return {r, g, b};
+}
+
+glm::vec4 hsl2rgbf(float h, float s, float l) {
+  float r = 0;
+  float g = 0;
+  float b = 0;
+
+  if (s == 0) {
+    r = g = b = l;
+  } else {
+    float q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    float p = 2 * l - q;
+
+    r = hue2rgb(p, q, h + 1.0/3.0);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1.0/3.0);
+  }
+
+  return glm::vec4(r, g, b, 1.0f);
 }
 
 uint32_t rgb2uint32(const RGB color) {
