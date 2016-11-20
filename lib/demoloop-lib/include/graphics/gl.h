@@ -150,7 +150,7 @@ public:
 
   GLuint getDefaultTexture() const;
 
-  void bufferVertices(const Vertex *vertices, size_t count);
+  void bufferVertices(const Vertex *vertices, size_t count, GLenum usage = GL_DYNAMIC_DRAW);
 
   void triangles(const Vertex *coords, size_t count);
   void triangles(const Triangle* triangles, size_t count);

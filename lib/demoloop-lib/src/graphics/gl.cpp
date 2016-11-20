@@ -295,9 +295,9 @@ namespace demoloop {
     Shader::current->checkSetBuiltinUniforms(modelView);
   }
 
-  void GL::bufferVertices(const Vertex *vertices, size_t count) {
+  void GL::bufferVertices(const Vertex *vertices, size_t count, GLenum usage) {
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &vertices[0].x, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &vertices[0].x, usage);
   }
 
   void GL::lines(const Vertex *coords, size_t count) {
