@@ -1,10 +1,9 @@
-#include <iostream>
-#include <cmath>
 #include "SDL.h"
 #include "SDL_image.h"
 #include "demoloop.h"
-#include "hsl.h"
 #include "helpers.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 using namespace std;
 using namespace demoloop;
 
