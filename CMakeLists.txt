@@ -53,6 +53,7 @@ set(LOOPS ${ASSET_LOOPS}
   loop044
   loop045
   loop046
+  loop047
   uv_sphere
   testopengl
 )
