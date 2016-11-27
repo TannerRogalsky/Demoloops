@@ -3,6 +3,7 @@
 #include "demoloop.h"
 #include "graphics/2d_primitives.h"
 #include "hsl.h"
+#include <glm/gtx/rotate_vector.hpp>
 using namespace std;
 using namespace demoloop;
 
