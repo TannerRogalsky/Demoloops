@@ -14,6 +14,33 @@ const static std::string defaultFragShader = "vec4 effect(mediump vec4 vcolor, I
 
 namespace demoloop {
 
+namespace
+{
+  // temporarily attaches a shader program (for setting uniforms, etc)
+  // reattaches the originally active program when destroyed
+  struct TemporaryAttacher
+  {
+    TemporaryAttacher(Shader *shader)
+    : curShader(shader)
+    , prevShader(Shader::current)
+    {
+      // curShader->attach(true);
+      curShader->attach();
+    }
+
+    ~TemporaryAttacher()
+    {
+      if (prevShader != nullptr)
+        prevShader->attach();
+      else
+        curShader->detach();
+    }
+
+    Shader *curShader;
+    Shader *prevShader;
+  };
+} // anonymous namespace
+
 Shader *Shader::current = nullptr;
 Shader *Shader::defaultShader = nullptr;
 
@@ -218,15 +245,52 @@ void Shader::detach() {
   current = nullptr;
 }
 
+void Shader::checkSetScreenParams()
+{
+  GL::Viewport view = gl.getViewport();
+
+  if (view == lastViewport && lastCanvas == Canvas::current)
+    return;
+
+  // In the shader, we do pixcoord.y = gl_FragCoord.y * params.z + params.w.
+  // This lets us flip pixcoord.y when needed, to be consistent (drawing with
+  // no Canvas active makes the y-values for pixel coordinates flipped.)
+  GLfloat params[] = {
+    (GLfloat) view.w, (GLfloat) view.h,
+    0.0f, 0.0f,
+  };
+
+  if (Canvas::current != nullptr) {
+    // No flipping: pixcoord.y = gl_FragCoord.y * 1.0 + 0.0.
+    params[2] = 1.0f;
+    params[3] = 0.0f;
+  } else {
+    // gl_FragCoord.y is flipped when drawing to the screen, so we un-flip:
+    // pixcoord.y = gl_FragCoord.y * -1.0 + height.
+    params[2] = -1.0f;
+    params[3] = (GLfloat) view.h;
+  }
+
+  GLint location = builtinUniforms[BUILTIN_SCREEN_SIZE];
+
+  if (location >= 0) {
+    TemporaryAttacher attacher(this);
+    glUniform4fv(location, 1, params);
+  }
+
+  lastCanvas = Canvas::current;
+  lastViewport = view;
+}
+
 void Shader::checkSetBuiltinUniforms(const glm::mat4 &curModel)
 {
-  // checkSetScreenParams();
+  checkSetScreenParams();
   // checkSetPointSize(gl.getPointSize());
 
   const glm::mat4 &curxform = gl.matrices.transform.back();
   const glm::mat4 &curproj = gl.matrices.projection.back();
 
-  // TemporaryAttacher attacher(this);
+  TemporaryAttacher attacher(this);
 
   bool tpmatrixneedsupdate = false;
 
@@ -282,7 +346,7 @@ void Shader::checkSetBuiltinUniforms(const glm::mat4 &curModel)
 
 void Shader::sendInt(const std::string &name, int size, const GLint *vec, int count)
 {
-  // TemporaryAttacher attacher(this);
+  TemporaryAttacher attacher(this);
 
   const Uniform &u = getUniform(name);
   // checkSetUniformError(u, size, count, UNIFORM_INT);
@@ -307,7 +371,7 @@ void Shader::sendInt(const std::string &name, int size, const GLint *vec, int co
 
 void Shader::sendFloat(const std::string &name, int size, const GLfloat *vec, int count)
 {
-  // TemporaryAttacher attacher(this);
+  TemporaryAttacher attacher(this);
 
   const Uniform &u = getUniform(name);
   // checkSetUniformError(u, size, count, UNIFORM_FLOAT);
@@ -332,7 +396,7 @@ void Shader::sendFloat(const std::string &name, int size, const GLfloat *vec, in
 
 void Shader::sendMatrix(const std::string &name, int size, const GLfloat *m, int count)
 {
-  // TemporaryAttacher attacher(this);
+  TemporaryAttacher attacher(this);
 
   // if (size < 2 || size > 4)
   // {

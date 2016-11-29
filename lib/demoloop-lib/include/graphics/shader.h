@@ -6,6 +6,7 @@
 #include "graphics/gl.h"
 #include "common/string_map.h"
 #include "glm/glm.hpp"
+#include "graphics/canvas.h"
 
 namespace demoloop {
 struct ShaderSource
@@ -102,6 +103,8 @@ public:
    **/
   void sendMatrix(const std::string &name, int size, const GLfloat *m, int count);
 
+  void checkSetScreenParams();
+  // void checkSetPointSize(float size);
   void checkSetBuiltinUniforms(const glm::mat4 &curModel);
 
 private:
@@ -140,6 +143,10 @@ private:
   glm::mat4 lastTransformMatrix;
   glm::mat4 lastProjectionMatrix;
   glm::mat4 lastModelMatrix;
+
+  // Pointer to the active Canvas when the screen params were last checked.
+  Canvas *lastCanvas;
+  GL::Viewport lastViewport;
 
   // Names for the generic vertex attributes.
   static StringMap<VertexAttribID, ATTRIB_MAX_ENUM>::Entry attribNameEntries[];
