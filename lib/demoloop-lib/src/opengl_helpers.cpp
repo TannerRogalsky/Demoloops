@@ -11,8 +11,8 @@ const char* SYNTAX =  "#ifndef GL_ES\n"
                       "#define number float\n"
                       "#define Image sampler2D\n"
                       "#define extern uniform\n"
-                      "#define Texel texture2D\n"
-                      "#pragma optionNV(strict on)\n";
+                      "#define Texel texture2D\n";
+                      // "#pragma optionNV(strict on)\n";
 
 const char* VERTEX_HEADER = "#define VERTEX\n"
                             "#define LOVE_PRECISE_GAMMA\n"
