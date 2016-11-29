@@ -84,15 +84,21 @@ const char* getVersionPragma() {
   return profileMask == SDL_GL_CONTEXT_PROFILE_ES ? "#version 100\n" : "#version 120\n";
 }
 
+const char* getLinePragma() {
+  int profileMask;
+  SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, &profileMask);
+  return profileMask == SDL_GL_CONTEXT_PROFILE_ES ? "#line 1\n" : "#line 0\n";
+}
+
 std::string createVertexCode(const std::string &vertexShaderSource) {
   std::stringstream ss;
-  ss << getVersionPragma() << SYNTAX << VERTEX_HEADER << UNIFORMS << vertexShaderSource << "\n" << VERTEX_FOOTER;
+  ss << getVersionPragma() << SYNTAX << VERTEX_HEADER << UNIFORMS << getLinePragma() << vertexShaderSource << "\n" << VERTEX_FOOTER;
   return ss.str();
 }
 
 std::string createFragmentCode(const std::string &fragmentShaderSource) {
   std::stringstream ss;
-  ss << getVersionPragma() << SYNTAX << FRAG_HEADER << UNIFORMS << fragmentShaderSource << "\n" << FRAG_FOOTER;
+  ss << getVersionPragma() << SYNTAX << FRAG_HEADER << UNIFORMS << getLinePragma() << fragmentShaderSource << "\n" << FRAG_FOOTER;
   return ss.str();
 }
 
