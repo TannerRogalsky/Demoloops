@@ -40,7 +40,7 @@ void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, int w, int
 }
 
 void renderTexture(GLuint texture, int x, int y, int w, int h) {
-  renderTexture(texture, x, y, 0, w, h);
+  renderTexture(texture, x, y, 1, w, h);
 }
 
 void renderTexture(GLuint texture, int x, int y, int z, int w, int h) {
