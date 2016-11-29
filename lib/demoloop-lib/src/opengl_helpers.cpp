@@ -3,80 +3,90 @@
 #include <sstream>
 #include <iostream>
 
-const char* SYNTAX =  "#ifndef GL_ES\n"
-                      "#define lowp\n"
-                      "#define mediump\n"
-                      "#define highp\n"
-                      "#endif\n"
-                      "#define number float\n"
-                      "#define Image sampler2D\n"
-                      "#define extern uniform\n"
-                      "#define Texel texture2D\n";
-                      // "#pragma optionNV(strict on)\n";
+const char* SYNTAX = R"===(
+#ifndef GL_ES
+#define lowp
+#define mediump
+#define highp
+#endif
+#define number float
+#define Image sampler2D
+#define extern uniform
+#define Texel texture2D
+// #pragma optionNV(strict on)
+)===";
 
-const char* VERTEX_HEADER = "#define VERTEX\n"
-                            "#define LOVE_PRECISE_GAMMA\n"
-                            "\n"
-                            "attribute vec4 VertexPosition;\n"
-                            "attribute vec4 VertexTexCoord;\n"
-                            "attribute vec4 VertexColor;\n"
-                            "attribute vec4 ConstantColor;\n"
-                            "\n"
-                            "varying vec4 VaryingTexCoord;\n"
-                            "varying vec4 VaryingColor;\n"
-                            "\n"
-                            "#ifdef GL_ES\n"
-                            "uniform mediump float demoloop_PointSize;\n"
-                            "#endif\n";
+const char* VERTEX_HEADER = R"===(
+#define VERTEX
 
-const char* VERTEX_FOOTER = "void main() {\n"
-                            "VaryingTexCoord = VertexTexCoord;\n"
-                            "VaryingColor = VertexColor * ConstantColor;\n"
-                            // "VaryingColor = gammaCorrectColor(VertexColor) * ConstantColor;\n"
-                            "#ifdef GL_ES\n"
-                            "gl_PointSize = demoloop_PointSize;\n"
-                            "#endif\n"
-                            "gl_Position = position(TransformProjectionMatrix, ModelMatrix, VertexPosition);\n"
-                            "}\n";
+attribute vec4 VertexPosition;
+attribute vec4 VertexTexCoord;
+attribute vec4 VertexColor;
+attribute vec4 ConstantColor;
 
-const char* FRAG_HEADER = "#define PIXEL\n"
-                          "\n"
-                          "#ifdef GL_ES\n"
-                          "precision mediump float;\n"
-                          "#endif\n"
-                          "\n"
-                          "varying mediump vec4 VaryingTexCoord;\n"
-                          "varying mediump vec4 VaryingColor;\n"
-                          "\n"
-                          "#define love_Canvases gl_FragData\n"
-                          "\n"
-                          "uniform sampler2D _tex0_;\n";
+varying vec4 VaryingTexCoord;
+varying vec4 VaryingColor;
 
-const char* FRAG_FOOTER = "void main() {\n"
-                          "// fix crashing issue in OSX when _tex0_ is unused within effect()\n"
-                          "float dummy = Texel(_tex0_, vec2(.5)).r;\n"
-                          "\n"
-                          "// See Shader::checkSetScreenParams in Shader.cpp.\n"
-                          "vec2 pixelcoord = vec2(gl_FragCoord.x, (gl_FragCoord.y * demoloop_ScreenSize.z) + demoloop_ScreenSize.w);\n"
-                          "\n"
-                          "gl_FragColor = effect(VaryingColor, _tex0_, VaryingTexCoord.st, pixelcoord);\n"
-                          "}\n";
+#ifdef GL_ES
+uniform mediump float demoloop_PointSize;
+#endif
+)===";
 
-const char* UNIFORMS =  "\n"
-                        "  // According to the GLSL ES 1.0 spec, uniform precision must match between stages,\n"
-                        "  // but we can't guarantee that highp is always supported in fragment shaders...\n"
-                        "  // We *really* don't want to use mediump for these in vertex shaders though.\n"
-                        "  #if defined(VERTEX) || defined(GL_FRAGMENT_PRECISION_HIGH)\n"
-                        "    #define DEMOLOOP_UNIFORM_PRECISION highp\n"
-                        "  #else\n"
-                        "    #define DEMOLOOP_UNIFORM_PRECISION mediump\n"
-                        "  #endif\n"
-                        "  uniform DEMOLOOP_UNIFORM_PRECISION mat4 TransformMatrix;\n"
-                        "  uniform DEMOLOOP_UNIFORM_PRECISION mat4 ProjectionMatrix;\n"
-                        "  uniform DEMOLOOP_UNIFORM_PRECISION mat4 TransformProjectionMatrix;\n"
-                        "  uniform DEMOLOOP_UNIFORM_PRECISION mat4 ModelMatrix;\n"
-                        "  uniform DEMOLOOP_UNIFORM_PRECISION mat3 NormalMatrix;\n"
-                        "uniform mediump vec4 demoloop_ScreenSize;\n";
+const char* VERTEX_FOOTER = R"===(
+void main() {
+  VaryingTexCoord = VertexTexCoord;
+  VaryingColor = VertexColor * ConstantColor;
+
+  #ifdef GL_ES
+  gl_PointSize = demoloop_PointSize;
+  #endif
+  gl_Position = position(TransformProjectionMatrix, ModelMatrix, VertexPosition);
+}
+)===";
+
+const char* FRAG_HEADER = R"===(
+#define PIXEL
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+varying mediump vec4 VaryingTexCoord;
+varying mediump vec4 VaryingColor;
+
+#define demoloop_Canvases gl_FragData
+
+uniform sampler2D _tex0_;
+)===";
+
+const char* FRAG_FOOTER = R"===(
+void main() {
+  // fix crashing issue in OSX when _tex0_ is unused within effect()
+  float dummy = Texel(_tex0_, vec2(.5)).r;
+
+  // See Shader::checkSetScreenParams in Shader.cpp.
+  vec2 pixelcoord = vec2(gl_FragCoord.x, (gl_FragCoord.y * demoloop_ScreenSize.z) + demoloop_ScreenSize.w);
+
+  gl_FragColor = effect(VaryingColor, _tex0_, VaryingTexCoord.st, pixelcoord);
+}
+)===";
+
+const char* UNIFORMS = R"===(
+// According to the GLSL ES 1.0 spec, uniform precision must match between stages,
+// but we can't guarantee that highp is always supported in fragment shaders...
+// We *really* don't want to use mediump for these in vertex shaders though.
+#if defined(VERTEX) || defined(GL_FRAGMENT_PRECISION_HIGH)
+  #define DEMOLOOP_UNIFORM_PRECISION highp
+#else
+  #define DEMOLOOP_UNIFORM_PRECISION mediump
+#endif
+uniform DEMOLOOP_UNIFORM_PRECISION mat4 TransformMatrix;
+uniform DEMOLOOP_UNIFORM_PRECISION mat4 ProjectionMatrix;
+uniform DEMOLOOP_UNIFORM_PRECISION mat4 TransformProjectionMatrix;
+uniform DEMOLOOP_UNIFORM_PRECISION mat4 ModelMatrix;
+uniform DEMOLOOP_UNIFORM_PRECISION mat3 NormalMatrix;
+uniform mediump vec4 demoloop_ScreenSize;
+)===";
 
 const char* getVersionPragma() {
   int profileMask;
