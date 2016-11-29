@@ -10,7 +10,7 @@ float t = 0;
 const float CYCLE_LENGTH = 10;
 
 const static std::string shaderCode = R"===(
-uniform float cycle_ratio;
+uniform mediump float cycle_ratio;
 
 #define DEMOLOOP_M_PI 3.1459
 
@@ -87,14 +87,14 @@ float snoise(float x, float y) {
 }
 
 float noise(float x, float y, float a, float b) {
-  return snoise(x * a / 256.0f, y * b / 256.0f);
+  return snoise(x * a / 256.0, y * b / 256.0);
 }
 
-vec3 mix(float a, vec3 v1, vec3 v2) { return v1 * (1 - a) + v2 * a; }
+vec3 mix(float a, vec3 v1, vec3 v2) { return v1 * (1.0 - a) + v2 * a; }
 
 float smoothStep(float w, float a, float b) {
-  if (w>=b) return 1.0f;
-  if (w<=a) return 0.0f;
+  if (w>=b) return 1.0;
+  if (w<=a) return 0.0;
   float d = b-a;
   return (w-a)/d;
 }
@@ -103,16 +103,16 @@ vec3 colsca(vec3 c, float s) {
   c.r*=s;
   c.g*=s;
   c.b*=s;
-  if (c.r>1) c.r=1;
-  if (c.g>1) c.g=1;
-  if (c.b>1) c.b=1;
+  if (c.r>1.0) c.r=1.0;
+  if (c.g>1.0) c.g=1.0;
+  if (c.b>1.0) c.b=1.0;
 
   return c;
 }
 
 vec3 eye(float x, float y, float b) {
-  float rx = 2.0f*(x-0.5f)*demoloop_ScreenSize.x/demoloop_ScreenSize.y;
-  float ry = 2.0f*(y-0.5f);
+  float rx = 2.0*(x-0.5)*demoloop_ScreenSize.x/demoloop_ScreenSize.y;
+  float ry = 2.0*(y-0.5);
   float a = atan(ry, rx);
   float e = rx*rx + ry*ry;
   float r = sqrt(e);
@@ -122,15 +122,15 @@ vec3 eye(float x, float y, float b) {
 
   // veins
   // float ven = noise(24 * x, 24 * y, 128, 128);
-  // ven = smoothStep(ven, 0-0.2, 0) - smoothStep(ven, 0, 0.2);
+  // ven = smoothStep(ven, -0.2, 0.0) - smoothStep(ven, 0.0, 0.2);
   // ven += x + pow(x, 6) * 10;
   // fue.r += 0.04 - 0.00*ven;
   // fue.g += 0.04 - 0.05*ven;
   // fue.b += 0.04 - 0.05*ven;
 
   // circular pattern
-  float noiseOffset = pow(sin(cycle_ratio * DEMOLOOP_M_PI), 2.0) * 1;
-  float no = 0.8 + 0.2 * noise(4*r + noiseOffset, 32*a/DEMOLOOP_M_PI + noiseOffset, 256.0, 256.0);
+  float noiseOffset = pow(sin(cycle_ratio * DEMOLOOP_M_PI), 2.0) * 1.0;
+  float no = 0.8 + 0.2 * noise(4.0*r + noiseOffset, 32.0*a/DEMOLOOP_M_PI + noiseOffset, 256.0, 256.0);
   den = colsca(den, no);
 
   // iris
@@ -142,14 +142,14 @@ vec3 eye(float x, float y, float b) {
 
   // ring
   float ri = smoothStep(e, 0.31, 0.35) - smoothStep(e, 0.35, 0.36);
-  ri = 1 - 0.35 * ri;
+  ri = 1.0 - 0.35 * ri;
   mixed = colsca(mixed, ri);
 
   // reflection
   // float r3 = sqrt(r*r*r);
-  // float re = noise(2+4*r3*cos(a), 4*r3*sin(a), 128, 128);
+  // float re = noise(2.0+4.0*r3*cos(a), 4.0*r3*sin(a), 128.0, 128.0);
   // re = 0.4 * smoothStep(re, 0.1, 0.5);
-  // mixed += re * (1 - mixed);
+  // mixed += re * (1.0 - mixed);
 
   // eye contours
   mixed=colsca(mixed,0.8+0.15*smoothStep(-b,0.0,0.2));
@@ -159,12 +159,12 @@ vec3 eye(float x, float y, float b) {
 }
 
 vec3 skin(float x, float y, float b) {
-  float rx = 2.0f*(x - 0.5f)*demoloop_ScreenSize.x/demoloop_ScreenSize.y;
-  float ry = 2.0f*(y - 0.5f);
+  float rx = 2.0*(x - 0.5)*demoloop_ScreenSize.x/demoloop_ScreenSize.y;
+  float ry = 2.0*(y - 0.5);
 
-  vec3 skinColor = vec3(0.75f, 0.69f, 0.6f);
+  vec3 skinColor = vec3(0.75, 0.69, 0.6);
 
-  // float cel = 0.95 + 0.05 * noise(64*x, 64*y, 256.0, 256.0);
+  // float cel = 0.95 + 0.05 * noise(64.0*x, 64.0*y, 256.0, 256.0);
   // skinColor = colsca(skinColor, cel);
   // skinColor.r += 0.03 * rx;
   // skinColor.g += 0.03 * ry;
@@ -174,55 +174,55 @@ vec3 skin(float x, float y, float b) {
   // bri = 0.2 + 0.8 * smoothStep(bri, 0.0, 0.3);
   // skinColor = mix(bri*0.08*y, skinColor, vec3(1, 1, 1));
 
-  // float san = 0.50*noise(16*x,16*y,256,256);
-  //       san+= 0.25*noise(32*x,32*y,256,256);
+  // float san = 0.50*noise(16.0*x,16.0*y,256.0,256.0);
+  //       san+= 0.25*noise(32.0*x,32.0*y,256.0,256.0);
   // skinColor.g*=1-0.1*san;
 
-  // float osc = 0.500*noise(16*x,16*y,256,256);
-  //       osc+= 0.250*noise(24*x,24*y,256,256);
-  //       osc+= 0.125*noise(48*x,48*y,256,256);
+  // float osc = 0.500*noise(16.0*x,16.0*y,256.0,256.0);
+  //       osc+= 0.250*noise(24.0*x,24.0*y,256.0,256.0);
+  //       osc+= 0.125*noise(48.0*x,48.0*y,256.0,256.0);
   // skinColor=colsca(skinColor,0.9+0.1*osc);
 
   // skinColor.r+=0.08*x;
   // skinColor.g+=0.01;
 
-  // float pecas = noise(32*x,32*y,256,256);
+  // float pecas = noise(32.0*x,32.0*y,256.0,256.0);
   // pecas=smoothStep(pecas,0.80,0.8001);
   // skinColor *= 1.0 - 0.16*pecas;
 
-  float g = smoothStep(1 - b, 0.2, 0.7);
-  g -= smoothStep(1 - b, 0.8, 1) * 3;
+  float g = smoothStep(1.0 - b, 0.2, 0.7);
+  g -= smoothStep(1.0 - b, 0.8, 1.0) * 3.0;
   skinColor += g * 0.1;
 
-  // skinColor = mix(0.14, skinColor, vec3(1, 1, 1));
+  // skinColor = mix(0.14, skinColor, vec3(1.0, 1.0, 1.0));
   // skinColor *= 1.23;
   // skinColor += 0.21;
 
-  skinColor=colsca(skinColor,(1-(b*0.5)));
+  skinColor=colsca(skinColor,(1.0-(b*0.5)));
 
   return skinColor;
 }
 
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
   float t = cycle_ratio;
-  float r = 0, g = 0, b = 0;
+  float r = 0.0, g = 0.0, b = 0.0;
   float x = tc.x;
   float y = tc.y;
 
-  float rx = 2.0f*(x - 0.5f)*demoloop_ScreenSize.x/demoloop_ScreenSize.y;
-  float ry = 2.0f*(y - 0.5f);
-  // float h = 3.0f*sqrt(x*x*x)*(1.0f-x);
-  float h = (2.0f*(1 - pow(sin(cycle_ratio * DEMOLOOP_M_PI), 5)) + 1.0f)*sqrt(x*x*x)*(1.0f-x);
+  float rx = 2.0*(x - 0.5)*demoloop_ScreenSize.x/demoloop_ScreenSize.y;
+  float ry = 2.0*(y - 0.5);
+  // float h = 3.0*sqrt(x*x*x)*(1.0-x);
+  float h = (2.0*(1.0 - pow(sin(cycle_ratio * DEMOLOOP_M_PI), 5.0)) + 1.0)*sqrt(x*x*x)*(1.0-x);
   float e = abs(ry) - h;
-  float f = smoothStep( e, 0.0f, 0.01f );
+  float f = smoothStep( e, 0.0, 0.01 );
 
-  float eyeX = x + cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 0.1 - 0.1;
+  float eyeX = x + cos(cycle_ratio * DEMOLOOP_M_PI * 2.0) * 0.1 - 0.1;
   // y += sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 0.1;
 
   vec3 skinColor = skin(x, y, e);
   vec3 eyeColor = eye(eyeX, y, e);
 
-  return vec4(mix(f, eyeColor, skinColor), 1.0f);
+  return vec4(mix(f, eyeColor, skinColor), 1.0);
 }
 #endif
 )===";
