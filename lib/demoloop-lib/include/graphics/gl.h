@@ -2,10 +2,28 @@
 
 #include <GL/glew.h>
 #include <vector>
-#include "graphics/shader.h"
 #include "graphics/texture.h"
 
 namespace demoloop {
+
+// Vertex attribute indices used in shaders. The values map to OpenGL generic vertex attribute indices.
+enum VertexAttribID
+{
+  ATTRIB_POS = 0,
+  ATTRIB_TEXCOORD,
+  ATTRIB_COLOR,
+  ATTRIB_CONSTANTCOLOR,
+  ATTRIB_MAX_ENUM
+};
+
+enum VertexAttribFlags
+{
+  ATTRIBFLAG_POS = 1 << ATTRIB_POS,
+  ATTRIBFLAG_TEXCOORD = 1 << ATTRIB_TEXCOORD,
+  ATTRIBFLAG_COLOR = 1 << ATTRIB_COLOR,
+  ATTRIBFLAG_CONSTANTCOLOR = 1 << ATTRIB_CONSTANTCOLOR
+};
+
 class GL {
 public:
 

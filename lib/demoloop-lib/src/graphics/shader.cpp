@@ -1,5 +1,4 @@
 #include "graphics/shader.h"
-#include "graphics/gl.h"
 #include "opengl_helpers.h"
 #include <iostream>
 #include <limits>
