@@ -19,7 +19,9 @@ namespace demoloop {
   GL::~GL() {}
 
   bool GL::initContext() {
+#ifndef EMSCRIPTEN
     glEnable(GL_MULTISAMPLE); // TODO: is this doing anything?
+#endif
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
     glEnable(GL_BLEND);
