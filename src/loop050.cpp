@@ -134,7 +134,7 @@ vec3 eye(float x, float y, float b) {
   den = colsca(den, no);
 
   // iris
-  float irisSize = 0.025 - pow(cos(cycle_ratio * DEMOLOOP_M_PI), 3.0) * 0.02;
+  float irisSize = 0.025 - (1.0 - pow(sin((cycle_ratio) * DEMOLOOP_M_PI), 3.0)) * 0.02;
   float f2 = smoothStep(e, irisSize, irisSize + 0.01);
   den = colsca(den, f2);
 
