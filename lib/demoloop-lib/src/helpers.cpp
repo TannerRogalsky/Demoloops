@@ -39,11 +39,11 @@ void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y, int w, int
   SDL_RenderCopy(ren, tex, NULL, &dst);
 }
 
-void renderTexture(GLuint texture, int x, int y, int w, int h) {
+void renderTexture(GLuint texture, float x, float y, float w, float h) {
   renderTexture(texture, x, y, 1, w, h);
 }
 
-void renderTexture(GLuint texture, int x, int y, int z, int w, int h) {
+void renderTexture(GLuint texture, float x, float y, float z, float w, float h) {
   demoloop::Vertex vertices[6];
   vertices[0].x = x + 0;
   vertices[0].y = y + 0;
