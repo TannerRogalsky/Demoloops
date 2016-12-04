@@ -1,4 +1,4 @@
-#include <iostream>
+
 #include "demoloop.h"
 #include "graphics/2d_primitives.h"
 #include "hsl.h"

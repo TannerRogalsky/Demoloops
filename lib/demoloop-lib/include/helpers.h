@@ -1,9 +1,6 @@
 #pragma once
 
-#include <iostream>
 #include <string>
-#include <SDL.h>
-#include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <GL/glew.h>
 #include "glm/glm.hpp"
@@ -19,7 +16,7 @@ void renderTexture(GLuint texture, float x, float y, float z, float w, float h);
  * @param os The output stream to write the message too
  * @param msg The error message to write, format will be msg error: SDL_GetError()
  */
-void logSDLError(std::ostream &os, const std::string &msg);
+void logSDLError(const char *msg);
 
 /*
  * Loads an image into a texture on the rendering device

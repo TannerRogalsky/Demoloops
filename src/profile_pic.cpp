@@ -1,5 +1,3 @@
-#include "SDL.h"
-#include "SDL_image.h"
 #include "demoloop.h"
 #include "helpers.h"
 #include <glm/gtc/matrix_transform.hpp>
@@ -25,7 +23,7 @@ const Triangle triangle = {
 class ProfilePic : public Demoloop {
 public:
   ProfilePic() : Demoloop(960, 1280, 255, 255, 255) {
-    fg_texture = loadTexture("tanner_fg.png");
+    fg_texture = loadTexture("profile_pic/tanner_fg.png");
   }
 
   ~ProfilePic() {
@@ -75,7 +73,7 @@ public:
     {
       GL::TempTransform t1(gl);
       t1.get() = glm::translate(t1.get(), {0, 0, 1.7});
-      renderTexture(fg_texture, 0, 0, width, height);
+      renderTexture(fg_texture, 0, 0, 0, width, height);
     }
   }
 

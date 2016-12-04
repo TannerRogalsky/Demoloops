@@ -1,8 +1,5 @@
 #include "graphics/gl.h"
 #include "graphics/shader.h"
-#include <string>
-#include <iostream>
-#include <cstddef>
 
 namespace demoloop {
   GL::GL()

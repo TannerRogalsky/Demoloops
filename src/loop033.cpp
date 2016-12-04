@@ -1,10 +1,12 @@
-#include <iostream>
+
 #include <algorithm>
 #include "demoloop.h"
 #include "graphics/3d_primitives.h"
 #include "graphics/2d_primitives.h"
 #include "graphics/mesh.h"
 #include "graphics/canvas.h"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 using namespace std;
 using namespace demoloop;
 

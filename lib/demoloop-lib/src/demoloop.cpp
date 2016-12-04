@@ -1,9 +1,7 @@
-#include <iostream>
+#include "demoloop.h"
 #include <SDL_ttf.h>
 #include <GL/glew.h>
 #include <SDL_opengl.h>
-#include "demoloop.h"
-#include "opengl_helpers.h"
 #include "cleanup.h"
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -23,7 +21,7 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
  :width(width), height(height), quit(false), bg_r(r), bg_g(g), bg_b(b) {
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0){
-    logSDLError(std::cerr, "SDL_Init");
+    logSDLError("SDL_Init");
     // return 1;
   }
 
@@ -43,13 +41,13 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
   const auto WINDOW_FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
   window = SDL_CreateWindow("Demoloop", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, WINDOW_FLAGS);
   if (window == nullptr){
-    logSDLError(std::cerr, "CreateWindow");
+    logSDLError("CreateWindow");
     SDL_Quit();
     // return 1;
   }
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (renderer == nullptr){
-    logSDLError(std::cerr, "CreateRenderer");
+    logSDLError("CreateRenderer");
     cleanup(window);
     SDL_Quit();
     // return 1;
@@ -60,13 +58,13 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
 
   auto context = SDL_GL_CreateContext(window);
   if (context == NULL) {
-      logSDLError(std::cerr, "SDL_GL_CreateContext");
+      logSDLError("SDL_GL_CreateContext");
   } else {
     //Initialize GLEW
     glewExperimental = GL_TRUE;
     GLenum glewError = glewInit();
     if (glewError != GLEW_OK) {
-      std::cerr << "Error initializing GLEW! " << glewGetErrorString(glewError) << std::endl;
+      printf("Error initializing GLEW! %s\n", glewGetErrorString(glewError));
     }
 
     gl.initContext();
@@ -75,12 +73,12 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
 
     //Use Vsync
     if (SDL_GL_SetSwapInterval(1) < 0) {
-      logSDLError(std::cerr, "SDL_GL_SetSwapInterval");
+      logSDLError("SDL_GL_SetSwapInterval");
     }
   }
 
   if (TTF_Init() != 0){
-    logSDLError(std::cerr, "TTF_Init");
+    logSDLError("TTF_Init");
     SDL_Quit();
     // return 1;
   }

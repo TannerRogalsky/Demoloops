@@ -3,8 +3,6 @@
 #include <set>
 #include <vector>
 #include "graphics/gl.h"
-#include "common/math.h"
-#include "glm/glm.hpp"
 
 namespace demoloop {
 

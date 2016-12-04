@@ -1,4 +1,4 @@
-#include <iostream>
+
 #include <cmath>
 #include "demoloop.h"
 #include "hsl.h"

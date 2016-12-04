@@ -1,4 +1,4 @@
-// #include <iostream>
+
 // #include <cmath>
 #include "demoloop.h"
 #include <glm/gtc/matrix_transform.hpp>

@@ -1,15 +1,16 @@
 #include "helpers.h"
+#include <SDL_image.h>
 #include "graphics/gl.h"
 #include "res_path.h"
 
-void logSDLError(std::ostream &os, const std::string &msg){
-  os << msg << " error: " << SDL_GetError() << std::endl;
+void logSDLError(const char *msg){
+  printf("%s error: %s\n", msg, SDL_GetError());
 }
 
 SDL_Texture* loadTexture(const std::string &file, SDL_Renderer *ren){
   SDL_Texture *texture = IMG_LoadTexture(ren, file.c_str());
   if (texture == nullptr){
-    logSDLError(std::cerr, "LoadTexture");
+    logSDLError("LoadTexture");
   }
   return texture;
 }
@@ -18,6 +19,9 @@ GLuint loadTexture(const std::string &path) {
   GLuint texture;
 
   SDL_Surface *surf = IMG_Load((getResourcePath() + path).c_str());
+  if (surf == nullptr) {
+    logSDLError("IMG_Load");
+  }
   glGenTextures(1,&texture);
   glBindTexture(GL_TEXTURE_2D,texture);
   auto fmt = surf->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB;
@@ -91,7 +95,7 @@ TTF_Font* loadFont(const std::string &fontFile, int fontSize) {
   //Open the font
   TTF_Font *font = TTF_OpenFont(fontFile.c_str(), fontSize);
   if (font == nullptr){
-    logSDLError(std::cerr, "TTF_OpenFont");
+    logSDLError("TTF_OpenFont");
     return nullptr;
   }
   return font;
@@ -102,12 +106,12 @@ SDL_Texture* renderText(const std::string &message, TTF_Font *font, SDL_Color co
   //load that surface into a texture
   SDL_Surface *surf = TTF_RenderText_Blended(font, message.c_str(), color);
   if (surf == nullptr){
-    logSDLError(std::cerr, "TTF_RenderText");
+    logSDLError("TTF_RenderText");
     return nullptr;
   }
   SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
   if (texture == nullptr){
-    logSDLError(std::cerr, "CreateTexture");
+    logSDLError("CreateTexture");
   }
   //Clean up the surface and font
   SDL_FreeSurface(surf);

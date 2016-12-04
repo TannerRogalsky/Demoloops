@@ -1,6 +1,4 @@
 #include "graphics/mesh.h"
-#include <algorithm>
-#include <iostream>
 
 namespace demoloop {
   // Mesh::Mesh() : Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices) {}

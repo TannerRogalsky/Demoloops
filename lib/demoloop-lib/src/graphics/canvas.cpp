@@ -19,11 +19,6 @@
  **/
 
 #include "graphics/canvas.h"
-
-#include <iostream>
-#include <stdexcept>
-#include <cstring> // For memcpy
-#include <algorithm> // For min/max
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace demoloop

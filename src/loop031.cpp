@@ -1,4 +1,4 @@
-#include <iostream>
+
 #include <algorithm>
 #include "demoloop.h"
 #include <glm/gtx/rotate_vector.hpp>

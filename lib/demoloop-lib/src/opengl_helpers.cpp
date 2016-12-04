@@ -1,7 +1,6 @@
 #include "opengl_helpers.h"
 #include <SDL.h>
 #include <sstream>
-#include <iostream>
 
 const char* SYNTAX = R"===(
 #ifndef GL_ES
@@ -123,13 +122,12 @@ void printProgramLog(GLuint program) {
 
     glGetProgramInfoLog(program, maxLength, &infoLogLength, infoLog);
     if(infoLogLength > 0) {
-
-      std::cerr << infoLog << std::endl;
+      printf("%s\n", infoLog);
     }
 
     delete[] infoLog;
   } else {
-    std::cerr << "Name " << program << " is not a program." << std::endl;
+    printf("Name %d is not a program\n", program);
   }
 }
 
@@ -144,12 +142,12 @@ void printShaderLog(GLuint shader) {
 
     glGetShaderInfoLog(shader, maxLength, &infoLogLength, infoLog);
     if(infoLogLength > 0) {
-      std::cerr << infoLog << std::endl;
+      printf( "%s\n", infoLog );
     }
 
     delete[] infoLog;
   }
   else {
-    std::cerr << "Name " << shader << " is not a shader." << std::endl;
+    printf("Name %d is not a shader\n", shader);
   }
 }
