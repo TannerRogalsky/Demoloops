@@ -3,7 +3,7 @@
 #include <string>
 #include <SDL.h>
 
-std::string getResourcePath(const std::string &subDir = ""){
+inline std::string getResourcePath(const std::string &subDir = ""){
 #ifdef _WIN32
   const char PATH_SEP = '\\';
 #else
