@@ -13,7 +13,12 @@ namespace demoloop {
     initMatrices();
   }
 
-  GL::~GL() {}
+  GL::~GL() {
+    glDeleteBuffers(1, &mVBO);
+    glDeleteBuffers(1, &mIBO);
+
+    deleteTexture(state.defaultTexture);
+  }
 
   bool GL::initContext() {
 #ifndef EMSCRIPTEN
