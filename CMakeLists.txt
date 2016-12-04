@@ -4,6 +4,7 @@ project(demoloops)
 set(ASSET_LOOPS
   asset_test
   profile_pic
+  sailor_moon
 )
 
 set(LOOPS ${ASSET_LOOPS}
@@ -128,7 +129,7 @@ foreach(LOOP ${LOOPS})
         SET(TEMP "") # set to empty string
       endif()
       # append our values
-      SET(TEMP "${TEMP} --preload-file ../res --use-preload-plugins")
+      SET(TEMP "${TEMP} --preload-file ../res/${LOOP} --use-preload-plugins")
       set_target_properties(${LOOP} PROPERTIES LINK_FLAGS ${TEMP} )
     endif()
 
