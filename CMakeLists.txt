@@ -5,6 +5,7 @@ set(ASSET_LOOPS
   asset_test
   profile_pic
   sailor_moon
+  test_openal
 )
 
 set(LOOPS ${ASSET_LOOPS}
@@ -79,9 +80,14 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
   endif()
 endif()
 
+if(EMSCRIPTEN)
+  add_definitions("-s NO_EXIT_RUNTIME=1")
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+endif()
+
 # SDL2
 if (EMSCRIPTEN)
-  add_definitions("-std=c++11 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2")
+  add_definitions("-std=c++11 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s USE_VORBIS=1 -s USE_OGG=1")
 else()
   include(FindPkgConfig)
 
@@ -99,6 +105,22 @@ if (NOT EMSCRIPTEN)
   find_package(OpenGL REQUIRED)
   include_directories(${OPENGL_INCLUDE_DIR})
 
+  # OpenAL
+  find_package(OpenAL REQUIRED)
+  include_directories(SYSTEM ${OPENAL_INCLUDE_DIR})
+
+  # OGG
+  pkg_search_module(OGG REQUIRED ogg)
+  include_directories(${OGG_INCLUDE_DIRS})
+
+  # Vorbis
+  pkg_search_module(VORBIS REQUIRED vorbis)
+  include_directories(${VORBIS_INCLUDE_DIRS})
+
+  # VorbisFile
+  pkg_search_module(VORBISFILE REQUIRED vorbisfile)
+  include_directories(${VORBISFILE_INCLUDE_DIRS})
+
   # GLEW
   find_package(GLEW REQUIRED)
   include_directories(${GLEW_INCLUDE_DIRS})
@@ -112,11 +134,6 @@ include_directories(${PROJECT_SOURCE_DIR}/lib/demoloop-lib/include)
 include_directories(${PROJECT_SOURCE_DIR}/lib/glm)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
-
-if(EMSCRIPTEN)
-  add_definitions("-s NO_EXIT_RUNTIME=1")
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-endif()
 
 foreach(LOOP ${LOOPS})
   add_executable(${LOOP} ${PROJECT_SOURCE_DIR}/src/${LOOP}.cpp)
@@ -133,7 +150,7 @@ foreach(LOOP ${LOOPS})
       set_target_properties(${LOOP} PROPERTIES LINK_FLAGS ${TEMP} )
     endif()
 
-    target_link_libraries(${LOOP} demoloop-lib)
+    target_link_libraries(${LOOP} demoloop-lib "-s USE_VORBIS=1 -s USE_OGG=1")
     # set_property(TARGET ${LOOP} PROPERTY SUFFIX ".html")
   else()
     target_link_libraries(${LOOP} demoloop-lib
@@ -141,6 +158,10 @@ foreach(LOOP ${LOOPS})
                           ${SDL2IMAGE_LIBRARIES}
                           ${SDL2TFF_LIBRARIES}
                           ${OPENGL_LIBRARIES}
+                          ${OPENAL_LIBRARY}
+                          ${VORBIS_LIBRARIES}
+                          ${VORBISFILE_LIBRARIES}
+                          ${OGG_LIBRARIES}
                           ${GLEW_LIBRARIES})
     set_property(TARGET ${LOOP} PROPERTY CXX_STANDARD 11)
     add_custom_target(run-${LOOP}

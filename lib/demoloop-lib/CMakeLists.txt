@@ -18,6 +18,7 @@ set(SRCS
   ${PROJECT_SOURCE_DIR}/graphics/canvas.cpp
   ${PROJECT_SOURCE_DIR}/graphics/2d_primitives.cpp
   ${PROJECT_SOURCE_DIR}/graphics/3d_primitives.cpp
+  ${PROJECT_SOURCE_DIR}/audio/source.cpp
 )
 
 include_directories("${PROJECT_BINARY_DIR}")
@@ -35,19 +36,38 @@ endif()
 
 # SDL2
 if (EMSCRIPTEN)
-  add_definitions("-std=c++11 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2")
+  add_definitions("-std=c++11 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s USE_VORBIS=1 -s USE_OGG=1")
 
   set(SDL2_LIBRARIES "-s USE_SDL=2")
   set(SDL2IMAGE_LIBRARIES "-s USE_SDL_IMAGE=2")
   set(SDL2TFF_LIBRARIES "-s USE_SDL_TTF=2")
+  set(VORBIS_LIBRARIES "-s USE_VORBIS=1")
+  set(OGG_LIBRARIES "-s USE_OGG=1")
 else()
   include(FindPkgConfig)
 
+  # SDL2
   pkg_search_module(SDL2 REQUIRED sdl2)
   pkg_search_module(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
   pkg_search_module(SDL2TFF REQUIRED SDL2_ttf>=2.0.0)
 
   include_directories(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIRS})
+
+  # OpenAL
+  find_package(OpenAL REQUIRED)
+  include_directories(SYSTEM ${OPENAL_INCLUDE_DIR})
+
+  # OGG
+  pkg_search_module(OGG REQUIRED ogg)
+  include_directories(${OGG_INCLUDE_DIRS})
+
+  # Vorbis
+  pkg_search_module(VORBIS REQUIRED vorbis)
+  include_directories(${VORBIS_INCLUDE_DIRS})
+
+  # VorbisFile
+  pkg_search_module(VORBISFILE REQUIRED vorbisfile)
+  include_directories(${VORBISFILE_INCLUDE_DIRS})
 endif(EMSCRIPTEN)
 
 # GLM
@@ -69,8 +89,8 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
 endif()
 
 if (EMSCRIPTEN)
-  add_library(${PROJECT_NAME} STATIC ${SRCS})
   set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+  add_library(${PROJECT_NAME} STATIC ${SRCS})
 else ()
   add_library(${PROJECT_NAME} SHARED ${SRCS})
 endif (EMSCRIPTEN)
@@ -79,5 +99,9 @@ target_link_libraries(${PROJECT_NAME}
   ${SDL2IMAGE_LIBRARIES}
   ${SDL2TFF_LIBRARIES}
   ${OPENGL_LIBRARIES}
-  ${GLEW_LIBRARIES})
+  ${GLEW_LIBRARIES}
+  ${OPENAL_LIBRARY}
+  ${VORBIS_LIBRARIES}
+  ${VORBISFILE_LIBRARIES}
+  ${OGG_LIBRARIES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)

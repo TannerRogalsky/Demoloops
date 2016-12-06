@@ -6,6 +6,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #ifdef EMSCRIPTEN
+  #include <AL/al.h>
+  #include <AL/alc.h>
+#else
+  #include <al.h>
+  #include <alc.h>
+#endif
+
+#ifdef EMSCRIPTEN
   #include <emscripten.h>
 #endif
 
@@ -56,8 +64,8 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
   states.reserve(10);
   states.push_back(DisplayState());
 
-  auto context = SDL_GL_CreateContext(window);
-  if (context == NULL) {
+  auto contextGL = SDL_GL_CreateContext(window);
+  if (contextGL == NULL) {
       logSDLError("SDL_GL_CreateContext");
   } else {
     //Initialize GLEW
@@ -82,6 +90,18 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
     SDL_Quit();
     // return 1;
   }
+
+  ALCdevice* deviceAL = alcOpenDevice(NULL);
+  ALCcontext* contextAL = alcCreateContext(deviceAL, NULL);
+  alcMakeContextCurrent(contextAL);
+
+  ALfloat listenerPos[] = {0.0, 0.0, 0.0};
+  ALfloat listenerVel[] = {0.0, 0.0, 0.0};
+  ALfloat listenerOri[] = {0.0, 0.0, -1.0, 0.0, 1.0, 0.0};
+
+  alListenerfv(AL_POSITION, listenerPos);
+  alListenerfv(AL_VELOCITY, listenerVel);
+  alListenerfv(AL_ORIENTATION, listenerOri);
 }
 
 Demoloop::~Demoloop() {
