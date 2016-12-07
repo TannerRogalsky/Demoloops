@@ -212,7 +212,7 @@ public:
     glGenBuffers(1, &modelViewsBuffer);
     glGenBuffers(1, &colorsBuffer);
 
-    // source.play();
+    source.play();
   }
 
   void Update(float dt) {
@@ -247,7 +247,8 @@ public:
 
       glm::mat4& m = matrices[i] = glm::mat4();
       m = glm::rotate(m, (float)DEMOLOOP_M_PI * 2 * cycle_ratio + (float)DEMOLOOP_M_PI, twoDAxis);
-      // m = glm::scale(m, {1 + beat / 4, 1 + beat / 4, 1});
+      const float scale = 1 + beat / 8;
+      m = glm::scale(m, {scale, scale, 1});
       m = glm::translate(m, p);
 
       float d = glm::length(p);
