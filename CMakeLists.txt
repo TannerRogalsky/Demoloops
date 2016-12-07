@@ -6,6 +6,7 @@ set(ASSET_LOOPS
   profile_pic
   sailor_moon
   test_openal
+  hope
 )
 
 set(LOOPS ${ASSET_LOOPS}
