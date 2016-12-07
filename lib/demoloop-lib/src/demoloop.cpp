@@ -300,8 +300,8 @@ void Demoloop::InternalUpdate() {
 
   auto now = std::chrono::high_resolution_clock::now();
   auto delta = std::chrono::duration_cast<std::chrono::duration<float>>(now - previous_frame);
+  previous_frame = now;
   Update(delta.count());
-  previous_frame = std::chrono::high_resolution_clock::now();
 
   SDL_GL_SwapWindow(window);
 }
