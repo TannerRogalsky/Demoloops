@@ -60,10 +60,13 @@ set(LOOPS ${ASSET_LOOPS}
   loop048
   loop049
   loop050
+  loop051
+  mandlebrot
   uv_sphere
   normal_lighting
   loop030_3d
   testopengl
+  voronoi
 )
 
 # Bump up warning levels appropriately for clang, gcc & msvc
