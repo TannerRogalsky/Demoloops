@@ -100,14 +100,7 @@ float smoothStep(float w, float a, float b) {
 }
 
 vec3 colsca(vec3 c, float s) {
-  c.r*=s;
-  c.g*=s;
-  c.b*=s;
-  if (c.r>1.0) c.r=1.0;
-  if (c.g>1.0) c.g=1.0;
-  if (c.b>1.0) c.b=1.0;
-
-  return c;
+  return c * s;
 }
 
 vec3 eye(float x, float y, float b) {
