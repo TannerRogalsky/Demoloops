@@ -43,11 +43,14 @@ void Source::play() {
 void Source::update() {
   if (!eof) {
     ALuint released[16];
-    ALint count;
-    alGetSourcei(source, AL_BUFFERS_PROCESSED, &count);
-    alSourceUnqueueBuffers(source, count, released);
 
-    for(int i = 0;i<count;++i) {
+    // Number of processed buffers
+    ALint processed = 0;
+    alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+
+    alSourceUnqueueBuffers(source, processed, released);
+
+    for(int i = 0;i<processed;++i) {
       unsigned long pos = 0;
 
       while(pos < sizeof(pcmout)) {
@@ -64,7 +67,7 @@ void Source::update() {
     alBufferData(released[i], mFormat, pcmout, pos, vi->rate);
 
     }
-    alSourceQueueBuffers(source, count, released);
+    alSourceQueueBuffers(source, processed, released);
   } else {
     ov_time_seek(&vf, 0);
     eof = 0;
