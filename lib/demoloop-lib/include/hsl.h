@@ -4,6 +4,8 @@
 
 struct RGB {
   uint8_t r, g, b;
+
+  RGB(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
 };
 
 float hue2rgb(float p, float q, float t);
