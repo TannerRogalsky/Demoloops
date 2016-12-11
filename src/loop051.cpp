@@ -23,6 +23,21 @@ vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {
 #ifdef PIXEL
 const int iter = 100;
 
+const int numColors = 5;
+const vec3 colors[numColors] = vec3[](
+  // vec3(26.0 / 256.0, 41.0 / 256.0, 128.0 / 256.0),
+  // vec3(38.0 / 256.0, 208.0 / 256.0, 206.0 / 256.0),
+  // vec3(1.0, 1.0, 1.0),
+  // vec3(0.0, 0.0, 0.0)
+
+  vec3(0.8, 0.60, 0.1),
+  vec3(234.0 / 256.0, 119.0 / 256.0, 2.0 / 256.0),
+  vec3(1.0, 0.0, 0.0),
+  vec3(1.0, 0.70, 0.0),
+  vec3(0.0, 0.0, 0.0)
+);
+// float arrayTest[5] = float[5](3.4, 4.2, 5.0, 5.2, 1.1);
+
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
   float t = cycle_ratio;
   float x = tc.x;
@@ -52,13 +67,13 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
 
   // float q = (iterations == iter ? 0.0 : float(iterations)) / iter;
   float q = (iterations - log2(log2(dot(z,z))) + 4.0) / iter;
-  float stepIncrement = 1.0 / 5.0;
-  float step = stepIncrement;
+  float stepIncrement = 1.0 / (numColors + 1.0);
+  float step = 0.0;
 
-  vec3 mixed = mix(vec3(0.0, 0.0, 0.0), vec3(1.0, 0.55, 0.0), smoothstep(0.0, stepIncrement, q));
-  mixed = mix(mixed, vec3(1.0, 0.0, 0.0), smoothstep(step, step + stepIncrement, q)); step += stepIncrement;
-  mixed = mix(mixed, vec3(1.0, 0.70, 0.0), smoothstep(step, step + stepIncrement, q)); step += stepIncrement;
-  mixed = mix(mixed, vec3(0.0, 0.0, 0.0), smoothstep(step, step + stepIncrement, q)); step += stepIncrement;
+  vec3 mixed = vec3(0.0, 0.0, 0.0);
+  for (int i = 0; i < numColors; ++i) {
+    mixed = mix(mixed, colors[i], smoothstep(step, step + stepIncrement, q)); step += stepIncrement;
+  }
   return vec4(mixed, 1.0);
 }
 #endif

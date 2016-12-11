@@ -83,19 +83,19 @@ vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {
 
 #ifdef PIXEL
 vec3 hsv2rgb(vec3 c) {
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
-  vec2 bl = step(vec2(0.1), tc);
+  vec2 bl = mix(vec2(1.0), step(vec2(0.1), tc), 0.5); ;
   bl = mix(bl, step(vec2(0.2), tc), 0.5);
   bl = mix(bl, step(vec2(0.3), tc), 0.5);
   bl = mix(bl, step(vec2(0.4), tc), 0.5);
   // bl = mix(bl, step(vec2(0.5), tc), 0.5);
 
-  vec2 tr = step(vec2(0.1), 1.0 - tc);
+  vec2 tr = mix(vec2(1.0), step(vec2(0.1), 1.0 - tc), 0.5); ;
   tr = mix(tr, step(vec2(0.2), 1.0 - tc), 0.5);
   tr = mix(tr, step(vec2(0.3), 1.0 - tc), 0.5);
   tr = mix(tr, step(vec2(0.4), 1.0 - tc), 0.5);
@@ -104,7 +104,7 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
   float pct = bl.x * bl.y * tr.x * tr.y;
   float t = mod(cycle_ratio + pct + vColor.r, 1.0);
 
-  return vec4(hsv2rgb(vec3(t, 1.0, 1.0)), vColor.a);
+  return vec4(hsv2rgb(vec3(t, 1.0, 0.8)), vColor.a);
 }
 #endif
 )===";

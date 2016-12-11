@@ -23,7 +23,12 @@ vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {
 #ifdef PIXEL
 const int iter = 100;
 
-vec3 mix(float a, vec3 v1, vec3 v2) { return v1 * (1.0 - a) + v2 * a; }
+vec2 cadd( vec2 a, float s ) { return vec2( a.x+s, a.y ); }
+vec2 cmul( vec2 a, vec2 b )  { return vec2( a.x*b.x - a.y*b.y, a.x*b.y + a.y*b.x ); }
+vec2 cdiv( vec2 a, vec2 b )  { float d = dot(b,b); return vec2( dot(a,b), a.y*b.x - a.x*b.y ) / d; }
+vec2 cpow( vec2 z, float n ) { float r = length( z ); float a = atan( z.y, z.x ); return pow( r, n )*vec2( cos(a*n), sin(a*n) ); }
+vec2 csqrt( vec2 z )         { float m = length(z); return sqrt( 0.5*vec2(m+z.x, m-z.x) ) * vec2( 1.0, sign(z.y) ); }
+vec2 cconj( vec2 z )         { return vec2(z.x,-z.y); }
 
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
   float t = cycle_ratio;
@@ -31,24 +36,30 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
   float y = tc.y;
 
   vec2 c;
-  c.x = 2.0*(x - 0.5)*demoloop_ScreenSize.x/demoloop_ScreenSize.y - 0.75;
+  c.x = 2.0*(x - 0.5)*demoloop_ScreenSize.x/demoloop_ScreenSize.y;
   c.y = 2.0*(y - 0.5);
 
   vec2 z = c;
   // z.x += pow(sin(cycle_ratio * DEMOLOOP_M_PI), 2.0);
 
+  const float B = 256.0;
+
   int i;
   for(i=0; i<iter; i++) {
-      float x = (z.x * z.x - z.y * z.y) + c.x;
-      float y = (z.y * z.x + z.x * z.y) + c.y;
+    // float x = (z.x * z.x - z.y * z.y) + c.x;
+    // float y = (z.y * z.x + z.x * z.y) + c.y;
+    // z = vec2( z.x*z.x - z.y*z.y, 2.0*z.x*z.y ) + c;
+    z = cpow(z, 2.0 + cycle_ratio * 6.0) + c;
 
-      if ((x * x + y * y) > 12.0) break;
-      z.x = x;
-      z.y = y;
+    if(dot(z,z)>(B*B)) break;
+    // if ((x * x + y * y) > 256.0) break;
+    // z.x = x;
+    // z.y = y;
   }
 
-  float q = (i == iter ? 0.0 : float(i)) / 100.0;
-  vec3 mixed = mix(q, vec3(0.0, 0.0, 0.0), vec3(1.0, 0.0, 0.0));
+  float q = (i == iter ? 0.0 : float(i)) / iter;
+  // float q = (i - log2(log2(dot(z,z))) + 4.0) / iter;
+  vec3 mixed = mix(vec3(0.0, 0.0, 0.0), vec3(1.0, 0.0, 0.0), q);
   return vec4(mixed, 1.0);
 }
 #endif
