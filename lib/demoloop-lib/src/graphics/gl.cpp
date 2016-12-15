@@ -296,7 +296,7 @@ namespace demoloop {
     prepareDraw(modelView);
   }
 
-  void GL::prepareDraw(glm::mat4 modelView) {
+  void GL::prepareDraw(const glm::mat4 &modelView) {
     Shader::current->checkSetBuiltinUniforms(modelView);
   }
 
@@ -319,8 +319,8 @@ namespace demoloop {
     glDrawArrays(GL_LINES, 0, count);
   }
 
-  void GL::triangles(const Vertex *coords, size_t count) {
-    prepareDraw();
+  void GL::triangles(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
+    prepareDraw(modelView);
 
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0].x, GL_DYNAMIC_DRAW);
@@ -332,6 +332,10 @@ namespace demoloop {
     glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
     glDrawArrays(GL_TRIANGLES, 0, count);
+  }
+
+  void GL::triangles(const Vertex *coords, size_t count) {
+    triangles(coords, count, glm::mat4());
   }
 
   void GL::triangles(const Triangle *triangleVertices, size_t count) {

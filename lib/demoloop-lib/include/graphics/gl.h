@@ -127,7 +127,7 @@ public:
   void useVertexAttribArrays(uint32_t arraybits);
 
   void prepareDraw();
-  void prepareDraw(glm::mat4 modelView);
+  void prepareDraw(const glm::mat4 &modelView);
 
   /**
    * glDrawArrays and glDrawElements which increment the draw-call counter by
@@ -170,6 +170,7 @@ public:
 
   void bufferVertices(const Vertex *vertices, size_t count, GLenum usage = GL_DYNAMIC_DRAW);
 
+  void triangles(const Vertex *coords, size_t count, const glm::mat4 &modelView);
   void triangles(const Vertex *coords, size_t count);
   void triangles(const Triangle* triangles, size_t count);
   void lines(const Vertex *coords, size_t count);
