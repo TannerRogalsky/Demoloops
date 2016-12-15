@@ -70,6 +70,7 @@ struct Vertex
 
   Vertex(): Vertex(0, 0, 0, 0, 0, 255, 255, 255, 255) {}
   Vertex(float x, float y, float z) : Vertex(x, y, z, 0, 0, 255, 255, 255, 255) {}
+  Vertex(float x, float y, float z, float s, float t) : Vertex(x, y, z, s, t, 255, 255, 255, 255) {}
   Vertex(float x, float y, float z, float s, float t, uint8_t r, uint8_t g, uint8_t b, uint8_t a) :
         x(x), y(y), z(z), s(s), t(t), r(r), g(g), b(b), a(a) {}
 
