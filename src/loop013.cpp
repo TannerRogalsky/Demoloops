@@ -18,7 +18,7 @@ public:
     glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
     gl.getProjection() = perspective;
 
-    mesh = sphere(0, 0, 0, RADIUS);
+    mesh = icosahedron(0, 0, 0, RADIUS);
     iota(mesh->mIndices.begin(), mesh->mIndices.end(), 0);
   }
 

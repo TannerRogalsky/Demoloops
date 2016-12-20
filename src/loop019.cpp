@@ -17,7 +17,7 @@ public:
   Loop19() : Demoloop(150, 150, 150) {
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
-    mesh = sphere(0, 0, 0, RADIUS);
+    mesh = icosahedron(0, 0, 0, RADIUS);
     auto indices = mesh->getIndexedVertices();
     Vertex *indexedVertices[12];
     uint32_t index = 0;

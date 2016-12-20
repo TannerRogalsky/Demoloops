@@ -16,7 +16,7 @@ public:
   Loop11() : Demoloop(150, 150, 150) {
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
-    mesh = sphere(0, 0, 0, RADIUS);
+    mesh = icosahedron(0, 0, 0, RADIUS);
     iota(mesh->mIndices.begin(), mesh->mIndices.end(), 0);
   }
 

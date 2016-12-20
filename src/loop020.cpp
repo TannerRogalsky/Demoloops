@@ -19,7 +19,7 @@ public:
     glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI / 4.0f), (float)width / (float)height, 0.1f, 100.0f);
     gl.getProjection() = perspective;
 
-    mesh = sphere(0, 0, 0, 1.2);
+    mesh = icosahedron(0, 0, 0, 1.2);
     points = mesh->getIndexedVertices();
     float t = 0;
     for (auto i : points) {

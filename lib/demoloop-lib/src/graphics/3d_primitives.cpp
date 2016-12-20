@@ -79,7 +79,7 @@ Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
   return new Mesh(vertices, indices);
 }
 
-Mesh* sphere(const float cx, const float cy, const float cz, const float radius) {
+Mesh* icosahedron(const float cx, const float cy, const float cz, const float radius) {
   const float t = (1.0 + sqrt(5.0)) / 2.0 * radius;
 
   Vertex points[12];
