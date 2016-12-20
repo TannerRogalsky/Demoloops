@@ -1,6 +1,7 @@
 #include "graphics/3d_primitives.h"
 #include <cmath>
 #include <numeric>
+#include <vector>
 
 namespace demoloop {
 
@@ -74,6 +75,64 @@ Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
     v.s = g_vertex_buffer_data[i * 5 + 3];
     v.t = g_vertex_buffer_data[i * 5 + 4];
     vertices.push_back(v);
+  }
+
+  return new Mesh(vertices, indices);
+}
+
+Mesh* sphere(const float radius, const uint32_t heightSegments, const uint32_t widthSegments) {
+  const float phiStart = 0;
+  const float phiLength = DEMOLOOP_M_PI * 2;
+
+  const float thetaStart = 0;
+  const float thetaLength = DEMOLOOP_M_PI;
+
+  const float thetaEnd = thetaStart + thetaLength;
+  const uint32_t vertexCount = ((widthSegments + 1) * (heightSegments + 1));
+
+  std::vector<Vertex> vertices;
+  vertices.reserve(vertexCount);
+  for ( uint32_t y = 0; y <= heightSegments; ++y ) {
+    const float v = static_cast<float>(y) / heightSegments;
+
+    for ( uint32_t x = 0; x <= widthSegments; ++x ) {
+      const float u = static_cast<float>(x) / widthSegments;
+
+      const float phi = phiStart + u * phiLength;
+      const float theta = thetaStart + v * thetaLength;
+
+      const float px = -radius * cosf( phi ) * sinf( theta );
+      const float py = radius * cosf( theta );
+      const float pz = radius * sinf( phi ) * sinf( theta );
+
+      // normal.set( px, py, pz ).normalize();
+      // normals.setXYZ( index, normal.x, normal.y, normal.z );
+
+      vertices.push_back({px, py, pz, u, v});
+    }
+  }
+
+  std::vector<uint32_t> indices;
+  for ( uint32_t y = 0; y < heightSegments; ++y ) {
+    for ( uint32_t x = 0; x < widthSegments; ++x ) {
+
+      const uint32_t v1 = (y) * (widthSegments + 1) + x + 1;
+      const uint32_t v2 = (y) * (widthSegments + 1) + x;
+      const uint32_t v3 = (y + 1) * (widthSegments + 1) + x;
+      const uint32_t v4 = (y + 1) * (widthSegments + 1) + x + 1;
+
+      if ( y != 0 || thetaStart > 0 ) {
+        indices.push_back(v1);
+        indices.push_back(v2);
+        indices.push_back(v4);
+      }
+      if ( y != heightSegments - 1 || thetaEnd < DEMOLOOP_M_PI ) {
+        indices.push_back(v2);
+        indices.push_back(v3);
+        indices.push_back(v4);
+      }
+
+    }
   }
 
   return new Mesh(vertices, indices);
