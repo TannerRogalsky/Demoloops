@@ -226,6 +226,7 @@ public:
     float bpm = 96.0 / (60.0 / CYCLE_LENGTH);
     float beat_ratio = cycle_ratio * DEMOLOOP_M_PI * bpm;
     float beat = powf(cosf(beat_ratio), 4 * 8);
+    // float beat = powf((powf(cosf(beat_ratio), 2) + powf(cosf(beat_ratio * (1.0f/3.0f)), 32)) / 2, 4 * 8);
 
     blurShader.attach();
     float blurDirection[2] = {beat * 2, 0};
