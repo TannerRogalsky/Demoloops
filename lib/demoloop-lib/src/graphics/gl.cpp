@@ -307,6 +307,11 @@ namespace demoloop {
 
   void GL::lines(const Vertex *coords, size_t count) {
     prepareDraw();
+  void GL::bufferIndices(const uint32_t *indices, size_t count, GLenum usage) {
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, usage);
+  }
+
 
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0].x, GL_DYNAMIC_DRAW);

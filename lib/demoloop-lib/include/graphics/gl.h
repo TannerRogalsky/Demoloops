@@ -169,6 +169,7 @@ public:
   GLuint getDefaultTexture() const;
 
   void bufferVertices(const Vertex *vertices, size_t count, GLenum usage = GL_DYNAMIC_DRAW);
+  void bufferIndices(const uint32_t *indices, size_t count, GLenum usage = GL_DYNAMIC_DRAW);
 
   void triangles(const Vertex *coords, size_t count, const glm::mat4 &modelView);
   void triangles(const Vertex *coords, size_t count);
