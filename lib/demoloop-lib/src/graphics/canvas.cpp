@@ -50,35 +50,6 @@ static GLenum createFBO(GLuint &framebuffer, GLuint texture)
   return status;
 }
 
-static GLenum createMSAABuffer(int width, int height, int &samples, GLenum iformat, GLuint &buffer)
-{
-  glGenRenderbuffers(1, &buffer);
-  glBindRenderbuffer(GL_RENDERBUFFER, buffer);
-
-  glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, iformat, width, height);
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, buffer);
-
-  glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_SAMPLES, &samples);
-
-  glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-  if (status == GL_FRAMEBUFFER_COMPLETE)
-  {
-    // Initialize the buffer to transparent black.
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-  }
-  else
-  {
-    glDeleteRenderbuffers(1, &buffer);
-    buffer = 0;
-  }
-
-  return status;
-}
-
 Canvas *Canvas::current = nullptr;
 GL::Viewport Canvas::systemViewport = GL::Viewport();
 bool Canvas::screenHasSRGB = false;
@@ -147,52 +118,6 @@ Canvas::~Canvas()
   unloadVolatile();
 }
 
-bool Canvas::createMSAAFBO(GLenum internalformat)
-{
-  actual_samples = requested_samples;
-
-  if (actual_samples <= 1)
-  {
-    actual_samples = 0;
-    return false;
-  }
-
-  // Create our FBO without a texture.
-  status = createFBO(fbo, 0);
-
-  // GLuint previous = gl.getDefaultFBO();
-  GLuint previous = 0;
-  if (current != this)
-  {
-    if (current != nullptr)
-      previous = current->fbo;
-
-    gl.bindFramebuffer(GL_FRAMEBUFFER, fbo);
-  }
-
-  // Create and attach the MSAA buffer for our FBO.
-  status = createMSAABuffer(width, height, actual_samples, internalformat, msaa_buffer);
-
-  // Create the FBO used for the MSAA resolve, and attach the texture.
-  if (status == GL_FRAMEBUFFER_COMPLETE)
-    status = createFBO(resolve_fbo, texture);
-
-  if (status != GL_FRAMEBUFFER_COMPLETE)
-  {
-    // Clean up.
-    glDeleteFramebuffers(1, &fbo);
-    glDeleteFramebuffers(1, &resolve_fbo);
-    glDeleteRenderbuffers(1, &msaa_buffer);
-    fbo = msaa_buffer = resolve_fbo = 0;
-    actual_samples = 0;
-  }
-
-  if (current != this)
-    gl.bindFramebuffer(GL_FRAMEBUFFER, previous);
-
-  return status == GL_FRAMEBUFFER_COMPLETE;
-}
-
 bool Canvas::loadVolatile()
 {
   // GL::TempDebugGroup debuggroup("Canvas load");
@@ -256,8 +181,7 @@ bool Canvas::loadVolatile()
 
   // Try to create a MSAA FBO if requested. On failure (or no requested MSAA),
   // fall back to a regular FBO.
-  if (!createMSAAFBO(internalformat))
-    status = createFBO(fbo, texture);
+  status = createFBO(fbo, texture);
 
   if (status != GL_FRAMEBUFFER_COMPLETE) {
     if (fbo != 0) {
@@ -428,7 +352,7 @@ void Canvas::stopGrab(bool switchingToOtherCanvas)
   // GL::TempDebugGroup debuggroup("Canvas un-set");
 
   // Make sure the canvas texture is up to date if we're using MSAA.
-  resolveMSAA(false);
+  // resolveMSAA(false);
 
   gl.matrices.projection.pop_back();
 
@@ -448,130 +372,6 @@ void Canvas::stopGrab(bool switchingToOtherCanvas)
     //     gl.setFramebufferSRGB(false);
     // }
   }
-}
-
-bool Canvas::checkCreateStencil()
-{
-  // Do nothing if we've already created the stencil buffer.
-  if (depth_stencil != 0)
-    return true;
-
-  // GL::TempDebugGroup debuggroup("Canvas create stencil");
-
-  if (current != this)
-    gl.bindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-  GLenum format = GL_STENCIL_INDEX8;
-  GLenum attachment = GL_STENCIL_ATTACHMENT;
-
-  // Prefer a combined depth/stencil buffer.
-  // if (GLAD_ES_VERSION_3_0 || GLAD_VERSION_3_0 || GLAD_ARB_framebuffer_object
-  //   || GLAD_EXT_packed_depth_stencil || GLAD_OES_packed_depth_stencil)
-  // {
-  //   format = GL_DEPTH24_STENCIL8;
-  //   attachment = GL_DEPTH_STENCIL_ATTACHMENT;
-  // }
-
-  glGenRenderbuffers(1, &depth_stencil);
-  glBindRenderbuffer(GL_RENDERBUFFER, depth_stencil);
-
-  // if (requested_samples > 1)
-  //   glRenderbufferStorageMultisample(GL_RENDERBUFFER, requested_samples, format, width, height);
-  // else
-    glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
-
-  // Attach the stencil buffer to the framebuffer object.
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, depth_stencil);
-
-  glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-  bool success = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
-
-  // We don't want the stencil buffer filled with garbage.
-  if (success)
-    glClear(GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  else
-  {
-    glDeleteRenderbuffers(1, &depth_stencil);
-    depth_stencil = 0;
-  }
-
-  if (current && current != this)
-    gl.bindFramebuffer(GL_FRAMEBUFFER, current->fbo);
-  else if (!current) {
-    // gl.bindFramebuffer(GL_FRAMEBUFFER, gl.getDefaultFBO());
-    gl.bindFramebuffer(GL_FRAMEBUFFER, 0);
-  }
-
-  return success;
-}
-
-// love::image::ImageData *Canvas::newImageData(love::image::Image *image, int x, int y, int w, int h)
-// {
-//   if (x < 0 || y < 0 || w <= 0 || h <= 0 || (x + w) > width || (y + h) > height)
-//     throw std::runtime_error("Invalid ImageData rectangle dimensions.");
-
-//   int row = 4 * w;
-//   int size = row * h;
-//   GLubyte *pixels = nullptr;
-//   try
-//   {
-//     pixels = new GLubyte[size];
-//   }
-//   catch (std::bad_alloc &)
-//   {
-//     throw std::runtime_error("Out of memory.");
-//   }
-
-//   // Make sure the canvas texture is up to date if we're using MSAA.
-//   if (current == this)
-//     resolveMSAA(false);
-
-//   // Our texture is attached to 'resolve_fbo' when we use MSAA.
-//   if (resolve_fbo != 0)
-//     gl.bindFramebuffer(GL_READ_FRAMEBUFFER, resolve_fbo);
-//   else
-//     gl.bindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-//   glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-//   GLuint prevfbo = current ? current->fbo : gl.getDefaultFBO();
-//   gl.bindFramebuffer(GL_FRAMEBUFFER, prevfbo);
-
-//   // The new ImageData now owns the pixel data, so we don't delete it here.
-//   return image->newImageData(w, h, pixels, true);
-// }
-
-bool Canvas::resolveMSAA(bool restoreprev)
-{
-  if (resolve_fbo == 0 || msaa_buffer == 0)
-    return false;
-
-  // GL::TempDebugGroup debuggroup("Canvas MSAA resolve");
-
-  GLint w = width;
-  GLint h = height;
-
-  // Do the MSAA resolve by blitting the MSAA renderbuffer to the texture.
-  // For many of the MSAA extensions that add suffixes to the functions, we
-  // assign function pointers in OpenGL.cpp so we can call the core functions.
-
-  gl.bindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
-  gl.bindFramebuffer(GL_DRAW_FRAMEBUFFER, resolve_fbo);
-
-  // if (GLAD_APPLE_framebuffer_multisample)
-  //   glResolveMultisampleFramebufferAPPLE();
-  // else
-    glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-  if (restoreprev)
-  {
-    // GLuint fbo = current ? current->fbo : gl.getDefaultFBO();
-    GLuint fbo = current ? current->fbo : 0;
-    gl.bindFramebuffer(GL_FRAMEBUFFER, fbo);
-  }
-
-  return true;
 }
 
 Canvas::Format Canvas::getSizedFormat(Canvas::Format format)

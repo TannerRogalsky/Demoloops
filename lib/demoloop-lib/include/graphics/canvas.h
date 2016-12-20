@@ -131,9 +131,6 @@ private:
 
   void setupGrab();
 
-  bool createMSAAFBO(GLenum internalformat);
-  bool resolveMSAA(bool restoreprev);
-
   void drawv(const glm::mat4 &t, const Vertex *v);
 
   static void convertFormat(Format format, GLenum &internalformat, GLenum &externalformat, GLenum &type);
