@@ -305,13 +305,13 @@ namespace demoloop {
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &vertices[0].x, usage);
   }
 
-  void GL::lines(const Vertex *coords, size_t count) {
-    prepareDraw();
   void GL::bufferIndices(const uint32_t *indices, size_t count, GLenum usage) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, usage);
   }
 
+  void GL::lines(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
+    prepareDraw(modelView);
 
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0].x, GL_DYNAMIC_DRAW);
@@ -322,6 +322,10 @@ namespace demoloop {
     glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
     glDrawArrays(GL_LINES, 0, count);
+  }
+
+  void GL::lines(const Vertex *coords, size_t count) {
+    lines(coords, count, glm::mat4());
   }
 
   void GL::triangles(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
