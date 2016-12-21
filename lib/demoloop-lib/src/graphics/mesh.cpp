@@ -11,7 +11,10 @@ namespace demoloop {
     buffer();
   }
 
-  Mesh::~Mesh() {}
+  Mesh::~Mesh() {
+    glDeleteBuffers(1, &mVBO);
+    glDeleteBuffers(1, &mIBO);
+  }
 
   std::set<uint32_t> Mesh::getIndexedVertices() {
     return std::set<uint32_t>(mIndices.begin(), mIndices.end());
