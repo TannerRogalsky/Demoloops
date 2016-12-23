@@ -28,17 +28,19 @@ vec3 hsv2rgb(vec3 c) {
   return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-float polygon(vec2 st, int numVertices) {
+float polygon(vec2 st, float numVertices) {
   // st.x += cos(cycle_ratio * DEMOLOOP_TWO_PI);
   // st.y += sin(cycle_ratio * DEMOLOOP_TWO_PI);
 
   // Angle and radius from the current pixel
   // float a = atan(st.x - cos(cycle_ratio * DEMOLOOP_TWO_PI) * 2.0, st.y + sin(cycle_ratio * DEMOLOOP_TWO_PI) * 2.0)+DEMOLOOP_M_PI;
-  float a = atan(st.x, st.y);//+DEMOLOOP_M_PI + cycle_ratio * DEMOLOOP_TWO_PI;
   float r = DEMOLOOP_TWO_PI / float(numVertices);
+  float a = atan(st.x, st.y) + DEMOLOOP_M_PI + cycle_ratio * r;
 
   // Shaping function that modulate the distance
-  float d = cos(floor(.5+a/r)*r-a)*length(st);
+  // float d = cos(floor(a/r)*r-a)*length(st);
+  float c = 0.0;
+  float d = cos( (fract(a/r)-c)*r) * length(st);
 
   return d;
 }
@@ -52,13 +54,13 @@ vec4 effect(vec4 color, Image texture, vec2 st, vec2 screen_coords) {
   st = st * 2. - 1.;
   st.x *= demoloop_ScreenSize.x/demoloop_ScreenSize.y;
 
-  d = polygon(st, 5);
+  d = polygon(st, 5.0);
   float f = mod(fract(d * 7.0) + cycle_ratio * 2.0, 1.0);
   d = smoothstep(0.0, f, d);
 
   // c = vec3(d);
   c = hsv2rgb(vec3(mod(d + t + (1.0 - length(st) / 4.0), 1.0), 1.0, 0.9));
-  c = mix(c, vec3(0, 0, 0), dot(st, st) * 0.35);
+  c = mix(c, vec3(0, 0, 0), dot(st, st) * 0.15);
 
   return vec4(c,1.0);
 }
