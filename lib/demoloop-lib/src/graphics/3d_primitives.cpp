@@ -5,7 +5,43 @@
 
 namespace demoloop {
 
-Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
+Mesh parametric(std::function<Vertex(float, float)> func, const uint32_t slices, const uint32_t stacks) {
+  std::vector<Vertex> vertices;
+  const uint32_t sliceCount = slices + 1;
+
+  for (uint32_t i = 0; i <= stacks; ++i) {
+    const float v = static_cast<float>(i) / stacks;
+
+    for (uint32_t j = 0; j <= slices; ++j) {
+      const float u = static_cast<float>(j) / slices;
+
+      vertices.push_back(func(u, v));
+    }
+  }
+
+  std::vector<uint32_t> indices;
+  for (uint32_t i = 0; i < stacks; ++i) {
+    for (uint32_t j = 0; j < slices; ++j) {
+
+      const float a = i * sliceCount + j;
+      const float b = i * sliceCount + j + 1;
+      const float c = ( i + 1 ) * sliceCount + j + 1;
+      const float d = ( i + 1 ) * sliceCount + j;
+
+      // faces one and two
+      indices.push_back(a);
+      indices.push_back(b);
+      indices.push_back(d);
+
+      indices.push_back(b);
+      indices.push_back(c);
+      indices.push_back(d);
+    }
+  }
+
+  return Mesh(vertices, indices);
+}
+
 Mesh cube(const float cx, const float cy, const float cz, const float radius) {
   static const GLfloat g_vertex_buffer_data[] = {
     // Top face
