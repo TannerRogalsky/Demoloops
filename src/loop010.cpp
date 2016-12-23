@@ -1,8 +1,8 @@
-
 #include <vector>
 #include <numeric>
 #include "demoloop.h"
 #include "graphics/3d_primitives.h"
+#include <glm/gtx/rotate_vector.hpp>
 #include "hsl.h"
 using namespace std;
 using namespace demoloop;
@@ -12,18 +12,17 @@ const float CYCLE_LENGTH = 3;
 
 class Loop10 : public Demoloop {
 public:
-  Loop10() : Demoloop(150, 150, 150) {
+  Loop10() : Demoloop(150, 150, 150), mesh(cube(0, 0, 0, 1)) {
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
-    mesh = cube(0, 0, 0, 1);
     vector<Vertex> vertices;
     vertices.reserve(36);
-    for (auto i : mesh->mIndices) {
-      vertices.push_back(mesh->mVertices[i]);
+    for (auto i : mesh.mIndices) {
+      vertices.push_back(mesh.mVertices[i]);
     }
-    mesh->mVertices = vertices;
-    iota(mesh->mIndices.begin(), mesh->mIndices.end(), 0);
-    mesh->buffer();
+    mesh.mVertices = vertices;
+    iota(mesh.mIndices.begin(), mesh.mIndices.end(), 0);
+    mesh.buffer();
   }
 
   void Update(float dt) {
@@ -39,7 +38,7 @@ public:
       const float interval_cycle_ratio = fmod(t / NUM_VERTS + cycle_ratio, 1);
       auto color = hsl2rgb(interval_cycle_ratio, 1, 0.5);
 
-      Vertex &v = mesh->mVertices[i];
+      Vertex &v = mesh.mVertices[i];
       v.r = color.r;
       v.g = color.g;
       v.b = color.b;
@@ -52,14 +51,14 @@ public:
     const float cameraZ = cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     gl.getTransform() = glm::lookAt(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
-    mesh->buffer();
-    mesh->draw();
+    mesh.buffer();
+    mesh.draw();
 
     gl.popTransform();
   }
 
 private:
-  Mesh *mesh;
+  Mesh mesh;
 };
 
 int main(int, char**){

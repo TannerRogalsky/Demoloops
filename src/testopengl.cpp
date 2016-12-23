@@ -1,4 +1,4 @@
-
+#include <iostream>
 #include <array>
 #include <cmath>
 #include <SDL.h>
@@ -7,6 +7,7 @@
 #include "graphics/2d_primitives.h"
 #include "graphics/mesh.h"
 #include "graphics/canvas.h"
+#include "graphics/shader.h"
 #include "hsl.h"
 #include <glm/gtx/rotate_vector.hpp>
 using namespace std;
@@ -34,7 +35,7 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) 
 
 class Test4 : public Demoloop {
 public:
-  Test4() : Demoloop(150, 150, 150), mesh(*cube(0, 0, 0, 1)), canvas(100, 100), shader({shaderCode, shaderCode}) {
+  Test4() : Demoloop(150, 150, 150), mesh(cube(0, 0, 0, 1)), canvas(100, 100), shader({shaderCode, shaderCode}) {
     std::cout << glGetString(GL_VERSION) << std::endl;
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 

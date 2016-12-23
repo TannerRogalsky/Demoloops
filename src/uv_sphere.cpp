@@ -11,7 +11,7 @@ const float CYCLE_LENGTH = 10;
 
 class Test4 : public Demoloop {
 public:
-  Test4() : Demoloop(1280, 640, 150, 150, 150), mesh(*sphere(1, 30, 30)) {
+  Test4() : Demoloop(1280, 640, 150, 150, 150), mesh(sphere(1, 30, 30)) {
     // glEnable(GL_CULL_FACE);
     texture = loadTexture("uv_texture.jpg");
   }

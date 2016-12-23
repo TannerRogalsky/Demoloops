@@ -1,4 +1,4 @@
-
+#include <glm/gtx/rotate_vector.hpp>
 #include <cmath>
 #include <numeric>
 #include "demoloop.h"
@@ -14,12 +14,11 @@ static const float RADIUS = 0.3;
 
 class Loop13 : public Demoloop {
 public:
-  Loop13() : Demoloop(150, 150, 150) {
+  Loop13() : Demoloop(150, 150, 150), mesh(icosahedron(0, 0, 0, RADIUS)) {
     glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
     gl.getProjection() = perspective;
 
-    mesh = icosahedron(0, 0, 0, RADIUS);
-    iota(mesh->mIndices.begin(), mesh->mIndices.end(), 0);
+    iota(mesh.mIndices.begin(), mesh.mIndices.end(), 0);
   }
 
   void Update(float dt) {
@@ -33,7 +32,7 @@ public:
       const float interval_cycle_ratio = fmod(t / NUM_VERTS + cycle_ratio, 1);
       auto color = hsl2rgb(interval_cycle_ratio, 1, 0.5);
 
-      Vertex &v = mesh->mVertices[i];
+      Vertex &v = mesh.mVertices[i];
       v.r = color.r;
       v.g = color.g;
       v.b = color.b;
@@ -47,8 +46,8 @@ public:
     const float cameraZ = cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     gl.getTransform() = glm::lookAt(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
-    mesh->buffer();
-    mesh->draw();
+    mesh.buffer();
+    mesh.draw();
 
     static const float SCALE = 0.2;
     gl.getTransform() = glm::scale(gl.getTransform(), {SCALE, SCALE, SCALE});
@@ -63,7 +62,7 @@ public:
       // const float y = sin(t / numPoints * DEMOLOOP_M_PI * 2 * interval_cycle_ratio) * RADIUS * 3 / SCALE;
       const float z = cos(interval_cycle_ratio * DEMOLOOP_M_PI * 6) * RADIUS * 3 / SCALE;
       gl.getTransform() = glm::translate(gl.getTransform(), {x, y, z});
-      mesh->draw();
+      mesh.draw();
       gl.popTransform();
     }
 
@@ -72,7 +71,7 @@ public:
 
 private:
   // Vertex vertices[NUM_VERTS];
-  Mesh *mesh;
+  Mesh mesh;
 };
 
 int main(int, char**){

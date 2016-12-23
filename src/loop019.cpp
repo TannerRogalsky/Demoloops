@@ -1,4 +1,4 @@
-
+#include <glm/gtx/rotate_vector.hpp>
 #include <cmath>
 #include <algorithm>
 #include <numeric>
@@ -14,15 +14,14 @@ static const float RADIUS = 0.3;
 
 class Loop19 : public Demoloop {
 public:
-  Loop19() : Demoloop(150, 150, 150) {
+  Loop19() : Demoloop(150, 150, 150), mesh(icosahedron(0, 0, 0, RADIUS)) {
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
-    mesh = icosahedron(0, 0, 0, RADIUS);
-    auto indices = mesh->getIndexedVertices();
+    auto indices = mesh.getIndexedVertices();
     Vertex *indexedVertices[12];
     uint32_t index = 0;
     for (auto i : indices) {
-      indexedVertices[index++] = &mesh->mVertices[i];
+      indexedVertices[index++] = &mesh.mVertices[i];
     }
     std::sort(&indexedVertices[0], &indexedVertices[11], [](Vertex* a, Vertex* b) {
         return b->z < a->z;
@@ -35,13 +34,13 @@ public:
       v->b = color.b;
     }
 
-    polygonLines = mesh->getLines();
+    polygonLines = mesh.getLines();
     for (Vertex &v : polygonLines) {
       v.r = 0;
       v.g = 0;
       v.b = 0;
     }
-    mesh->buffer();
+    mesh.buffer();
   }
 
   void Update(float dt) {
@@ -60,7 +59,7 @@ public:
     gl.getTransform() = glm::lookAt(glm::vec3(lookX, lookY, lookZ), glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 1, 0));
 
     // setColor(255, 255, 255);
-    mesh->draw();
+    mesh.draw();
 
     gl.lines(polygonLines.data(), polygonLines.size());
 
@@ -107,7 +106,7 @@ public:
   }
 
 private:
-  Mesh *mesh;
+  Mesh mesh;
   vector<Vertex> polygonLines;
 };
 

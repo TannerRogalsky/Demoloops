@@ -27,18 +27,17 @@ const Triangle defaultTriangle = {
 
 class Loop033 : public Demoloop {
 public:
-  Loop033() : Demoloop(150, 150, 150), mesh(nullptr), canvas(height, height)  {
+  Loop033() : Demoloop(150, 150, 150), mesh(cube(0, 0, 0, 1)), canvas(height, height)  {
     glEnable(GL_CULL_FACE);
 
-    mesh = cube(0, 0, 0, 1);
-    mesh->setTexture(&canvas);
-    mesh->mIndices[6] = 0+4;
-    mesh->mIndices[7] = 1+4;
-    mesh->mIndices[8] = 2+4;
-    mesh->mIndices[9] = 0+4;
-    mesh->mIndices[10] = 2+4;
-    mesh->mIndices[11] = 3+4;
-    mesh->buffer();
+    mesh.setTexture(&canvas);
+    mesh.mIndices[6] = 0+4;
+    mesh.mIndices[7] = 1+4;
+    mesh.mIndices[8] = 2+4;
+    mesh.mIndices[9] = 0+4;
+    mesh.mIndices[10] = 2+4;
+    mesh.mIndices[11] = 3+4;
+    mesh.buffer();
   }
 
   void Update(float dt) {
@@ -105,10 +104,10 @@ public:
     p1.get() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     setBlendMode(BLEND_ALPHA, BLENDALPHA_MULTIPLY);
-    mesh->draw();
+    mesh.draw();
   }
 private:
-  Mesh *mesh;
+  Mesh mesh;
   Canvas canvas;
   Triangle triangles[numTris];
 };

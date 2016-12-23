@@ -1,7 +1,7 @@
-
 #include <numeric>
 #include "demoloop.h"
 #include "graphics/3d_primitives.h"
+#include <glm/gtx/rotate_vector.hpp>
 #include "hsl.h"
 using namespace std;
 using namespace demoloop;
@@ -13,11 +13,10 @@ static const float RADIUS = 0.3;
 
 class Loop11 : public Demoloop {
 public:
-  Loop11() : Demoloop(150, 150, 150) {
+  Loop11() : Demoloop(150, 150, 150), mesh(icosahedron(0, 0, 0, RADIUS)) {
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
-    mesh = icosahedron(0, 0, 0, RADIUS);
-    iota(mesh->mIndices.begin(), mesh->mIndices.end(), 0);
+    iota(mesh.mIndices.begin(), mesh.mIndices.end(), 0);
   }
 
   void Update(float dt) {
@@ -31,7 +30,7 @@ public:
       const float interval_cycle_ratio = fmod(t / NUM_VERTS + cycle_ratio, 1);
       auto color = hsl2rgb(interval_cycle_ratio, 1, 0.5);
 
-      Vertex &v = mesh->mVertices[i];
+      Vertex &v = mesh.mVertices[i];
       v.r = color.r;
       v.g = color.g;
       v.b = color.b;
@@ -45,18 +44,18 @@ public:
     const float cameraZ = 3;//cos(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;
     gl.getTransform() = glm::lookAt(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
-    mesh->buffer();
-    mesh->draw();
+    mesh.buffer();
+    mesh.draw();
     glm::mat4 m;
     m = glm::translate(m, {0, sinf(cycle_ratio * DEMOLOOP_M_PI * 2) * RADIUS * 4, 0});
     m = glm::scale(m, {0.5, 0.5, 0.5});
-    mesh->draw(m);
+    mesh.draw(m);
 
     gl.popTransform();
   }
 
 private:
-  Mesh *mesh;
+  Mesh mesh;
 };
 
 int main(int, char**){

@@ -6,6 +6,7 @@
 namespace demoloop {
 
 Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
+Mesh cube(const float cx, const float cy, const float cz, const float radius) {
   static const GLfloat g_vertex_buffer_data[] = {
     // Top face
      1.0f, 1.0f, -1.0f , 1.0f, 0.0f,  // Top-right of top face
@@ -77,10 +78,10 @@ Mesh* cube(const float cx, const float cy, const float cz, const float radius) {
     vertices.push_back(v);
   }
 
-  return new Mesh(vertices, indices);
+  return Mesh(vertices, indices);
 }
 
-Mesh* sphere(const float radius, const uint32_t heightSegments, const uint32_t widthSegments) {
+Mesh sphere(const float radius, const uint32_t heightSegments, const uint32_t widthSegments) {
   const float phiStart = 0;
   const float phiLength = DEMOLOOP_M_PI * 2;
 
@@ -135,10 +136,10 @@ Mesh* sphere(const float radius, const uint32_t heightSegments, const uint32_t w
     }
   }
 
-  return new Mesh(vertices, indices);
+  return Mesh(vertices, indices);
 }
 
-Mesh* icosahedron(const float cx, const float cy, const float cz, const float radius) {
+Mesh icosahedron(const float cx, const float cy, const float cz, const float radius) {
   const float t = (1.0 + sqrt(5.0)) / 2.0 * radius;
 
   Vertex points[12];
@@ -284,7 +285,7 @@ Mesh* icosahedron(const float cx, const float cy, const float cz, const float ra
     17, 29, 5
   };
 
-  return new Mesh(vertices, indices);
+  return Mesh(vertices, indices);
 }
 
 void polygon(GL& gl, const float* xCoords, const float* yCoords, const float* zCoords, uint32_t count) {
