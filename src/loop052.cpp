@@ -1,9 +1,7 @@
-
 #include "demoloop.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include "graphics/shader.h"
-#include <iostream>
 using namespace std;
 using namespace demoloop;
 

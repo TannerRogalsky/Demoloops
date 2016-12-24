@@ -4,7 +4,6 @@
 #include "helpers.h"
 #include "graphics/shader.h"
 #include <glm/gtx/rotate_vector.hpp>
-#include <iostream>
 using namespace std;
 using namespace demoloop;
 

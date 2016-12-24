@@ -1,6 +1,5 @@
 #include "graphics/shader.h"
 #include "opengl_helpers.h"
-#include <iostream>
 #include <limits>
 #include <cstring> // memcpy
 #include <glm/gtc/matrix_transform.hpp>

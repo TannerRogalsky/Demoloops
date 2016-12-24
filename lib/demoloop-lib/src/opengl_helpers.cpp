@@ -1,6 +1,5 @@
 #include "opengl_helpers.h"
 #include <SDL.h>
-#include <sstream>
 
 const char* SYNTAX = R"===(
 #ifndef GL_ES
@@ -100,15 +99,29 @@ const char* getLinePragma() {
 }
 
 std::string createVertexCode(const std::string &vertexShaderSource) {
-  std::stringstream ss;
-  ss << getVersionPragma() << SYNTAX << VERTEX_HEADER << UNIFORMS << getLinePragma() << vertexShaderSource << "\n" << VERTEX_FOOTER;
-  return ss.str();
+  std::string s;
+  s += getVersionPragma();
+  s += SYNTAX;
+  s += VERTEX_HEADER;
+  s += UNIFORMS;
+  s += getLinePragma();
+  s += vertexShaderSource;
+  s += "\n";
+  s += VERTEX_FOOTER;
+  return s;
 }
 
 std::string createFragmentCode(const std::string &fragmentShaderSource) {
-  std::stringstream ss;
-  ss << getVersionPragma() << SYNTAX << FRAG_HEADER << UNIFORMS << getLinePragma() << fragmentShaderSource << "\n" << FRAG_FOOTER;
-  return ss.str();
+  std::string s;
+  s += getVersionPragma();
+  s += SYNTAX;
+  s += FRAG_HEADER;
+  s += UNIFORMS;
+  s += getLinePragma();
+  s += fragmentShaderSource;
+  s += "\n";
+  s += FRAG_FOOTER;
+  return s;
 }
 
 void printProgramLog(GLuint program) {
