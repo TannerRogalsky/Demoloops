@@ -1,5 +1,6 @@
-
 #include <algorithm>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 #include "demoloop.h"
 using namespace std;
 using namespace demoloop;

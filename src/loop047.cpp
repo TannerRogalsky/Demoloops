@@ -1,5 +1,5 @@
-
 #include "demoloop.h"
+#include "graphics/shader.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include "graphics/3d_primitives.h"

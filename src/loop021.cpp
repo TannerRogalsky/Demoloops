@@ -1,5 +1,6 @@
-
 #include <algorithm>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 #include "demoloop.h"
 #include "graphics/2d_primitives.h"
 #include "math_helpers.h"
