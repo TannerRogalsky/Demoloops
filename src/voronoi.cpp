@@ -38,15 +38,14 @@ highp float iqnoise( in vec2 x, float u, float v ) {
   highp float va = 0.0;
   highp float wt = 0.0;
   for( int j=-2; j<=2; j++ )
-  for( int i=-2; i<=2; i++ )
-  {
-      vec2 g = vec2( float(i),float(j) );
-  vec3 o = hash3( p + g )*vec3(u,u,1.0);
-  vec2 r = g - f + o.xy;
-  float d = dot(r,r);
-  float ww = pow( 1.0-smoothstep(0.0,1.414,sqrt(d)), k );
-  va += o.z*ww;
-  wt += ww;
+  for( int i=-2; i<=2; i++ ) {
+    vec2 g = vec2( float(i),float(j) );
+    vec3 o = hash3( p + g )*vec3(u,u,1.0);
+    vec2 r = g - f + o.xy;
+    float d = dot(r,r);
+    float ww = pow( 1.0-smoothstep(0.0,1.414,sqrt(d)), k );
+    va += o.z*ww;
+    wt += ww;
   }
 
   return va/wt;
