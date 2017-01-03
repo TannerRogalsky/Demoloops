@@ -39,25 +39,26 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
   c.x = 2.0*(x - 0.5)*demoloop_ScreenSize.x/demoloop_ScreenSize.y;
   c.y = 2.0*(y - 0.5);
 
-  vec2 z = c;
+  highp vec2 z = c;
   // z.x += pow(sin(cycle_ratio * DEMOLOOP_M_PI), 2.0);
 
   const float B = 256.0;
 
-  int i;
-  for(i=0; i<iter; i++) {
+  int iterations = 0;
+  for(int i=0; i<iter; i++) {
     // float x = (z.x * z.x - z.y * z.y) + c.x;
     // float y = (z.y * z.x + z.x * z.y) + c.y;
     // z = vec2( z.x*z.x - z.y*z.y, 2.0*z.x*z.y ) + c;
     z = cpow(z, 2.0 + cycle_ratio * 6.0) + c;
 
+    iterations = i;
     if(dot(z,z)>(B*B)) break;
     // if ((x * x + y * y) > 256.0) break;
     // z.x = x;
     // z.y = y;
   }
 
-  float q = (i == iter ? 0.0 : float(i)) / iter;
+  float q = (iterations == iter ? 0.0 : float(iterations)) / float(iter);
   // float q = (i - log2(log2(dot(z,z))) + 4.0) / iter;
   vec3 mixed = mix(vec3(0.0, 0.0, 0.0), vec3(1.0, 0.0, 0.0), q);
   return vec4(mixed, 1.0);
