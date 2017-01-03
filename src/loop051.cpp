@@ -23,20 +23,8 @@ vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {
 #ifdef PIXEL
 const int iter = 100;
 
-const int numColors = 5;
-const vec3 colors[numColors] = vec3[](
-  // vec3(26.0 / 256.0, 41.0 / 256.0, 128.0 / 256.0),
-  // vec3(38.0 / 256.0, 208.0 / 256.0, 206.0 / 256.0),
-  // vec3(1.0, 1.0, 1.0),
-  // vec3(0.0, 0.0, 0.0)
-
-  vec3(0.8, 0.60, 0.1),
-  vec3(234.0 / 256.0, 119.0 / 256.0, 2.0 / 256.0),
-  vec3(1.0, 0.0, 0.0),
-  vec3(1.0, 0.70, 0.0),
-  vec3(0.0, 0.0, 0.0)
-);
-// float arrayTest[5] = float[5](3.4, 4.2, 5.0, 5.2, 1.1);
+#define NUM_COLORS 5
+uniform vec3 gradientColors[NUM_COLORS];
 
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
   float t = cycle_ratio;
@@ -48,7 +36,7 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
     0.3 + sin(cycle_ratio * DEMOLOOP_M_PI * 2.0) / 30.0
   );
 
-  vec2 z;
+  highp vec2 z;
   z.x = 3.0 * (x - 0.5);
   z.y = 2.0 * (y - 0.5);
 
@@ -65,14 +53,15 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
     iterations = i;
   }
 
-  // float q = (iterations == iter ? 0.0 : float(iterations)) / iter;
-  float q = (iterations - log2(log2(dot(z,z))) + 4.0) / iter;
-  float stepIncrement = 1.0 / (numColors + 1.0);
+  float fIterations = float(iterations);
+  float logLogDot = log2(log2(dot(z,z)));
+  float q = (fIterations - logLogDot + 4.0) / float(iter);
+  float stepIncrement = 1.0 / (float(NUM_COLORS) + 1.0);
   float step = 0.0;
 
   vec3 mixed = vec3(0.0, 0.0, 0.0);
-  for (int i = 0; i < numColors; ++i) {
-    mixed = mix(mixed, colors[i], smoothstep(step, step + stepIncrement, q)); step += stepIncrement;
+  for (int i = 0; i < NUM_COLORS; ++i) {
+    mixed = mix(mixed, gradientColors[i], smoothstep(step, step + stepIncrement, q)); step += stepIncrement;
   }
   return vec4(mixed, 1.0);
 }
@@ -81,6 +70,14 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
 class Loop050 : public Demoloop {
 public:
   Loop050() : Demoloop(150, 150, 150), shader({shaderCode, shaderCode}) {
+    glm::vec3 colors[5] = {
+      glm::vec3(0.8, 0.6, 0.1),
+      glm::vec3(0.917, 0.467, 0.008),
+      glm::vec3(1.0, 0.0, 0.0),
+      glm::vec3(1.0, 0.7, 0.0),
+      glm::vec3(0.0, 0.0, 0.0),
+    };
+    shader.sendFloat("gradientColors", 3, &colors[0].x, 5);
   }
 
   void Update(float dt) {
