@@ -42,6 +42,16 @@ Mesh parametric(std::function<Vertex(float, float)> func, const uint32_t slices,
   return Mesh(vertices, indices);
 }
 
+Mesh plane(const float width, const float height, const uint32_t slices, const uint32_t stacks) {
+  return parametric([&width, &height](const float u, const float v) {
+    return Vertex(
+      u * width, v * height, 0,
+      u, v,
+      255, 255, 255, 255
+    );
+   }, slices, stacks);
+}
+
 Mesh cube(const float cx, const float cy, const float cz, const float radius) {
   static const GLfloat g_vertex_buffer_data[] = {
     // Top face
@@ -141,9 +151,6 @@ Mesh sphere(const float radius, const uint32_t heightSegments, const uint32_t wi
       const float px = -radius * cosf( phi ) * sinf( theta );
       const float py = radius * cosf( theta );
       const float pz = radius * sinf( phi ) * sinf( theta );
-
-      // normal.set( px, py, pz ).normalize();
-      // normals.setXYZ( index, normal.x, normal.y, normal.z );
 
       vertices.push_back({px, py, pz, u, v});
     }

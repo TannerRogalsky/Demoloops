@@ -7,6 +7,7 @@
 namespace demoloop {
 
 Mesh parametric(std::function<Vertex(float, float)> func, const uint32_t slices, const uint32_t stacks);
+Mesh plane(const float width, const float height, const uint32_t slices, const uint32_t stacks);
 Mesh cube(const float cx, const float cy, const float cz, const float radius);
 Mesh sphere(const float radius, const uint32_t heightSegments = 30, const uint32_t widthSegments = 30);
 Mesh icosahedron(const float cx, const float cy, const float cz, const float radius);
