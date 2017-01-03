@@ -123,13 +123,14 @@ vec4 position(mat4 transform_proj, mat4 m, vec4 v_coord) {
 #endif
 
 #ifdef PIXEL
-//#define ANIMATE
-
-vec2 hash2( vec2 p ) {
-  return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
+highp vec2 hash2( vec2 p ) {
+  vec2 a = vec2(127.1,311.7);
+  vec2 b = vec2(269.5,183.3);
+  highp vec2 c = vec2(dot(p, a),dot(p, b));
+  return fract(sin(c)*43758.5453);
 }
 
-vec3 voronoi( in vec2 x )
+float voronoi( in vec2 x )
 {
   vec2 n = floor(x);
   vec2 f = fract(x);
@@ -145,9 +146,6 @@ vec3 voronoi( in vec2 x )
   {
     vec2 g = vec2(float(i),float(j));
     vec2 o = hash2( n + g );
-    #ifdef ANIMATE
-    o = 0.5 + 0.5*sin( cycle_ratio + 6.2831*o );
-    #endif
     vec2 r = g + o - f;
     float d = dot(r,r);
 
@@ -168,25 +166,23 @@ vec3 voronoi( in vec2 x )
   {
     vec2 g = mg + vec2(float(i),float(j));
     vec2 o = hash2( n + g );
-    #ifdef ANIMATE
-    o = 0.5 + 0.5*sin( cycle_ratio + 6.2831*o );
-    #endif
     vec2 r = g + o - f;
 
-    if( dot(mr-r,mr-r)>0.00001 )
+    if( dot(mr-r,mr-r)>0.1 )
     md = min( md, dot( 0.5*(mr+r), normalize(r-mr) ) );
   }
 
-  return vec3( md, mr );
+  return md;
 }
 
 vec4 effect(vec4 color, Image texture, vec2 st, vec2 screen_coords) {
-  vec3 c = voronoi( 8.0*st );
+  float c = voronoi( 8.0*st );
 
   // isolines
-  vec3 col = c.x*(0.5 + 0.5*sin(64.0*c.x))*vec3(1.0);
+  vec3 col = c*(0.5 + 0.5*sin(64.0*c))*vec3(1.0);
   // borders
-  col = mix( vec3(1.0,0.6,0.0), col, smoothstep( 0.04, 0.07, c.x ) );
+  vec3 borderColor = vec3(1.0,0.6,0.0);
+  col = mix(borderColor, col, smoothstep( 0.04, 0.07, c ) );
 
   if (gl_FrontFacing) {
     color = frontColor;
