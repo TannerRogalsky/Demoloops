@@ -174,6 +174,7 @@ public:
   void triangles(const Vertex *coords, size_t count, const glm::mat4 &modelView);
   void triangles(const Vertex *coords, size_t count);
   void triangles(const Triangle* triangles, size_t count);
+  void triangles(const Triangle* triangles, size_t count, const glm::mat4 &modelView);
   void lines(const Vertex *coords, size_t count, const glm::mat4 &modelView);
   void lines(const Vertex *coords, size_t count);
 

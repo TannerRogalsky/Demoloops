@@ -351,6 +351,10 @@ namespace demoloop {
     triangles((Vertex *)triangleVertices, count * 3);
   }
 
+  void GL::triangles(const Triangle *triangleVertices, size_t count, const glm::mat4 &modelView) {
+    triangles((Vertex *)triangleVertices, count * 3, modelView);
+  }
+
   GLuint GL::getDefaultTexture() const {
     return state.defaultTexture;
   }
