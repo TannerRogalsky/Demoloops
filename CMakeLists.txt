@@ -96,7 +96,7 @@ endif()
 
 # SDL2
 if (EMSCRIPTEN)
-  add_definitions("-std=c++11 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s USE_VORBIS=1 -s USE_OGG=1")
+  add_definitions("-std=c++11 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1")
 else()
   include(FindPkgConfig)
 
@@ -133,6 +133,9 @@ if (NOT EMSCRIPTEN)
   # GLEW
   find_package(GLEW REQUIRED)
   include_directories(${GLEW_INCLUDE_DIRS})
+
+  find_package(BULLET REQUIRED)
+  include_directories(SYSTEM ${BULLET_INCLUDE_DIRS})
 endif()
 
 # DEMOLOOP LIB
@@ -159,7 +162,7 @@ foreach(LOOP ${LOOPS})
       set_target_properties(${LOOP} PROPERTIES LINK_FLAGS ${TEMP} )
     endif()
 
-    target_link_libraries(${LOOP} demoloop-lib "-s USE_VORBIS=1 -s USE_OGG=1")
+    target_link_libraries(${LOOP} demoloop-lib "-s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1")
     # set_property(TARGET ${LOOP} PROPERTY SUFFIX ".html")
   else()
     target_link_libraries(${LOOP} demoloop-lib
@@ -171,7 +174,8 @@ foreach(LOOP ${LOOPS})
                           ${VORBIS_LIBRARIES}
                           ${VORBISFILE_LIBRARIES}
                           ${OGG_LIBRARIES}
-                          ${GLEW_LIBRARIES})
+                          ${GLEW_LIBRARIES}
+                          ${BULLET_LIBRARIES})
     set_property(TARGET ${LOOP} PROPERTY CXX_STANDARD 11)
     add_custom_target(run-${LOOP}
         COMMAND ${LOOP}
