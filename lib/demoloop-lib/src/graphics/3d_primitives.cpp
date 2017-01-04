@@ -45,7 +45,7 @@ Mesh parametric(std::function<Vertex(float, float)> func, const uint32_t slices,
 Mesh plane(const float width, const float height, const uint32_t slices, const uint32_t stacks) {
   return parametric([&width, &height](const float u, const float v) {
     return Vertex(
-      u * width, v * height, 0,
+      (u - 0.5) * width, (v - 0.5) * height, 0,
       u, v,
       255, 255, 255, 255
     );
