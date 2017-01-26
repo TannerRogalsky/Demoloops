@@ -310,37 +310,39 @@ namespace demoloop {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, usage);
   }
 
-  void GL::lines(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
+  void GL::genericDrawArrays(const Vertex *coords, size_t count, const glm::mat4 &modelView, GLenum mode, uint32_t arraybits) {
     prepareDraw(modelView);
 
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0].x, GL_DYNAMIC_DRAW);
 
-    useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
+    useVertexAttribArrays(arraybits);
 
     glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
     glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
-    glDrawArrays(GL_LINES, 0, count);
+    gl.drawArrays(mode, 0, count);
+  }
+
+  void GL::lines(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
+    genericDrawArrays(coords, count, modelView, GL_LINES, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
   }
 
   void GL::lines(const Vertex *coords, size_t count) {
     lines(coords, count, glm::mat4());
   }
 
+  void GL::lineStrip(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
+    genericDrawArrays(coords, count, modelView, GL_LINE_STRIP, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
+  }
+
+  void GL::lineLoop(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
+    genericDrawArrays(coords, count, modelView, GL_LINE_LOOP, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
+  }
+
   void GL::triangles(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
-    prepareDraw(modelView);
-
-    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(Vertex), &coords[0].x, GL_DYNAMIC_DRAW);
-
-    useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);
-
-    glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
-    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
-    glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
-
-    glDrawArrays(GL_TRIANGLES, 0, count);
+    genericDrawArrays(coords, count, modelView, GL_TRIANGLES, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);
   }
 
   void GL::triangles(const Vertex *coords, size_t count) {
