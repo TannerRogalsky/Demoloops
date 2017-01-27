@@ -341,6 +341,10 @@ namespace demoloop {
     genericDrawArrays(coords, count, modelView, GL_LINE_LOOP, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
   }
 
+  void GL::triangleFan(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
+    genericDrawArrays(coords, count, modelView, GL_TRIANGLE_FAN, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);
+  }
+
   void GL::triangles(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
     genericDrawArrays(coords, count, modelView, GL_TRIANGLES, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);
   }

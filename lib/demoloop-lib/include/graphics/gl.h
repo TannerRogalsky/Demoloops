@@ -178,6 +178,7 @@ public:
   void lines(const Vertex *coords, size_t count, const glm::mat4 &modelView);
   void lines(const Vertex *coords, size_t count);
   void lineStrip(const Vertex *coords, size_t count, const glm::mat4 &modelView);
+  void triangleFan(const Vertex *coords, size_t count, const glm::mat4 &modelView);
   void lineLoop(const Vertex *coords, size_t count, const glm::mat4 &modelView);
 
 private:
