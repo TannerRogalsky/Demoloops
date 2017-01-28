@@ -1,6 +1,6 @@
 #include "demoloop.h"
 #include "graphics/3d_primitives.h"
-#include "graphics/mesh.h"
+#include "graphics/shader.h"
 #include "helpers.h"
 #include <array>
 #include <glm/gtx/rotate_vector.hpp>
@@ -12,7 +12,14 @@ const float CYCLE_LENGTH = 10;
 
 const float size = 3;
 
-Vertex plane(const float u, const float v) {
+float cubicEaseInOut(float t,float b , float c, float d) {
+  t/=d/2;
+  if (t < 1) return c/2*t*t*t + b;
+  t-=2;
+  return c/2*(t*t*t + 2) + b;
+}
+
+Vertex parametricPlane(const float u, const float v) {
   return {
     (u - 0.5f) * size, (v - 0.5f) * size, 0,
     1 - u, 1 - v,
@@ -26,14 +33,14 @@ Vertex flatMobius(float s, float t) {
 
   float x, y, z;
 
-  float a = size / 2;
+  float a = size / 2 / 2;
   x = cosf(v) * (a + u * cosf(v / 2));
   y = sinf(v) * (a + u * cosf(v / 2));
   z = u * sinf( v / 2 );
 
   return {
     x, y, z,
-    s, (1 - t) * 3
+    1 - s, (1 - t) * 1
   };
 }
 
@@ -52,7 +59,7 @@ Vertex volumetricMobius(float s, float v) {
 
   return {
     x, y, z,
-    s, 1 - v
+    1 - s, 1 - v
   };
 }
 
@@ -75,7 +82,7 @@ Vertex parametricSphere(float s, float t) {
 template <
   typename T,
   typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type
-> T mix(T const& a, T const& b, const float& ratio)  {
+> constexpr T mix(T const& a, T const& b, const float& ratio) {
   return a * (1.0f - ratio) + b * ratio;
 }
 
@@ -102,9 +109,30 @@ Vertex mix(const Vertex& a, const Vertex& b, const float& ratio) {
   return {x, y, z, s, t, red, green, blue, alpha};
 }
 
-const array<function<Vertex(float, float)>, 2> surfaces = {{
-  plane, parametricSphere//, volumetricMobius, flatMobius
+const array<function<Vertex(float, float)>, 3> surfaces = {{
+  parametricPlane, parametricSphere, flatMobius
 }};
+
+const static std::string shaderCode = R"===(
+#ifdef VERTEX
+vec4 position(mat4 transform_proj, mat4 m, vec4 v_coord) {
+  mat4 mvp = transform_proj * m;
+  return mvp * v_coord;
+}
+#endif
+
+#ifdef PIXEL
+vec4 effect(vec4 globalColor, Image texture, vec2 st, vec2 screen_coords) {
+  vec2 q = abs(fract(st) - 0.5);
+  float d = fract((q.x + q.y) * 5.0);
+  if (gl_FrontFacing) {
+    return vec4(vec3(1, 0.2, 0.75) * d, 1.0);
+  } else {
+    return vec4(vec3(0.2, 0.75, 1) * d, 1.0);
+  }
+}
+#endif
+)===";
 
 const uint32_t stacks = 30, slices = 30;
 const uint32_t numVertices = (slices + 1) * (stacks + 1);
@@ -112,7 +140,7 @@ const uint32_t numIndices = slices * stacks * 6;
 
 class Loop055 : public Demoloop {
 public:
-  Loop055() : Demoloop(150, 150, 150) {
+  Loop055() : Demoloop(150, 150, 150), shader({shaderCode, shaderCode}) {
     // glEnable(GL_CULL_FACE);
     texture = loadTexture("uv_texture.jpg");
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
@@ -127,7 +155,7 @@ public:
 
     const float cycle = fmod(t, CYCLE_LENGTH);
     const float cycle_ratio = cycle / CYCLE_LENGTH;
-    const float mod_ratio = powf(sinf(cycle_ratio * DEMOLOOP_M_PI), 2);
+    // const float mod_ratio = powf(sinf(cycle_ratio * DEMOLOOP_M_PI), 2);
     const uint32_t surfaceIndex = fmod(floor(t / CYCLE_LENGTH), surfaces.size());
 
     const uint32_t sliceCount = slices + 1;
@@ -139,12 +167,12 @@ public:
       for (uint32_t j = 0; j <= slices; ++j) {
         const float u = static_cast<float>(j) / slices;
 
-        // vertices[index] = parametricSphere(u, v);
-        // vertices[index] = mix(plane(u, v), parametricSphere(u, v), mod_ratio);
+        // vertices[index] = volumetricMobius(u, v);
+        // vertices[index] = mix(plane(u, v), flatMobius(u, v), mod_ratio);
         vertices[index] = mix(
           surfaces[surfaceIndex](u, v),
           surfaces[(surfaceIndex + 1) % surfaces.size()](u, v),
-          cycle_ratio
+          cubicEaseInOut(cycle_ratio, 0, 1, 1)
         );
         normals[index] = glm::vec3(0, 0, 0);
         index++;
@@ -191,6 +219,8 @@ public:
     GL::TempProjection p1(gl);
     p1.get() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
+    shader.attach();
+
     gl.bufferVertices(&vertices[0], numVertices);
     glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
@@ -208,7 +238,7 @@ public:
 
     {
       glm::mat4 m;
-      m = glm::translate(m, {2.5, -0.5, 0});
+      m = glm::translate(m, {2.5, 0, 0});
       m = glm::scale(m, {1.5, 1.5, 1.5});
       m = glm::rotate(m, cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(0, 1, 0));
 
@@ -218,7 +248,7 @@ public:
 
     {
       glm::mat4 m;
-      m = glm::translate(m, {-2.5, -0.5, 0});
+      m = glm::translate(m, {-2.5, 0, 0});
       m = glm::scale(m, {1.5, 1.5, 1.5});
       m = glm::rotate(m, cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(0, 1, 0));
       m = glm::rotate(m, (float)DEMOLOOP_M_PI, glm::vec3(0, 1, 0));
@@ -226,10 +256,13 @@ public:
       gl.prepareDraw(m);
       gl.drawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
     }
+
+    shader.detach();
   }
 
 private:
   GLuint texture;
+  Shader shader;
   Vertex vertices[numVertices];
   glm::vec3 normals[numVertices];
   uint32_t indices[numIndices];
