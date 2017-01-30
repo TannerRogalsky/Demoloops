@@ -1,10 +1,13 @@
 #include <array>
 #include <vector>
+#include <unordered_map>
+#include <utility>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/fast_square_root.hpp>
+#include "graphics/shader.h"
 #include "demoloop.h"
-#include "hsl.h"
-#include "math_helpers.h"
+#include "graphics/2d_primitives.h"
 using namespace std;
 using namespace demoloop;
 
@@ -17,7 +20,7 @@ float randFloat() {
   return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 }
 
-template<uint N>
+template<uint32_t N>
 typename std::enable_if<N >= 3, array<Vertex, N>>::type
 polygonVertices(const float &radius) {
   array<Vertex, N> r;
@@ -25,15 +28,15 @@ polygonVertices(const float &radius) {
   const float interval = DEMOLOOP_M_PI * 2 / N;
   float phi = 0.0f;
   // float phi = rotationOffset(N);
-  for (uint i = 0; i < N; ++i, phi += interval) {
+  for (uint32_t i = 0; i < N; ++i, phi += interval) {
     r[i].x = cosf(phi) * radius;
     r[i].y = sinf(phi) * radius;
     r[i].z = 0;
 
-    // RGB c = hsl2rgb(phi / (DEMOLOOP_M_PI * 2), 1, 0.5);
-    // r[i].r = c.r;
-    // r[i].g = c.g;
-    // r[i].b = c.b;
+    RGB c = hsl2rgb(phi / (DEMOLOOP_M_PI * 2), 1, 0.5);
+    r[i].r = c.r;
+    r[i].g = c.g;
+    r[i].b = c.b;
   }
 
   return r;
@@ -52,6 +55,13 @@ buffer(float RADIUS, GLuint *vbos) {
   buffer<N, I + 1>(RADIUS, vbos);
 }
 
+template<typename K, typename V>
+struct PairHasher {
+  std::size_t operator()(const pair<K, V> &k) const {
+    return hash<K>()(k.first) ^ (hash<V>()(k.second) << 1);
+  }
+};
+
 struct Polygon {
   uint32_t num_verts;
   glm::mat4 transform;
@@ -62,13 +72,16 @@ struct TreeData {
   vector<Polygon> all_shapes;
   uint32_t previous_layer;
   uint32_t previous_shape;
+  unordered_map<uint32_t, vector<glm::mat4>> shapes_by_vertex_count;
+  unordered_map<pair<int32_t, int32_t>, vector<Polygon>, PairHasher<int32_t, int32_t>> spatial_hash;
 };
 
 bool doShapesIntersect(const float radius, const Polygon &a, const Polygon &b) {
-  glm::vec3 translationA(a.transform[3]);
-  glm::vec3 translationB(b.transform[3]);
-  float scaleA = glm::length(a.transform[0]);
-  float scaleB = glm::length(b.transform[0]);
+  glm::vec2 translationA(a.transform[3]);
+  glm::vec2 translationB(b.transform[3]);
+
+  float scaleA = glm::fastSqrt(a.transform[0].x * a.transform[0].x + a.transform[0].y * a.transform[0].y);
+  float scaleB = glm::fastSqrt(b.transform[0].x * b.transform[0].x + b.transform[0].y * b.transform[0].y);
 
   float x1 = translationA.x, y1 = translationA.y;
   float x2 = translationB.x, y2 = translationB.y;
@@ -77,9 +90,10 @@ bool doShapesIntersect(const float radius, const Polygon &a, const Polygon &b) {
   float r1 = radius * scaleA * cosf(DEMOLOOP_M_PI / v1), r2 = radius * scaleB * cosf(DEMOLOOP_M_PI / v2);
 
   float dx = x1 - x2, dy = y1 - y2;
-  float d = sqrt(dx * dx + dy * dy);
+  float d = dx * dx + dy * dy;
+  float i = r1 + r2 - 0.1;
 
-  bool inscriptions_overlap = d < (r1 + r2 - 0.1);
+  bool inscriptions_overlap = d < (i * i);
   return inscriptions_overlap;
 }
 
@@ -132,9 +146,12 @@ void addForShape(const float radius, TreeData &treeData) {
     transform = glm::scale(transform, {inner_outer_ratio, inner_outer_ratio, 1});
 
     Polygon p = {current_vertex_count, transform};
+    // pair<int32_t, int32_t> hash_lookup({floor(transform[3][0] / 100), floor(transform[3][1] / 100)});
     if (intersectsAny(radius, p, all_shapes) == false) {
       current_layer.push_back(p);
       all_shapes.push_back(p);
+      treeData.shapes_by_vertex_count[p.num_verts].push_back(p.transform);
+      // treeData.spatial_hash[hash_lookup].push_back(p);
     }
   }
 
@@ -155,14 +172,19 @@ void addLayer(const float radius, TreeData &treeData) {
 TreeData build(const float radius, const uint32_t num_layers) {
   vector<vector<Polygon>> tree;
   vector<Polygon> all_shapes;
+  unordered_map<uint32_t, vector<glm::mat4>> shapes_by_vertex_count;
+  unordered_map<pair<int32_t, int32_t>, vector<Polygon>, PairHasher<int32_t, int32_t>> spatial_hash;
 
   {
     Polygon p = {6, glm::mat4()};
     tree.push_back({p});
     all_shapes.push_back(p);
+    shapes_by_vertex_count[p.num_verts].push_back(p.transform);
+    pair<int32_t, int32_t> test = {0, 0};
+    spatial_hash[{0, 0}].push_back(p);
   }
 
-  TreeData treeData = {tree, all_shapes, 0, 0};
+  TreeData treeData = {tree, all_shapes, 0, 0, shapes_by_vertex_count, spatial_hash};
 
   for (uint32_t layer_index = 1; layer_index < num_layers; ++layer_index) {
     addLayer(radius, treeData);
@@ -171,19 +193,60 @@ TreeData build(const float radius, const uint32_t num_layers) {
   return treeData;
 }
 
+uint32_t bufferMatrixAttribute(const GLint location, const GLuint buffer, const float *data, const uint32_t num) {
+  uint32_t enabledAttribs = 0;
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  glBufferData(GL_ARRAY_BUFFER, num * sizeof(float) * 4 * 4, data, GL_DYNAMIC_DRAW);
+
+  for (int i = 0; i < 4; ++i) {
+    enabledAttribs |= 1u << (uint32_t)(location + i);
+    glVertexAttribPointer(location + i, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4 * 4, (void*)(sizeof(float) * (4 * i)));
+    glVertexAttribDivisor(location + i, 1);
+  }
+
+  return enabledAttribs;
+}
+
+const static std::string shaderCode = R"===(
+varying vec4 vpos;
+// varying vec4 vColor;
+
+#ifdef VERTEX
+attribute mat4 modelViews;
+// attribute vec4 colors;
+
+vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {
+  // vColor = colors;
+  return transform_proj * modelViews * vertpos;
+}
+#endif
+
+#ifdef PIXEL
+vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+  return Texel(texture, texture_coords) * color;
+}
+#endif
+)===";
+
 class Loop021 : public Demoloop {
 public:
-  Loop021() : Demoloop(720, 720, 150, 150, 150), RADIUS(height / 20) {
+  Loop021() : Demoloop(720, 720, 150, 150, 150), RADIUS(height / 20), shader({shaderCode, shaderCode}) {
     glDisable(GL_DEPTH_TEST);
 
     glGenBuffers(MAX_VERTS - 3, vbos);
     buffer<MAX_VERTS>(RADIUS, vbos);
 
-    treeData = build(RADIUS, 6);
+    glGenBuffers(1, &modelViewsBuffer);
+    glGenBuffers(1, &colorsBuffer);
+
+    srand(time(0));
+    treeData = build(RADIUS, 3);
   }
 
   ~Loop021() {
     glDeleteBuffers(MAX_VERTS - 3, vbos);
+    glDeleteBuffers(1, &modelViewsBuffer);
+    glDeleteBuffers(1, &colorsBuffer);
   }
 
   void Update(float dt) {
@@ -192,35 +255,44 @@ public:
     float cycle = fmod(t, CYCLE_LENGTH);
     float cycle_ratio = cycle / CYCLE_LENGTH;
 
-    for (uint32_t i = 0; i < 25; ++i) {
-      addForShape(RADIUS, treeData);
-    }
+    // for (uint32_t i = 0; i < 25; ++i) {
+    //   addForShape(RADIUS, treeData);
+    // }
     // addForShape(RADIUS, treeData);
 
-    float scale = 0.25 * (1-cycle_ratio*0.75);
+    float scale = 0.8 * (1-powf(sinf(cycle_ratio*DEMOLOOP_M_PI),2)*0.65);
+    scale = 1;
     GL::TempTransform t1(gl);
     t1.get() = glm::scale(glm::translate(t1.get(),
       glm::vec3(width / 2, height / 2, 0)), glm::vec3(scale, scale, 1)
     );
 
-    uint32_t index = 0;
-    for(const vector<Polygon> &layer : treeData.tree) {
-      setColor(hsl2rgb((float)index/treeData.tree.size(), 1, 0.5));
-      for(const Polygon &p : layer) {
-        gl.prepareDraw(p.transform);
-        glBindBuffer(GL_ARRAY_BUFFER, vbos[p.num_verts - 3]);
-        gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
-        glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
-        glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
-        gl.drawArrays(GL_TRIANGLE_FAN, 0, p.num_verts);
-      }
-      index++;
+    shader.attach();
+    gl.prepareDraw();
+
+    uint32_t modelViewsLocation = shader.getAttribLocation("modelViews");
+    for(const auto &shapes : treeData.shapes_by_vertex_count) {
+      setColor(hsl2rgb((float)shapes.first/MAX_VERTS, 1, 0.5));
+
+      uint32_t enabledAttribs = bufferMatrixAttribute(modelViewsLocation, modelViewsBuffer, &shapes.second.data()[0][0][0], shapes.second.size());
+
+      glBindBuffer(GL_ARRAY_BUFFER, vbos[shapes.first - 3]);
+      glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+      glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
+
+      gl.useVertexAttribArrays(enabledAttribs | ATTRIBFLAG_POS);
+      gl.drawArraysInstanced(GL_TRIANGLE_FAN, 0, shapes.first, shapes.second.size());
     }
+
+    shader.detach();
   }
 private:
   const float RADIUS;
+  Shader shader;
   GLuint vbos[MAX_VERTS - 3];
   TreeData treeData;
+  GLuint modelViewsBuffer;
+  GLuint colorsBuffer;
 };
 
 int main(int, char**){
