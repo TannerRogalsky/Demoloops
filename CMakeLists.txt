@@ -110,7 +110,7 @@ endif()
 
 # SDL2
 if (EMSCRIPTEN)
-  add_definitions("-std=c++11 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1")
+  add_definitions("-std=c++11 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1 --bind")
 else()
   include(FindPkgConfig)
 
@@ -176,8 +176,8 @@ foreach(LOOP ${LOOPS})
       set_target_properties(${LOOP} PROPERTIES LINK_FLAGS ${TEMP} )
     endif()
 
-    target_link_libraries(${LOOP} demoloop-lib "-s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1")
-    # set_property(TARGET ${LOOP} PROPERTY SUFFIX ".html")
+    target_link_libraries(${LOOP} demoloop-lib "-s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1 --bind")
+    set_property(TARGET ${LOOP} PROPERTY SUFFIX ".html")
   else()
     target_link_libraries(${LOOP} demoloop-lib
                           ${SDL2_LIBRARIES}

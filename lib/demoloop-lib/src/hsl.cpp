@@ -56,3 +56,27 @@ uint32_t rgb2uint32(const RGB color) {
           (color.g << 8) +
           color.b;
 }
+
+#ifdef EMSCRIPTEN
+#include <emscripten/bind.h>
+using namespace emscripten;
+
+EMSCRIPTEN_BINDINGS(HSL) {
+  // class_<RGB>("RGB")
+  //   .constructor<uint8_t, uint8_t, uint8_t>()
+  //   .property("r", &RGB::r)
+  //   .property("g", &RGB::g)
+  //   .property("b", &RGB::b)
+  //   ;
+
+  value_object<RGB>("RGB")
+    .field("r", &RGB::r)
+    .field("g", &RGB::g)
+    .field("b", &RGB::b)
+    ;
+
+
+  function("hsl2rgb", &hsl2rgb);
+  function("rgb2uint32", &rgb2uint32);
+}
+#endif
