@@ -299,6 +299,16 @@ void Shader::checkSetBuiltinUniforms(const glm::mat4 &curModel)
       glUniformMatrix4fv(location, 1, GL_FALSE, &curModel[0][0]);
     }
 
+    // Also upload the re-calculated normal matrix, if possible. The
+    // normal matrix is the transpose of the inverse of the rotation
+    // portion (top-left 3x3) of the transform matrix.
+    location = builtinUniforms[BUILTIN_NORMAL_MATRIX];
+    if (location >= 0)
+    {
+      glm::mat3 normalmatrix = glm::inverse(glm::transpose(curModel));
+      glUniformMatrix3fv(location, 1, GL_FALSE, &normalmatrix[0][0]);
+    }
+
     lastModelMatrix = curModel;
   }
 
@@ -307,16 +317,6 @@ void Shader::checkSetBuiltinUniforms(const glm::mat4 &curModel)
     GLint location = builtinUniforms[BUILTIN_TRANSFORM_MATRIX];
     if (location >= 0)
       glUniformMatrix4fv(location, 1, GL_FALSE, &curxform[0][0]);
-
-    // Also upload the re-calculated normal matrix, if possible. The
-    // normal matrix is the transpose of the inverse of the rotation
-    // portion (top-left 3x3) of the transform matrix.
-    location = builtinUniforms[BUILTIN_NORMAL_MATRIX];
-    if (location >= 0)
-    {
-      glm::mat3 normalmatrix = glm::inverse(glm::transpose(curxform));
-      glUniformMatrix3fv(location, 1, GL_FALSE, &normalmatrix[0][0]);
-    }
 
     tpmatrixneedsupdate = true;
     lastTransformMatrix = curxform;

@@ -7,7 +7,6 @@
 #include <glm/gtx/fast_square_root.hpp>
 #include "graphics/shader.h"
 #include "demoloop.h"
-#include "graphics/2d_primitives.h"
 using namespace std;
 using namespace demoloop;
 
@@ -15,6 +14,8 @@ const glm::vec3 twoDAxis = {0, 0, 1};
 float t = 0;
 const float CYCLE_LENGTH = 10;
 const uint32_t MAX_VERTS = 12;
+const float SPATIAL_HASH_SIZE = 100;
+array<array<glm::vec4, MAX_VERTS>, MAX_VERTS - 3> polygonVerts;
 
 float randFloat() {
   return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -27,16 +28,15 @@ polygonVertices(const float &radius) {
 
   const float interval = DEMOLOOP_M_PI * 2 / N;
   float phi = 0.0f;
-  // float phi = rotationOffset(N);
   for (uint32_t i = 0; i < N; ++i, phi += interval) {
     r[i].x = cosf(phi) * radius;
     r[i].y = sinf(phi) * radius;
     r[i].z = 0;
 
-    RGB c = hsl2rgb(phi / (DEMOLOOP_M_PI * 2), 1, 0.5);
-    r[i].r = c.r;
-    r[i].g = c.g;
-    r[i].b = c.b;
+    // RGB c = hsl2rgb(phi / (DEMOLOOP_M_PI * 2), 1, 0.5);
+    // r[i].r = c.r;
+    // r[i].g = c.g;
+    // r[i].b = c.b;
   }
 
   return r;
@@ -67,13 +67,15 @@ struct Polygon {
   glm::mat4 transform;
 };
 
+typedef unordered_map<pair<int32_t, int32_t>, vector<Polygon>, PairHasher<int32_t, int32_t>> SpatialHash;
+
 struct TreeData {
   vector<vector<Polygon>> tree;
   vector<Polygon> all_shapes;
   uint32_t previous_layer;
   uint32_t previous_shape;
   unordered_map<uint32_t, vector<glm::mat4>> shapes_by_vertex_count;
-  unordered_map<pair<int32_t, int32_t>, vector<Polygon>, PairHasher<int32_t, int32_t>> spatial_hash;
+  SpatialHash spatial_hash;
 };
 
 bool doShapesIntersect(const float radius, const Polygon &a, const Polygon &b) {
@@ -94,7 +96,40 @@ bool doShapesIntersect(const float radius, const Polygon &a, const Polygon &b) {
   float i = r1 + r2 - 0.1;
 
   bool inscriptions_overlap = d < (i * i);
-  return inscriptions_overlap;
+  if (inscriptions_overlap) {
+    return true;
+  }
+
+  // const array<glm::vec4, MAX_VERTS> &verticesA = polygonVerts[v1 - 3];
+  // const array<glm::vec4, MAX_VERTS> &verticesB = polygonVerts[v2 - 3];
+
+  // // printf("%u\n", v1);
+  // for (uint32_t k = 0; k < v2; ++k) {
+  //   const glm::vec4 v = verticesB[k] * b.transform;
+
+  //   bool result = false;
+  //   uint32_t j = v1 - 1;
+  //   for (uint32_t i = 0; i < v1; ++i) {
+  //     // printf("%u, %u\n", i, j);
+  //     glm::vec4 e1 = verticesA[j] * a.transform;
+  //     glm::vec4 e2 = verticesA[i] * a.transform;
+  //     printf("%f > %f\n", e1.y, v.y);
+
+  //     // if ((e1.y > v.y) != (e2.y > v.y) && (v.x < (e2.x - e1.x) * (v.y - e1.y) / (e2.y-e1.y) + e1.x)) {
+  //     // if (e1.y > v.y) {
+  //     //   result = !result;
+  //     // }
+
+  //     j = i;
+  //   }
+
+  //   if (result) {
+  //     return true;
+  //   }
+  // }
+  // printf("done\n");
+
+  return false;
 }
 
 bool intersectsAny(const float radius, const Polygon &shape, const vector<Polygon> &shapes) {
@@ -104,6 +139,18 @@ bool intersectsAny(const float radius, const Polygon &shape, const vector<Polygo
     }
   }
   return false;
+}
+
+void populateSpatialHash(const Polygon &p, const pair<int32_t, int32_t> &base, SpatialHash &spatial_hash) {
+  spatial_hash[base].push_back(p);
+  spatial_hash[{base.first + 1, base.second}].push_back(p);
+  spatial_hash[{base.first - 1, base.second}].push_back(p);
+  spatial_hash[{base.first, base.second + 1}].push_back(p);
+  spatial_hash[{base.first, base.second - 1}].push_back(p);
+  spatial_hash[{base.first + 1, base.second + 1}].push_back(p);
+  spatial_hash[{base.first + 1, base.second - 1}].push_back(p);
+  spatial_hash[{base.first - 1, base.second - 1}].push_back(p);
+  spatial_hash[{base.first - 1, base.second + 1}].push_back(p);
 }
 
 void addForShape(const float radius, TreeData &treeData) {
@@ -120,23 +167,19 @@ void addForShape(const float radius, TreeData &treeData) {
   const Polygon &previous_shape = previous_layer[treeData.previous_shape];
   uint32_t previous_vertex_count = previous_shape.num_verts;
   float previous_side_length = sinf(DEMOLOOP_M_PI / previous_vertex_count) * 2 * radius;
-  // printf("previous_vertex_count: %u\n", previous_vertex_count);
 
   float PI = DEMOLOOP_M_PI;
 
   for (uint32_t i = 0; i < previous_vertex_count; ++i) {
     uint32_t current_vertex_count = randFloat() * (MAX_VERTS - 3) + 3;
     float current_side_length = sinf(DEMOLOOP_M_PI / current_vertex_count) * 2 * radius;
-    // printf("current_vertex_count: %u\n", current_vertex_count);
 
     float t = (DEMOLOOP_M_PI * 2) / previous_vertex_count;
     float inner_outer_ratio = previous_side_length / current_side_length;
-    // printf("inner_outer_ratio: %f\n", inner_outer_ratio);
 
     float previous_distance = radius * cosf(DEMOLOOP_M_PI / previous_vertex_count);
     float current_distance = radius * cosf(DEMOLOOP_M_PI / current_vertex_count) * inner_outer_ratio;
     float d = previous_distance + current_distance;
-    // printf("%f\n", d);
 
     glm::mat4 transform = previous_shape.transform;
     transform = glm::rotate(transform, i * t, twoDAxis);
@@ -146,12 +189,12 @@ void addForShape(const float radius, TreeData &treeData) {
     transform = glm::scale(transform, {inner_outer_ratio, inner_outer_ratio, 1});
 
     Polygon p = {current_vertex_count, transform};
-    // pair<int32_t, int32_t> hash_lookup({floor(transform[3][0] / 100), floor(transform[3][1] / 100)});
-    if (intersectsAny(radius, p, all_shapes) == false) {
+    pair<int32_t, int32_t> hash_lookup({floor(transform[3][0] / SPATIAL_HASH_SIZE), floor(transform[3][1] / SPATIAL_HASH_SIZE)});
+    if (intersectsAny(radius, p, treeData.spatial_hash[hash_lookup]) == false) {
       current_layer.push_back(p);
       all_shapes.push_back(p);
       treeData.shapes_by_vertex_count[p.num_verts].push_back(p.transform);
-      // treeData.spatial_hash[hash_lookup].push_back(p);
+      populateSpatialHash(p, hash_lookup, treeData.spatial_hash);
     }
   }
 
@@ -164,7 +207,6 @@ void addForShape(const float radius, TreeData &treeData) {
 
 void addLayer(const float radius, TreeData &treeData) {
   for (uint32_t i = 0; i < treeData.tree[treeData.previous_layer].size(); ++i) {
-    // printf("layer_index %u, shape_index: %u\n", treeData.previous_layer, treeData.previous_shape);
     addForShape(radius, treeData);
   }
 }
@@ -173,15 +215,15 @@ TreeData build(const float radius, const uint32_t num_layers) {
   vector<vector<Polygon>> tree;
   vector<Polygon> all_shapes;
   unordered_map<uint32_t, vector<glm::mat4>> shapes_by_vertex_count;
-  unordered_map<pair<int32_t, int32_t>, vector<Polygon>, PairHasher<int32_t, int32_t>> spatial_hash;
+  SpatialHash spatial_hash;
 
   {
     Polygon p = {6, glm::mat4()};
     tree.push_back({p});
     all_shapes.push_back(p);
     shapes_by_vertex_count[p.num_verts].push_back(p.transform);
-    pair<int32_t, int32_t> test = {0, 0};
-    spatial_hash[{0, 0}].push_back(p);
+    pair<int32_t, int32_t> hash_lookup = {0, 0};
+    populateSpatialHash(p, hash_lookup, spatial_hash);
   }
 
   TreeData treeData = {tree, all_shapes, 0, 0, shapes_by_vertex_count, spatial_hash};
@@ -236,11 +278,26 @@ public:
     glGenBuffers(MAX_VERTS - 3, vbos);
     buffer<MAX_VERTS>(RADIUS, vbos);
 
+    for (uint32_t N = 3; N < MAX_VERTS; ++N) {
+      auto &r = polygonVerts[N - 3];
+      const float interval = DEMOLOOP_M_PI * 2 / N;
+      float phi = 0.0f;
+      for (uint32_t i = 0; i < N; ++i, phi += interval) {
+        r[i].x = cosf(phi) * RADIUS;
+        r[i].y = sinf(phi) * RADIUS;
+        r[i].z = 0;
+        r[i].w = 0;
+      }
+    }
+
     glGenBuffers(1, &modelViewsBuffer);
     glGenBuffers(1, &colorsBuffer);
 
-    srand(time(0));
-    treeData = build(RADIUS, 3);
+    uint32_t seed = time(0);
+    seed = 1485781690;
+    printf("%u\n", seed);
+    srand(seed);
+    treeData = build(RADIUS, 5);
   }
 
   ~Loop021() {
@@ -255,13 +312,13 @@ public:
     float cycle = fmod(t, CYCLE_LENGTH);
     float cycle_ratio = cycle / CYCLE_LENGTH;
 
-    // for (uint32_t i = 0; i < 25; ++i) {
+    // for (uint32_t i = 0; i < 35; ++i) {
     //   addForShape(RADIUS, treeData);
     // }
-    // addForShape(RADIUS, treeData);
+    addForShape(RADIUS, treeData);
 
-    float scale = 0.8 * (1-powf(sinf(cycle_ratio*DEMOLOOP_M_PI),2)*0.65);
-    scale = 1;
+    float scale = 0.7 * (1-powf(sinf(cycle_ratio*DEMOLOOP_M_PI),2)*0.55);
+    scale = 0.8;
     GL::TempTransform t1(gl);
     t1.get() = glm::scale(glm::translate(t1.get(),
       glm::vec3(width / 2, height / 2, 0)), glm::vec3(scale, scale, 1)
@@ -272,19 +329,25 @@ public:
 
     uint32_t modelViewsLocation = shader.getAttribLocation("modelViews");
     for(const auto &shapes : treeData.shapes_by_vertex_count) {
-      setColor(hsl2rgb((float)shapes.first/MAX_VERTS, 1, 0.5));
 
       uint32_t enabledAttribs = bufferMatrixAttribute(modelViewsLocation, modelViewsBuffer, &shapes.second.data()[0][0][0], shapes.second.size());
 
       glBindBuffer(GL_ARRAY_BUFFER, vbos[shapes.first - 3]);
       glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
-      glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
+      // glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
       gl.useVertexAttribArrays(enabledAttribs | ATTRIBFLAG_POS);
-      gl.drawArraysInstanced(GL_TRIANGLE_FAN, 0, shapes.first, shapes.second.size());
+
+      setColor(hsl2rgb((float)shapes.first/MAX_VERTS, 1, 0.5));
+      // gl.drawArraysInstanced(GL_TRIANGLE_FAN, 0, shapes.first, shapes.second.size());
+      // setColor(0, 0, 0);
+      gl.drawArraysInstanced(GL_LINE_LOOP, 0, shapes.first, shapes.second.size());
     }
 
     shader.detach();
+
+    // setColor(0, 0, 0);
+    // gl.lineLoop(polygonVerts[3].data(), 6, glm::mat4());
   }
 private:
   const float RADIUS;

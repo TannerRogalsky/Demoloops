@@ -77,6 +77,15 @@ set(LOOPS ${ASSET_LOOPS}
   testopengl
   voronoi
   lsystem
+  carpenter_brut
+  canvas
+  two_squares_in_a_circle
+  bezier
+  pingpong
+  parametric_surface
+  snowflake
+  wave_visualization
+  tube
 )
 
 # Bump up warning levels appropriately for clang, gcc & msvc
