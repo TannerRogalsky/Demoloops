@@ -141,10 +141,6 @@ const uint32_t numIndices = slices * stacks * 6;
 class Loop055 : public Demoloop {
 public:
   Loop055() : Demoloop(150, 150, 150), shader({shaderCode, shaderCode}) {
-    // glEnable(GL_CULL_FACE);
-    texture = loadTexture("uv_texture.jpg");
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
   }
 
   ~Loop055() {
@@ -261,7 +257,6 @@ public:
   }
 
 private:
-  GLuint texture;
   Shader shader;
   Vertex vertices[numVertices];
   glm::vec3 normals[numVertices];
