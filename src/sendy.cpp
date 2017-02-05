@@ -83,7 +83,7 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
 class Loop050 : public Demoloop {
 public:
   Loop050() : Demoloop(480, 480, 254, 230, 231), colorShader({colorShaderCode, colorShaderCode}),
-              transformShader({transformShaderCode, transformShaderCode}), canvas(height, height) {
+              transformShader({transformShaderCode, transformShaderCode}), canvas(width * 2, height * 2) {
     glDisable(GL_DEPTH_TEST);
     {
       TTF_Font *font = loadFont(getResourcePath() + "sendy/sans.ttf", 64);
@@ -99,15 +99,20 @@ public:
         mode = GL_RGBA;
       }
 
+      textWidth = textSurface->w;
+      textHeight = textSurface->h;
       glTexImage2D(GL_TEXTURE_2D, 0, mode, textSurface->w, textSurface->h, 0, mode, GL_UNSIGNED_BYTE, textSurface->pixels);
       cleanup(textSurface);
 
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
     GL::TempTransform t1(gl);
-    t1.get() = glm::translate(t1.get(), {width / 2, height / 2, 0});
+    t1.get() = glm::translate(t1.get(), {canvas.getWidth() / 2, canvas.getHeight() / 2, 0});
+    t1.get() = glm::scale(t1.get(), {2, 2, 1});
 
     setCanvas(&canvas);
     colorShader.attach();
@@ -138,13 +143,13 @@ public:
     const float cycle_ratio = cycle / CYCLE_LENGTH;
 
     // GL::TempTransform t1(gl);
-    // t1.get() = glm::scale(t1.get(), {2, 2, 1});
+    // t1.get() = glm::scale(t1.get(), {0.5, 0.5, 1});
 
     setColor(255, 255, 255);
     setBlendMode(BLEND_ALPHA, BLENDALPHA_PREMULTIPLIED);
     transformShader.attach();
     transformShader.sendFloat("cycle_ratio", 1, &cycle_ratio, 1);
-    canvas.draw();
+    canvas.draw(glm::scale(glm::mat4(), {0.5, 0.5, 1}));
     transformShader.detach();
     setBlendMode(BLEND_ALPHA, BLENDALPHA_MULTIPLY);
 
@@ -154,16 +159,13 @@ public:
       m = glm::translate(m, {width / 2, height / 2, 0});
       m = glm::rotate(m, sinf(-cycle_ratio * DEMOLOOP_M_PI * 2) * 0.9f, {0, 0, 1});
       m = glm::translate(m, {-width / 2, -height / 2, 0});
+      m = glm::scale(m, {0.5, 0.5, 1});
       canvas.draw(m);
     }
 
     {
-      float w, h;
-      gl.bindTexture(text);
-      glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-      glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
       setColor(222, 103, 101);
-      renderTexture(text, width * 0.5 - w * 0.5, height * 0.5 - h * 0.5, w, h);
+      renderTexture(text, width * 0.5 - textWidth * 0.5, height * 0.5 - textHeight * 0.5, textWidth, textHeight);
     }
   }
 
@@ -172,6 +174,7 @@ private:
   Shader transformShader;
   Canvas canvas;
   GLuint text;
+  float textWidth, textHeight;
   uint32_t NUM_ARMS = 16;
 };
 
