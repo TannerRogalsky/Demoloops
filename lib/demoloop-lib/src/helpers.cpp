@@ -2,6 +2,7 @@
 #include <SDL_image.h>
 #include "graphics/gl.h"
 #include "res_path.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 void logSDLError(const char *msg){
   printf("%s error: %s\n", msg, SDL_GetError());
@@ -50,25 +51,32 @@ void renderTexture(GLuint texture, float x, float y, float w, float h) {
 }
 
 void renderTexture(GLuint texture, float x, float y, float z, float w, float h) {
-  demoloop::Vertex vertices[6];
-  vertices[0].x = x + 0;
-  vertices[0].y = y + 0;
-  vertices[0].z = z + 0;
-  vertices[1].x = x + 0;
-  vertices[1].y = y + h;
-  vertices[1].z = z + 0;
-  vertices[2].x = x + w;
-  vertices[2].y = y + 0;
-  vertices[2].z = z + 0;
-  vertices[3].x = x + w;
-  vertices[3].y = y + h;
-  vertices[3].z = z + 0;
-  vertices[4].x = x + 0;
-  vertices[4].y = y + h;
-  vertices[4].z = z + 0;
-  vertices[5].x = x + w;
-  vertices[5].y = y + 0;
-  vertices[5].z = z + 0;
+  glm::mat4 m;
+  m = glm::translate(m, {x, y, z});
+  m = glm::scale(m, {w, h, 1});
+  renderTexture(texture, m);
+}
+
+void renderTexture(GLuint texture, const glm::mat4 &transform) {
+  static demoloop::Vertex vertices[6];
+  vertices[0].x = 0;
+  vertices[0].y = 0;
+  vertices[0].z = 0;
+  vertices[1].x = 0;
+  vertices[1].y = 1;
+  vertices[1].z = 0;
+  vertices[2].x = 1;
+  vertices[2].y = 0;
+  vertices[2].z = 0;
+  vertices[3].x = 1;
+  vertices[3].y = 1;
+  vertices[3].z = 0;
+  vertices[4].x = 0;
+  vertices[4].y = 1;
+  vertices[4].z = 0;
+  vertices[5].x = 1;
+  vertices[5].y = 0;
+  vertices[5].z = 0;
 
   vertices[0].s = 0;
   vertices[0].t = 0;
@@ -84,7 +92,7 @@ void renderTexture(GLuint texture, float x, float y, float z, float w, float h) 
   vertices[5].t = 0;
 
   demoloop::gl.bindTexture(texture);
-  demoloop::gl.triangles(vertices, 6);
+  demoloop::gl.triangles(vertices, 6, transform);
 }
 
 void renderTexture(SDL_Texture *tex, SDL_Renderer *ren, int x, int y){

@@ -10,6 +10,7 @@
 GLuint loadTexture(const std::string &path);
 void renderTexture(GLuint texture, float x, float y, float w, float h);
 void renderTexture(GLuint texture, float x, float y, float z, float w, float h);
+void renderTexture(GLuint texture, const glm::mat4 &transform);
 
 /*
  * Log an SDL error with some error message to the output stream of our choice
