@@ -7,6 +7,7 @@ set(ASSET_LOOPS
   sailor_moon
   test_openal
   hope
+  sendy
 )
 
 set(LOOPS ${ASSET_LOOPS}
