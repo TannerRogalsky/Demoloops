@@ -283,6 +283,26 @@ Demoloop::BlendMode Demoloop::getBlendMode(BlendAlpha &alphamode) const {
   return states.back().blendMode;
 }
 
+int Demoloop::getMouseX() const {
+  return mouse_x;
+}
+
+int Demoloop::getMouseY() const {
+  return mouse_y;
+}
+
+int Demoloop::getMouseDeltaX() const {
+  return mouse_x - prev_mouse_x;
+}
+
+int Demoloop::getMouseDeltaY() const {
+  return mouse_y - prev_mouse_y;
+}
+
+bool Demoloop::isMouseDown(uint8_t button) const {
+  return SDL_BUTTON(button) & mouse_state;
+}
+
 void Demoloop::InternalUpdate() {
   while (SDL_PollEvent(&e)){
     //If user closes the window
@@ -294,6 +314,8 @@ void Demoloop::InternalUpdate() {
       quit = true;
     }
   }
+  prev_mouse_x = mouse_x, prev_mouse_y = mouse_y;
+  mouse_state = SDL_GetMouseState(&mouse_x, &mouse_y);
 
   glClearColor( bg_r / 255.0, bg_g / 255.0, bg_b / 255.0, 1.f );
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

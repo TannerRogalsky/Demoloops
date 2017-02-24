@@ -37,6 +37,11 @@ public:
   ~Demoloop();
   void Run();
   virtual void Update(float dt) = 0;
+  int getMouseX() const;
+  int getMouseY() const;
+  int getMouseDeltaX() const;
+  int getMouseDeltaY() const;
+  bool isMouseDown(uint8_t button) const;
   int width, height;
 protected:
   bool quit;
@@ -68,6 +73,9 @@ private:
   int bg_r, bg_g, bg_b;
   void InternalUpdate();
   SDL_Event e;
+  int mouse_x, mouse_y;
+  int prev_mouse_x, prev_mouse_y;
+  uint32_t mouse_state;
 
   struct DisplayState
   {
