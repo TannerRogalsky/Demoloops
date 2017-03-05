@@ -92,22 +92,37 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
   }
 
   ALCdevice* deviceAL = alcOpenDevice(NULL);
-  ALCcontext* contextAL = alcCreateContext(deviceAL, NULL);
-  alcMakeContextCurrent(contextAL);
+  if (deviceAL == nullptr) {
+    printf("Could not open audio device\n");
+  } else {
+    ALCcontext* contextAL = alcCreateContext(deviceAL, NULL);
+    if (contextAL == nullptr) {
+      printf("Could not create audio context.\n");
+    } else {
+      if (!alcMakeContextCurrent(contextAL) || alcGetError(deviceAL) != ALC_NO_ERROR) {
+        printf("Could not make audio context current.");
+      } else {
+        ALfloat listenerPos[] = {0.0, 0.0, 0.0};
+        ALfloat listenerVel[] = {0.0, 0.0, 0.0};
+        ALfloat listenerOri[] = {0.0, 0.0, -1.0, 0.0, 1.0, 0.0};
 
-  ALfloat listenerPos[] = {0.0, 0.0, 0.0};
-  ALfloat listenerVel[] = {0.0, 0.0, 0.0};
-  ALfloat listenerOri[] = {0.0, 0.0, -1.0, 0.0, 1.0, 0.0};
-
-  alListenerfv(AL_POSITION, listenerPos);
-  alListenerfv(AL_VELOCITY, listenerVel);
-  alListenerfv(AL_ORIENTATION, listenerOri);
+        alListenerfv(AL_POSITION, listenerPos);
+        alListenerfv(AL_VELOCITY, listenerVel);
+        alListenerfv(AL_ORIENTATION, listenerOri);
+      }
+    }
+  }
 }
 
 Demoloop::~Demoloop() {
   cleanup(renderer, window);
   TTF_Quit();
   SDL_Quit();
+
+  // alcMakeContextCurrent(nullptr);
+  // alcDestroyContext(context);
+  // //if (capture) alcCaptureCloseDevice(capture);
+  // alcCloseDevice(device);
 }
 
 void Demoloop::setColor(const RGB& rgb, uint8_t a) {
