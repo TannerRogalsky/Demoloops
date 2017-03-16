@@ -7,6 +7,7 @@ namespace demoloop {
 
 Mesh parametric(std::function<Vertex(float, float)> func, const uint32_t slices, const uint32_t stacks) {
   std::vector<Vertex> vertices;
+  vertices.reserve(stacks * slices);
   const uint32_t sliceCount = slices + 1;
 
   for (uint32_t i = 0; i <= stacks; ++i) {
@@ -20,6 +21,7 @@ Mesh parametric(std::function<Vertex(float, float)> func, const uint32_t slices,
   }
 
   std::vector<uint32_t> indices;
+  indices.reserve(stacks * slices * 6);
   for (uint32_t i = 0; i < stacks; ++i) {
     for (uint32_t j = 0; j < slices; ++j) {
 
