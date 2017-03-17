@@ -7,7 +7,7 @@
 using namespace std;
 using namespace demoloop;
 
-#define NUM_VERTS 12
+const uint32_t NUM_VERTS = 6;
 
 float t = 0;
 const float CYCLE_LENGTH = 6;
@@ -17,17 +17,13 @@ public:
   Loop015() : Demoloop(150, 150, 150), RADIUS(height / 6) {
     glDisable(GL_DEPTH_TEST);
 
-    float phi = 0.0f;
-    const float interval = DEMOLOOP_M_PI * 2 / NUM_VERTS * 2;
+    const float interval = DEMOLOOP_M_PI * 2 / NUM_VERTS;
+    for (uint32_t i = 0; i < NUM_VERTS; ++i) {
+      const float phi = interval * i;
 
-    for (int i = 0; i < NUM_VERTS - 1; i+=2, phi += interval) {
       vertices[i].x = RADIUS * cosf(phi);
       vertices[i].y = RADIUS * sinf(phi);
       vertices[i].z = 1;
-
-      vertices[i + 1].x = RADIUS * cosf(phi + interval);
-      vertices[i + 1].y = RADIUS * sinf(phi + interval);
-      vertices[i + 1].z = 1;
     }
 
     gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
@@ -40,27 +36,23 @@ public:
     float cycle_ratio = cycle / CYCLE_LENGTH;
 
     setColor(255, 255, 255);
-    gl.lines(vertices, NUM_VERTS);
+    gl.lineLoop(vertices, NUM_VERTS, glm::mat4());
 
     const float interval = DEMOLOOP_M_PI * 2 / 6;
     float apothem = cos(DEMOLOOP_M_PI / 6) * RADIUS;
     float side = 2 * apothem * tan(DEMOLOOP_M_PI / 6);
 
     for (int i = 0; i < 6; ++i) {
-      gl.pushTransform();
-      glm::mat4 &m = gl.getTransform();
-
       int current_vertex = fmod(floor(i + cycle_ratio * 6), 6);
       float phi = current_vertex * interval + DEMOLOOP_M_PI / 3 * 2;
 
       float x = side * cosf(phi) * pow(sinf(cycle_ratio * DEMOLOOP_M_PI), 2);
       float y = side * sinf(phi) * pow(sinf(cycle_ratio * DEMOLOOP_M_PI), 2);
 
+      glm::mat4 m;
       m = glm::translate(m, {x, y, 0});
 
-      gl.lines(vertices, NUM_VERTS);
-
-      gl.popTransform();
+      gl.lineLoop(vertices, NUM_VERTS, m);
     }
   }
 private:
