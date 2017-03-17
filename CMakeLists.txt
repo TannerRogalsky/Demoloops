@@ -158,6 +158,9 @@ endif()
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/demoloop-lib)
 include_directories(${PROJECT_SOURCE_DIR}/lib/demoloop-lib/include)
 
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/poly2tri)
+include_directories(${PROJECT_SOURCE_DIR}/lib/poly2tri/poly2tri)
+
 # GLM
 include_directories(${PROJECT_SOURCE_DIR}/lib/glm)
 
@@ -178,10 +181,10 @@ foreach(LOOP ${LOOPS})
       set_target_properties(${LOOP} PROPERTIES LINK_FLAGS ${TEMP} )
     endif()
 
-    target_link_libraries(${LOOP} demoloop-lib "-s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1")
+    target_link_libraries(${LOOP} demoloop-lib poly2tri "-s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1")
     # set_property(TARGET ${LOOP} PROPERTY SUFFIX ".html")
   else()
-    target_link_libraries(${LOOP} demoloop-lib
+    target_link_libraries(${LOOP} demoloop-lib poly2tri
                           ${SDL2_LIBRARIES}
                           ${SDL2IMAGE_LIBRARIES}
                           ${SDL2TFF_LIBRARIES}
