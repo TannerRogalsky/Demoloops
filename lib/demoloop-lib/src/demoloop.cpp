@@ -347,7 +347,7 @@ void Demoloop::Run() {
   previous_frame = std::chrono::high_resolution_clock::now();
   #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop_arg([](void *arg) {
-      Demoloop *self = static_cast<Demoloop*>(arg);
+      Demoloop *self = static_cast<Demoloop *>(arg);
       self->InternalUpdate();
     }, (void *)this, 0, 1);
   #else
