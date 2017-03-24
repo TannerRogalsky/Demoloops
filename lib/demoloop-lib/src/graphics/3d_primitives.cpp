@@ -159,6 +159,7 @@ Mesh sphere(const float radius, const uint32_t heightSegments, const uint32_t wi
   }
 
   std::vector<uint32_t> indices;
+  indices.reserve(widthSegments * heightSegments * 6);
   for ( uint32_t y = 0; y < heightSegments; ++y ) {
     for ( uint32_t x = 0; x < widthSegments; ++x ) {
 
