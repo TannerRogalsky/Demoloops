@@ -12,6 +12,7 @@ set(SRCS
   ${PROJECT_SOURCE_DIR}/common/object.cpp
   ${PROJECT_SOURCE_DIR}/graphics/gl.cpp
   ${PROJECT_SOURCE_DIR}/graphics/shader.cpp
+  ${PROJECT_SOURCE_DIR}/graphics/image.cpp
   ${PROJECT_SOURCE_DIR}/graphics/mesh.cpp
   ${PROJECT_SOURCE_DIR}/graphics/quad.cpp
   ${PROJECT_SOURCE_DIR}/graphics/texture.cpp
