@@ -15,6 +15,7 @@ set(SRCS
   ${PROJECT_SOURCE_DIR}/graphics/image.cpp
   ${PROJECT_SOURCE_DIR}/graphics/mesh.cpp
   ${PROJECT_SOURCE_DIR}/graphics/quad.cpp
+  ${PROJECT_SOURCE_DIR}/graphics/polyline.cpp
   ${PROJECT_SOURCE_DIR}/graphics/texture.cpp
   ${PROJECT_SOURCE_DIR}/graphics/canvas.cpp
   ${PROJECT_SOURCE_DIR}/graphics/2d_primitives.cpp
