@@ -68,6 +68,9 @@ public:
    */
   void draw();
 
+  glm::vec3 *vertices;
+  size_t vertex_count;
+
 protected:
   virtual void calc_overdraw_vertex_count(bool is_looping);
   virtual void render_overdraw(const std::vector<glm::vec3> &normals, float pixel_size, bool is_looping);
@@ -88,9 +91,9 @@ protected:
                           glm::vec3 &s, float &len_s, glm::vec3 &ns,
                           const glm::vec3 &q, const glm::vec3 &r, float hw) = 0;
 
-  glm::vec3 *vertices;
+  // glm::vec3 *vertices;
   glm::vec3 *overdraw;
-  size_t vertex_count;
+  // size_t vertex_count;
   size_t overdraw_vertex_count;
   GLenum draw_mode;
   bool use_quad_indices;
