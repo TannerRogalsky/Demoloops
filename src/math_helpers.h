@@ -22,3 +22,19 @@ template <
 > constexpr T mix(T const &a, T const &b, const float &ratio) {
   return a * (1.0f - ratio) + b * ratio;
 }
+
+demoloop::Vertex mix(const demoloop::Vertex &a, const demoloop::Vertex &b, const float &ratio) {
+  return {
+    mix(a.x, b.x, ratio),
+    mix(a.y, b.y, ratio),
+    mix(a.z, b.z, ratio),
+
+    mix(a.s, b.s, ratio),
+    mix(a.t, b.t, ratio),
+
+    mix(a.r, b.r, ratio),
+    mix(a.g, b.g, ratio),
+    mix(a.b, b.b, ratio),
+    mix(a.a, b.a, ratio)
+  };
+}
