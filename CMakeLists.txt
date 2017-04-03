@@ -75,6 +75,7 @@ set(LOOPS ${ASSET_LOOPS}
   mandlebrot
   uv_sphere
   normal_lighting
+  wireframe
   loop030_3d
   testopengl
   voronoi
