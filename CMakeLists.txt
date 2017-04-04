@@ -8,6 +8,7 @@ set(ASSET_LOOPS
   test_openal
   hope
   sendy
+  loop064
 )
 
 set(LOOPS ${ASSET_LOOPS}
@@ -72,6 +73,9 @@ set(LOOPS ${ASSET_LOOPS}
   loop059
   loop060
   loop061
+  loop062
+  loop065
+  loop066
   mandlebrot
   uv_sphere
   normal_lighting

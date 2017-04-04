@@ -122,46 +122,6 @@ public:
           setColor(50,208,188);
           gl.triangleFan(polygonVertices<6>(RADIUS).data(), 6, view);
         }
-
-        // if (y_index % 2 != 0) {
-        //   for (uint32_t i = 0; i < 3; ++i) {
-        //     uint32_t current_cycle = (num_cycles + i) % 3;
-        //     glm::mat4 triangleView;
-
-        //     if (current_cycle % 3 == 0) {
-        //       const float tx = x + x_offset +
-        //                        powf(cycle_ratio, 2.0) * x_offset;
-        //       // const float tx = x;
-        //       const float ty = y + RADIUS - RADIUS * ratio * 1.5 +
-        //                        cycle_ratio * y_offset * 2;
-        //       triangleView = glm::translate(triangleView, {tx, ty, 0});
-        //       triangleView = glm::rotate(triangleView, rotationOffset(3) + (float)DEMOLOOP_M_PI, {0, 0, 1});
-        //       triangleView = glm::rotate(triangleView, (float)DEMOLOOP_M_PI * 2 / 3 * -cycle_ratio, {0, 0, 1});
-        //       triangleView = glm::scale(triangleView, {ratio, ratio, 1});
-        //     } else if(current_cycle % 3 == 1) {
-        //       const float tx = x + x_offset * 2 + cycle_ratio * x_offset;
-        //       // const float tx = x;
-        //       const float ty = y + y_offset * 3 - RADIUS * ratio +
-        //                        powf(cycle_ratio, 2.0) * RADIUS * ratio * 2;
-        //       triangleView = glm::translate(triangleView, {tx, ty, 0});
-        //       triangleView = glm::rotate(triangleView, rotationOffset(3) + (float)DEMOLOOP_M_PI, {0, 0, 1});
-        //       triangleView = glm::rotate(triangleView, (float)DEMOLOOP_M_PI / 3 * cycle_ratio, {0, 0, 1});
-        //       triangleView = glm::scale(triangleView, {ratio, ratio, 1});
-        //     } else {
-        //       const float tx = x + x_offset;
-        //       // const float tx = x;
-        //       const float ty = y + y_offset * 3 + RADIUS * ratio -
-        //                        (y_offset * 3 - RADIUS * ratio) * cycle_ratio;
-        //       triangleView = glm::translate(triangleView, {tx, ty, 0});
-        //       triangleView = glm::rotate(triangleView, rotationOffset(3) + (float)DEMOLOOP_M_PI / 3 * cycle_ratio, {0, 0, 1});
-        //       // triangleView = glm::rotate(triangleView, (float)DEMOLOOP_M_PI / 3 * cycle_ratio, {0, 0, 1});
-        //       triangleView = glm::scale(triangleView, {ratio, ratio, 1});
-        //     }
-
-        //     setColor(hsl2rgb(i / 3.0, 1.0, 0.5));
-        //     gl.triangleFan(polygonVertices<3>(RADIUS).data(), 3, triangleView);
-        //   }
-        // }
       }
     }
   }
