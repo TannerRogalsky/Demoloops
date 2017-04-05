@@ -115,17 +115,14 @@ array<Vertex, N * 2> getWireframeGeometry(const array<Vertex, N> &in) {
 }
 
 template<int32_t N>
-typename std::enable_if<N < 0, void>::type
-buffer(GLuint*) {}
-
-template<int32_t N>
-typename std::enable_if<N >= 0, void>::type
-buffer(GLuint *vbos) {
-  const auto vertices = subdivide<N>(indexedVertices, indices);
-  const auto wireframe = getWireframeGeometry(vertices);
-  glBindBuffer(GL_ARRAY_BUFFER, vbos[N]);
-  glBufferData(GL_ARRAY_BUFFER, wireframe.size() * sizeof(Vertex), wireframe.data(), GL_STATIC_DRAW);
-  buffer<N - 1>(vbos);
+void buffer(GLuint *vbos) {
+  if constexpr(N >= 0) {
+    const auto vertices = subdivide<N>(indexedVertices, indices);
+    const auto wireframe = getWireframeGeometry(vertices);
+    glBindBuffer(GL_ARRAY_BUFFER, vbos[N]);
+    glBufferData(GL_ARRAY_BUFFER, wireframe.size() * sizeof(Vertex), wireframe.data(), GL_STATIC_DRAW);
+    buffer<N - 1>(vbos);
+  }
 }
 
 const uint32_t num_details = 4;

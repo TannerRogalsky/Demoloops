@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.8)
 project(demoloop-lib)
 
 set (PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
@@ -38,7 +38,7 @@ endif()
 
 # SDL2
 if (EMSCRIPTEN)
-  add_definitions("-std=c++11 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s USE_VORBIS=1 -s USE_OGG=1")
+  add_definitions("-std=c++1z -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s USE_VORBIS=1 -s USE_OGG=1")
 
   set(SDL2_LIBRARIES "-s USE_SDL=2")
   set(SDL2IMAGE_LIBRARIES "-s USE_SDL_IMAGE=2")
@@ -106,4 +106,4 @@ target_link_libraries(${PROJECT_NAME}
   ${VORBIS_LIBRARIES}
   ${VORBISFILE_LIBRARIES}
   ${OGG_LIBRARIES})
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
