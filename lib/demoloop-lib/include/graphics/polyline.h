@@ -45,8 +45,8 @@ class Polyline
 public:
   Polyline(GLenum mode = GL_TRIANGLE_STRIP, bool quadindices = false)
     : vertices(nullptr)
-    , overdraw(nullptr)
     , vertex_count(0)
+    , overdraw(nullptr)
     , overdraw_vertex_count(0)
     , draw_mode(mode)
     , use_quad_indices(quadindices)
