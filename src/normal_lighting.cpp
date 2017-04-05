@@ -71,8 +71,6 @@ varying vec3 vNorm;
 varying vec4 vColor;
 
 #ifdef VERTEX
-uniform float time;
-
 uniform mat4 v_inv;
 attribute mat4 modelViews;
 attribute vec3 v_normal;
@@ -94,7 +92,7 @@ lightSource light0 = lightSource(
   180.0, 0.0,
   vec3(0.0, 0.0, 0.0)
 );
-vec4 scene_ambient = vec4(0.2, 0.2, 0.2, 1.0);
+vec4 scene_ambient = vec4(0.6, 0.6, 0.6, 1.0);
 
 struct material {
   vec4 ambient;
@@ -158,10 +156,7 @@ vec4 position(mat4 transform_proj, mat4 model, vec4 v_coord) {
 
 #ifdef PIXEL
 vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-  // return Texel(texture, texture_coords) * color;
-  // float cosTheta = clamp(dot(vNorm, lightDir), 0, 1);
-  // return Texel(texture, texture_coords) * vColor * vec4(vNorm, 1.0) * color;
-  return vColor;
+  return Texel(texture, texture_coords) * vColor * color;
 }
 #endif
 )===";
@@ -236,8 +231,8 @@ public:
     const float cycle = fmod(t, CYCLE_LENGTH);
     const float cycle_ratio = cycle / CYCLE_LENGTH;
 
-    // const glm::vec3 eye = glm::rotate(glm::vec3(0, 1, 10), cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(0, 1, 0));
-    const glm::vec3 eye = glm::vec3(0, 1, 4);
+    const glm::vec3 eye = glm::rotate(glm::vec3(0, 1, 4), cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(0, 1, 0));
+    // const glm::vec3 eye = glm::vec3(0, 1, 4);
     const glm::vec3 up = glm::vec3(0, 1, 0);
     const glm::vec3 target = glm::vec3(0, 0, 0);
     glm::mat4 camera = glm::lookAt(eye, target, up);
@@ -252,7 +247,7 @@ public:
     shader.attach();
 
     // gl.bindTexture(texture);
-
+    setColor(255, 255, 255);
     gl.prepareDraw(m);
 
     glm::mat4 v_inv = glm::inverse(t1.get());
@@ -275,24 +270,29 @@ public:
 
 
 
-    m = glm::mat4();
-    // m = glm::rotate(m, (float)DEMOLOOP_M_PI * cycle_ratio * 2, {0, 1, 0});
-    m = glm::translate(m, {sinf(cycle_ratio * DEMOLOOP_M_PI * 2) * 2, 0.5, 0});
-    m = glm::scale(m, {4, 4, 4});
-    // m = glm::rotate(m, (float)DEMOLOOP_M_PI * cycle_ratio * 4, {0, 0, 1});
-    gl.prepareDraw(m);
+    for (uint32_t i = 0; i < 5; ++i) {
+      const float i_cycle_ratio = fmod((float)i / 5 + cycle_ratio, 1);
+      setColor(hsl2rgb(i_cycle_ratio, 1, 0.5));
 
-    gl.bufferVertices((Vertex *)tetrahedron, 4 * 3);
-    glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
-    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
-    glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
+      m = glm::mat4();
+      m = glm::rotate(m, (float)DEMOLOOP_M_PI * i_cycle_ratio * 2, {0, 1, 0});
+      m = glm::translate(m, {sinf(i_cycle_ratio * DEMOLOOP_M_PI * 2) * 2, 0.5, 0});
+      m = glm::scale(m, {4, 4, 4});
+      m = glm::rotate(m, (float)DEMOLOOP_M_PI * cycle_ratio * 4, {0, 0, 1});
+      gl.prepareDraw(m);
 
-    glBindBuffer(GL_ARRAY_BUFFER, normalsBuffer);
-    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(glm::vec3), &tetrahedronNormals[0].x, GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(normalsLocation, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
+      gl.bufferVertices((Vertex *)tetrahedron, 4 * 3);
+      glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+      glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
+      glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
 
-    gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD | (1u << normalsLocation));
-    gl.drawArrays(GL_TRIANGLES, 0, 4 * 3);
+      glBindBuffer(GL_ARRAY_BUFFER, normalsBuffer);
+      glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(glm::vec3), &tetrahedronNormals[0].x, GL_DYNAMIC_DRAW);
+      glVertexAttribPointer(normalsLocation, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
+
+      gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD | (1u << normalsLocation));
+      gl.drawArrays(GL_TRIANGLES, 0, 4 * 3);
+    }
 
     shader.detach();
 

@@ -142,7 +142,7 @@ array<Vertex, NUM_INDICES * pow<uint32_t>(4, DETAIL)> subdivide(const array<Vert
   return out;
 }
 
-const auto vertices = subdivide<3>(originalVertices, indices);
+const auto vertices = subdivide<0>(originalVertices, indices);
 
 template<size_t N>
 array<glm::vec3, N> getNormals(const array<Vertex, N> &verts) {
@@ -166,13 +166,23 @@ const static std::string shaderCode = R"===(
 varying vec4 vpos;
 varying vec3 vNorm;
 varying vec4 vColor;
+uniform mat4 v_inv;
+
+varying vec4 varyingPosition;  // position of the vertex (and fragment) in world space
+varying vec3 varyingNormalDirection;  // surface normal vector in world space
 
 #ifdef VERTEX
-uniform mat4 v_inv;
-attribute mat4 modelViews;
 attribute vec3 v_normal;
-attribute vec4 colors;
 
+vec4 position(mat4 transform_proj, mat4 model, vec4 v_coord) {
+  varyingPosition = model * v_coord;
+  mat4 mvp = transform_proj * model;
+  varyingNormalDirection = normalize(NormalMatrix * v_normal);
+  return mvp * v_coord;
+}
+#endif
+
+#ifdef PIXEL
 struct lightSource {
   vec4 position;
   vec4 diffuse;
@@ -197,63 +207,65 @@ struct material {
   vec4 specular;
   float shininess;
 };
-material mymaterial = material(
+material frontMaterial = material(
   vec4(1.0, 1.0, 1.0, 1.0),
   vec4(1.0, 1.0, 1.0, 1.0),
   vec4(1.0, 1.0, 1.0, 1.0),
   5.0
 );
 
-vec4 position(mat4 transform_proj, mat4 model, vec4 v_coord) {
-  mat4 mvp = transform_proj * model;
-  vec3 normalDirection = normalize(NormalMatrix * v_normal);
-  vec3 viewDirection = normalize(vec3(v_inv * vec4(0.0, 0.0, 0.0, 1.0) - model * v_coord));
+vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+  vec3 normalDirection = normalize(varyingNormalDirection);
+  vec3 viewDirection = normalize(vec3(v_inv * vec4(0.0, 0.0, 0.0, 1.0) - varyingPosition));
   vec3 lightDirection;
   float attenuation;
 
-  if (light0.position.w == 0.0) { // directional light
-    attenuation = 1.0; // no attenuation
-    lightDirection = normalize(vec3(light0.position));
-  } else { // point or spot light (or other kind of light)
-    vec3 vertexToLightSource = vec3(light0.position - model * v_coord);
-    float distance = length(vertexToLightSource);
-    lightDirection = normalize(vertexToLightSource);
-    attenuation = 1.0 / (light0.constantAttenuation
-       + light0.linearAttenuation * distance
-       + light0.quadraticAttenuation * distance * distance);
+  if (0.0 == light0.position.w) // directional light?
+    {
+      attenuation = 1.0; // no attenuation
+      lightDirection = normalize(vec3(light0.position));
+    }
+  else // point light or spotlight (or other kind of light)
+    {
+      vec3 positionToLightSource = vec3(light0.position - varyingPosition);
+      float distance = length(positionToLightSource);
+      lightDirection = normalize(positionToLightSource);
+      attenuation = 1.0 / (light0.constantAttenuation
+                           + light0.linearAttenuation * distance
+                           + light0.quadraticAttenuation * distance * distance);
 
-    if (light0.spotCutoff <= 90.0) { // spotlight
-      float clampedCosine = max(0.0, dot(-lightDirection, normalize(light0.spotDirection)));
-      if (clampedCosine < cos(radians(light0.spotCutoff))) { // outside of spotlight cone
+      if (light0.spotCutoff <= 90.0) // spotlight?
+  {
+    float clampedCosine = max(0.0, dot(-lightDirection, light0.spotDirection));
+    if (clampedCosine < cos(radians(light0.spotCutoff))) // outside of spotlight cone?
+      {
         attenuation = 0.0;
-      } else {
+      }
+    else
+      {
         attenuation = attenuation * pow(clampedCosine, light0.spotExponent);
       }
-    }
   }
+    }
 
-  vec3 ambientLighting = vec3(scene_ambient) * vec3(mymaterial.ambient);
+  vec3 ambientLighting = vec3(scene_ambient) * vec3(frontMaterial.ambient);
 
   vec3 diffuseReflection = attenuation
-    * vec3(light0.diffuse) * vec3(mymaterial.diffuse)
+    * vec3(light0.diffuse) * vec3(frontMaterial.diffuse)
     * max(0.0, dot(normalDirection, lightDirection));
 
   vec3 specularReflection;
-  if (dot(normalDirection, lightDirection) < 0.0) { // light source on the wrong side?
-    specularReflection = vec3(0.0, 0.0, 0.0); // no specular reflection
-  } else { // light source on the right side
-    specularReflection = attenuation * vec3(light0.specular) * vec3(mymaterial.specular)
-      * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), mymaterial.shininess);
-  }
+  if (dot(normalDirection, lightDirection) < 0.0) // light source on the wrong side?
+    {
+      specularReflection = vec3(0.0, 0.0, 0.0); // no specular reflection
+    }
+  else // light source on the right side
+    {
+      specularReflection = attenuation * vec3(light0.specular) * vec3(frontMaterial.specular)
+  * pow(max(0.0, dot(reflect(-lightDirection, normalDirection), viewDirection)), frontMaterial.shininess);
+    }
 
-  vColor = vec4(ambientLighting + diffuseReflection + specularReflection, 1.0);
-  return mvp * v_coord;
-}
-#endif
-
-#ifdef PIXEL
-vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-  return Texel(texture, texture_coords) * vColor * color;
+  return vec4(ambientLighting + diffuseReflection + specularReflection, 1.0);
 }
 #endif
 )===";
@@ -282,9 +294,7 @@ public:
     glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
     gl.getProjection() = perspective;
 
-    glGenBuffers(1, &modelViewsBuffer);
     glGenBuffers(1, &normalsBuffer);
-    glGenBuffers(1, &colorsBuffer);
 
     // gl.bufferVertices((Vertex *)&tetrahedron, numVertices, GL_STATIC_DRAW);
     // glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
@@ -438,9 +448,7 @@ private:
   Shader shader;
   Mesh mesh;
   Mesh sphereMesh;
-  GLuint modelViewsBuffer;
   GLuint normalsBuffer;
-  GLuint colorsBuffer;
   glm::mat4 camera;
 };
 

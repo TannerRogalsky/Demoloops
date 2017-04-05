@@ -79,6 +79,8 @@ set(LOOPS ${ASSET_LOOPS}
   mandlebrot
   uv_sphere
   normal_lighting
+  normal_lighting2
+  normal_lighting3
   wireframe
   loop030_3d
   testopengl
