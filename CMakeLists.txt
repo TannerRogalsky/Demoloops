@@ -177,6 +177,8 @@ foreach(LOOP ${LOOPS})
   add_executable(${LOOP} ${PROJECT_SOURCE_DIR}/src/${LOOP}.cpp)
 
   if (EMSCRIPTEN)
+    add_executable(${LOOP}_asm ${PROJECT_SOURCE_DIR}/src/${LOOP}.cpp)
+
     # if it's an asset loop, preload the assets
     if (${LOOP} IN_LIST ASSET_LOOPS)
       get_target_property(TEMP ${LOOP} LINK_FLAGS)
@@ -186,10 +188,13 @@ foreach(LOOP ${LOOPS})
       # append our values
       SET(TEMP "${TEMP} --preload-file ../res/${LOOP} --use-preload-plugins")
       set_target_properties(${LOOP} PROPERTIES LINK_FLAGS ${TEMP} )
+      set_target_properties(${LOOP}_asm PROPERTIES LINK_FLAGS ${TEMP} )
     endif()
 
-    target_link_libraries(${LOOP} demoloop-lib poly2tri "-s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1")
-    # set_property(TARGET ${LOOP} PROPERTY SUFFIX ".html")
+    target_link_libraries(${LOOP} demoloop-lib poly2tri "-s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1 -s WASM=1")
+    target_link_libraries(${LOOP}_asm demoloop-lib poly2tri "-s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1")
+
+    # set_property(TARGET ${LOOP}_asm PROPERTY SUFFIX ".html")
   else()
     target_link_libraries(${LOOP} demoloop-lib poly2tri
                           ${SDL2_LIBRARIES}
