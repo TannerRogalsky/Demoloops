@@ -20,6 +20,7 @@
 
 #include "graphics/canvas.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <stdexcept>
 
 namespace demoloop
 {

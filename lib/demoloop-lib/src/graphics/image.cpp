@@ -1,6 +1,7 @@
 #include "graphics/image.h"
 #include "res_path.h"
 #include <SDL_image.h>
+#include <stdexcept>
 
 namespace demoloop {
 

@@ -6,6 +6,7 @@
 #include "graphics/texture.h"
 // #include "graphics/Volatile.h"
 #include "graphics/gl.h"
+#include <string>
 
 namespace demoloop
 {
