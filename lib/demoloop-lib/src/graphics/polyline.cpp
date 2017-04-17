@@ -393,16 +393,15 @@ void Polyline::draw(const glm::mat4 &transform)
 
   Vertex *actualVertices = new Vertex[total_vertex_count];
   for (uint32_t i = 0; i < total_vertex_count; ++i) {
-    actualVertices[i].x = vertices[i].x;
-    actualVertices[i].y = vertices[i].y;
-    actualVertices[i].z = vertices[i].z;
+    memcpy(&actualVertices[i], &vertices[i], sizeof(glm::vec3));
+    actualVertices[i].s = i % 2;
   }
 
   gl.prepareDraw(transform);
 
   gl.bindTexture(gl.getDefaultTexture());
 
-  uint32_t enabledattribs = ATTRIBFLAG_POS;
+  uint32_t enabledattribs = ATTRIBFLAG_POS | ATTRIBFLAG_TEXCOORD;
 
   if (overdraw)
   {
@@ -416,6 +415,7 @@ void Polyline::draw(const glm::mat4 &transform)
 
   gl.bufferVertices(actualVertices, total_vertex_count, GL_DYNAMIC_DRAW);
   glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *) offsetof(Vertex, x));
+  glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *) offsetof(Vertex, s));
   glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid *) offsetof(Vertex, r));
 
   gl.useVertexAttribArrays(enabledattribs);
