@@ -86,6 +86,7 @@ void Polyline::render(const float *coords, size_t count, size_t size_hint, float
       extra_vertices = 2;
   }
 
+  if (vertices) delete[] vertices;
   // Use a single linear array for both the regular and overdraw vertices.
   vertices = new glm::vec3[vertex_count + extra_vertices + overdraw_vertex_count];
 
