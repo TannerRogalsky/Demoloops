@@ -354,7 +354,11 @@ Polyline::~Polyline()
     delete[] vertices;
 }
 
-void Polyline::draw()
+void Polyline::draw() {
+  draw(glm::mat4());
+}
+
+void Polyline::draw(const glm::mat4 &transform)
 {
   // OpenGL::TempDebugGroup debuggroup("Line draw");
 
@@ -393,7 +397,7 @@ void Polyline::draw()
     actualVertices[i].z = vertices[i].z;
   }
 
-  gl.prepareDraw();
+  gl.prepareDraw(transform);
 
   gl.bindTexture(gl.getDefaultTexture());
 

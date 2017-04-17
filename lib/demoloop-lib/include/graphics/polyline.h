@@ -67,6 +67,7 @@ public:
   /** Draws the line on the screen
    */
   void draw();
+  void draw(const glm::mat4 &transform);
 
   glm::vec3 *vertices;
   size_t vertex_count;
