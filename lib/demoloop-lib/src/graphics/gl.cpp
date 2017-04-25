@@ -3,7 +3,8 @@
 
 namespace demoloop {
   GL::GL()
-    : maxAnisotropy(1.0f)
+    : contextInitialized(false)
+    , maxAnisotropy(1.0f)
     , maxTextureSize(0)
     , maxRenderTargets(1)
     , maxRenderbufferSamples(0)
@@ -14,6 +15,10 @@ namespace demoloop {
   }
 
   GL::~GL() {
+    if (!contextInitialized) {
+      return;
+    }
+
     glDeleteBuffers(1, &mVBO);
     glDeleteBuffers(1, &mIBO);
 
@@ -58,6 +63,8 @@ namespace demoloop {
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &maxvertexattribs);
     state.enabledAttribArrays = (uint32_t) ((1ull << uint32_t(maxvertexattribs)) - 1);
     useVertexAttribArrays(0);
+
+    contextInitialized = true;
 
     return true;
   }

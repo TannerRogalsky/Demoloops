@@ -190,6 +190,8 @@ private:
   void initMaxValues();
   void createDefaultTexture();
 
+  bool contextInitialized;
+
   GLfloat maxAnisotropy;
   GLint maxTextureSize;
   GLint maxRenderTargets;
