@@ -10,7 +10,7 @@ using namespace demoloop;
 float t = 0;
 const float CYCLE_LENGTH = 10;
 
-const float size = 3;
+const float SIZE = 3;
 
 float cubicEaseInOut(float t,float b , float c, float d) {
   t/=d/2;
@@ -21,7 +21,7 @@ float cubicEaseInOut(float t,float b , float c, float d) {
 
 Vertex parametricPlane(const float u, const float v) {
   return {
-    (u - 0.5f) * size, (v - 0.5f) * size, 0,
+    (u - 0.5f) * SIZE, (v - 0.5f) * SIZE, 0,
     1 - u, 1 - v,
     255, 255, 255, 255
   };
@@ -33,7 +33,7 @@ Vertex flatMobius(float s, float t) {
 
   float x, y, z;
 
-  float a = size / 2 / 2;
+  float a = SIZE / 2 / 2;
   x = cosf(v) * (a + u * cosf(v / 2));
   y = sinf(v) * (a + u * cosf(v / 2));
   z = u * sinf( v / 2 );
@@ -50,7 +50,7 @@ Vertex volumetricMobius(float s, float v) {
 
   u = u * 2;
   float phi = u / 2;
-  float major = size / 2, a = 0.125, b = 0.65;
+  float major = SIZE / 2, a = 0.125, b = 0.65;
   float x, y, z;
   x = a * cosf( t ) * cosf( phi ) - b * sinf( t ) * sinf( phi );
   z = a * cosf( t ) * sinf( phi ) + b * sinf( t ) * cosf( phi );
@@ -68,7 +68,7 @@ Vertex parametricSphere(float s, float t) {
   float v = s * DEMOLOOP_M_PI * 2;
   // v *= 3.0/4.0;
 
-  float radius = size / 2;
+  float radius = SIZE / 2;
   float x = -radius * sinf(u) * sinf(v);
   float y = -radius * cosf(u);
   float z = radius * sinf(u) * cosf(v);
@@ -140,7 +140,7 @@ const uint32_t numIndices = slices * stacks * 6;
 
 class Loop055 : public Demoloop {
 public:
-  Loop055() : Demoloop(150, 150, 150), shader({shaderCode, shaderCode}) {
+  Loop055() : Demoloop(1280, 720, 150, 150, 150), shader({shaderCode, shaderCode}) {
   }
 
   ~Loop055() {
