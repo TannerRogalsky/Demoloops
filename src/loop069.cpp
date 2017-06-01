@@ -26,9 +26,8 @@ vec2 rotate(vec2 pos, float rad){
 }
 
 float random (in vec2 st) {
-    return fract(sin(dot(st.xy,
-                         vec2(12.9898,78.233)))*
-        43758.5453123);
+  highp float p = dot(st.xy, vec2(12.9898,78.233));
+  return fract(sin(p)*4358.5453123);
 }
 
 // Based on Morgan McGuire @morgan3d
