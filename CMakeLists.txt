@@ -76,6 +76,7 @@ set(LOOPS ${ASSET_LOOPS}
   loop062
   loop065
   loop066
+  loop069
   mandlebrot
   uv_sphere
   normal_lighting
