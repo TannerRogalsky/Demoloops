@@ -111,6 +111,7 @@ set(LOOPS ${ASSET_LOOPS}
   pilotpriest_lost_boy
   compile_time_geometry
   stag
+  cube_tube
 )
 
 # Bump up warning levels appropriately for clang, gcc & msvc
