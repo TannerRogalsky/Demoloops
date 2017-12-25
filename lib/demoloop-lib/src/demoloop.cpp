@@ -35,12 +35,12 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
 
   // SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   // SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
@@ -357,7 +357,7 @@ void Demoloop::Run() {
       InternalUpdate();
       while((std::chrono::high_resolution_clock::now() - start) < interval){}
     }
-    // const std::chrono::seconds CYCLE_LENGTH(10);
+    // const std::chrono::seconds CYCLE_LENGTH(4);
     // const std::chrono::duration<float> interval(1.0f / 50.0f);
     // char* pixels = new char [3 * width * height];
     // SDL_Surface* temp = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 24, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);

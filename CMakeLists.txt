@@ -74,11 +74,16 @@ set(LOOPS ${ASSET_LOOPS}
   loop060
   loop061
   loop062
+  loop063
   loop065
   loop066
+  loop067
+  loop068
   loop069
+  loop070
   mandlebrot
   uv_sphere
+  tetrahedron
   normal_lighting
   normal_lighting2
   normal_lighting3
@@ -96,6 +101,16 @@ set(LOOPS ${ASSET_LOOPS}
   snowflake
   wave_visualization
   tube
+  valentines
+  polygon_tiling
+  orbit_controls
+  # rune_generation
+  domain_warping
+  tiling_domain_warping
+  constellations
+  pilotpriest_lost_boy
+  compile_time_geometry
+  stag
 )
 
 # Bump up warning levels appropriately for clang, gcc & msvc

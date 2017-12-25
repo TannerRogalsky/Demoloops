@@ -2,12 +2,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include "math_helpers.h"
+#include "graphics/image.h"
 #include <array>
 using namespace std;
 using namespace demoloop;
 
 float t = 0;
-const float CYCLE_LENGTH = 10;
+const float CYCLE_LENGTH = 7;
 
 template<size_t NUM_VERTS, size_t NUM_INDICES>
 array<Vertex, NUM_INDICES> toNonIndexed(const array<Vertex, NUM_VERTS> &in_verts, const array<uint32_t, NUM_INDICES> &indices) {
@@ -127,6 +128,79 @@ void subdivideFace(Vertex *out, uint32_t &index, const Vertex &a, const Vertex &
   }
 }
 
+template<size_t N>
+void correctSeam(array<Vertex, N> &v) {
+  for (uint32_t i = 0; i < N; i+=3) {
+    const float u0 = v[i + 0].s;
+    const float u1 = v[i + 1].s;
+    const float u2 = v[i + 2].s;
+
+    const float maxU = max({u0, u1, u2});
+    const float minU = min({u0, u1, u2});
+
+    if (maxU > 0.9 && minU < 0.1) {
+      if (u0 < 0.2) v[i + 0].s += 1;
+      if (u1 < 0.2) v[i + 1].s += 1;
+      if (u2 < 0.2) v[i + 2].s += 1;
+    }
+  }
+}
+
+float azimuth(const Vertex &v) {
+  return atan2(v.z, -v.x);
+}
+
+float inclination(const Vertex &v) {
+  return atan2(-v.y, sqrt(v.x * v.x + v.z * v.z));
+}
+
+void correctUV(Vertex &v, const glm::vec2 &uv, const float azimuth) {
+  if ((azimuth < 0) && (uv.x == 1)) {
+    v.s =  uv.x - 1;
+  }
+
+  if ((v.x == 0) && (v.z == 0)) {
+    v.s = azimuth / 2.0 / DEMOLOOP_M_PI + 0.5;
+  }
+}
+
+template<size_t N>
+void correctUVs(array<Vertex, N> &v) {
+  glm::vec3 a, b, c, centroid;
+  glm::vec2 uvA, uvB, uvC;
+
+  for (uint32_t i = 0; i < N; i+=3) {
+    memcpy(&a, &v[i + 0].x, sizeof(glm::vec3));
+    memcpy(&b, &v[i + 1].x, sizeof(glm::vec3));
+    memcpy(&c, &v[i + 2].x, sizeof(glm::vec3));
+
+    memcpy(&uvA, &v[i + 0].s, sizeof(glm::vec2));
+    memcpy(&uvB, &v[i + 1].s, sizeof(glm::vec2));
+    memcpy(&uvC, &v[i + 2].s, sizeof(glm::vec2));
+
+    centroid = (a + b + c) / 3.0f;
+
+    const float azimuth = atan2(centroid.z, -centroid.x);
+
+    correctUV(v[i + 0], uvA, azimuth);
+    correctUV(v[i + 1], uvB, azimuth);
+    correctUV(v[i + 2], uvC, azimuth);
+  }
+}
+
+template<size_t N>
+array<Vertex, N> generateUVs(array<Vertex, N> &vertices) {
+  for (Vertex &v : vertices) {
+    v.s = azimuth(v) / 2.0 / DEMOLOOP_M_PI + 0.5;
+    v.t = inclination(v) / DEMOLOOP_M_PI + 0.5;
+  }
+
+  // correctSeam(vertices);
+  // correctUVs(vertices);
+
+  return vertices;
+}
+
 template<
   uint32_t DETAIL = 0,
   size_t NUM_VERTS,
@@ -143,15 +217,28 @@ array<Vertex, NUM_INDICES * pow<uint32_t>(4, DETAIL)> subdivide(const array<Vert
     subdivideFace<DETAIL>(out.data(), index, a, b, c);
   }
 
+  generateUVs(out);
+
   return out;
 }
 
-const auto vertices = subdivide<2>(indexedVertices, indices);
+const auto vertices = subdivide<0>(indexedVertices, indices);
 
 class Loop037 : public Demoloop {
 public:
-  Loop037() : Demoloop(720, 720, 150, 150, 150) {
+  Loop037() : Demoloop(480, 480, 150, 150, 150), uvTexture("uv_texture.jpg") {
     gl.getProjection() = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
+    // Vertex v = {100, 200, 300, 1, 1, 4, 5, 6, 7};
+    // glm::vec3 pos;
+    // glm::vec2 uvs;
+    // printf("%f\n", uvs.x);
+    // memcpy(&pos, &v, sizeof(glm::vec3));
+    // memcpy(&uvs, &v.s, sizeof(glm::vec2));
+    // printf("%f\n", uvs.x);
+
+    // glm::vec3 &a = *((glm::vec3 *) &v);
+    // a.x = 1.0;
+    // printf("%f\n", v.x);
   }
 
   void Update(float dt) {
@@ -169,16 +256,18 @@ public:
     t1.get() = camera;
 
     glm::mat4 transform;
-    transform = glm::rotate(transform, (float)DEMOLOOP_M_PI * 2 * cycle_ratio, {1, 1, 0});
+    transform = glm::rotate(transform, (float)DEMOLOOP_M_PI * 2 * cycle_ratio, {0, 1, 0});
+    // transform = glm::rotate(transform, (float)DEMOLOOP_M_PI * -0.5f, {0, 1, 0});
     transform = glm::scale(transform, {radius, radius, radius});
 
-    setColor(0, 0, 0);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // setColor(0, 0, 0);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     gl.triangles(vertices.data(), vertices.size(), transform);
   }
 
 private:
+  Image uvTexture;
 };
 
 int main(int, char**){
