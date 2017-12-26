@@ -81,6 +81,7 @@ set(LOOPS ${ASSET_LOOPS}
   loop068
   loop069
   loop070
+  loop071
   mandlebrot
   uv_sphere
   tetrahedron
@@ -111,7 +112,6 @@ set(LOOPS ${ASSET_LOOPS}
   pilotpriest_lost_boy
   compile_time_geometry
   stag
-  cube_tube
 )
 
 # Bump up warning levels appropriately for clang, gcc & msvc
