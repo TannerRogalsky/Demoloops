@@ -15,6 +15,7 @@
 
 #ifdef EMSCRIPTEN
   #include <emscripten.h>
+  #include <emscripten/html5.h>
 #endif
 
 namespace demoloop {
@@ -112,6 +113,25 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
       }
     }
   }
+
+#ifdef EMSCRIPTEN
+  const auto& touchCallback = [](int /*eventType*/, const EmscriptenTouchEvent *e, void *userData) {
+    Demoloop *self = static_cast<Demoloop*>(userData);
+    self->mouse_x = e->touches[0].canvasX;
+    self->mouse_y = e->touches[0].canvasY;
+    return static_cast<EM_BOOL>(true);
+  };
+  emscripten_set_touchstart_callback("#canvas", this, true, touchCallback);
+  emscripten_set_touchmove_callback("#canvas", this, true, touchCallback);
+
+  const auto& mouseCallback = [](int /*eventType*/, const EmscriptenMouseEvent *e, void *userData) {
+    Demoloop *self = static_cast<Demoloop*>(userData);
+    self->mouse_x = e->canvasX;
+    self->mouse_y = e->canvasY;
+    return static_cast<EM_BOOL>(true);
+  };
+  emscripten_set_mousemove_callback("#canvas", this, true, mouseCallback);
+#endif
 }
 
 Demoloop::~Demoloop() {
@@ -330,7 +350,11 @@ void Demoloop::InternalUpdate() {
     }
   }
   prev_mouse_x = mouse_x, prev_mouse_y = mouse_y;
+#ifdef EMSCRIPTEN
+  mouse_state = SDL_GetMouseState(NULL, NULL);
+#else
   mouse_state = SDL_GetMouseState(&mouse_x, &mouse_y);
+#endif
 
   glClearColor( bg_r / 255.0, bg_g / 255.0, bg_b / 255.0, 1.f );
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
