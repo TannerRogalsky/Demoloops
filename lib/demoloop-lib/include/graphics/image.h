@@ -7,6 +7,7 @@
 // #include "graphics/Volatile.h"
 #include "graphics/gl.h"
 #include <string>
+#include <vector>
 
 namespace demoloop
 {
@@ -14,6 +15,7 @@ namespace demoloop
 class Image : public Texture
 {
 public:
+  Image(std::vector<uint8_t> &&pixels, int width, int height);
   Image(const std::string &path);
   virtual ~Image();
 

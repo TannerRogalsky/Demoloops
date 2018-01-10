@@ -1,29 +1,10 @@
 #include "graphics/image.h"
 #include "res_path.h"
 #include <SDL_image.h>
-#include <stdexcept>
 
 namespace demoloop {
 
-Image::Image(const std::string &path) {
-  SDL_Surface *surf = IMG_Load((getResourcePath() + path).c_str());
-  if (surf == nullptr) {
-    logSDLError("IMG_Load");
-  }
-
-  auto fmt = surf->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-  width = surf->w;
-  height = surf->h;
-
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D,texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surf->w,surf->h, 0, fmt, GL_UNSIGNED_BYTE,surf->pixels);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-  SDL_FreeSurface(surf);
-
+void initVertices(Vertex *vertices, int width, int height) {
   for (int i = 0; i < 4; i++)
     vertices[i].r = vertices[i].g = vertices[i].b = vertices[i].a = 255;
 
@@ -49,6 +30,40 @@ Image::Image(const std::string &path) {
   vertices[2].t = 0.0f;
   vertices[3].s = 1.0f;
   vertices[3].t = 1.0f;
+}
+
+Image::Image(std::vector<uint8_t> &&pixels, int width, int height) : width(width), height(height) {
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D,texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, static_cast<void *>(pixels.data()));
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+
+  initVertices(vertices, width, height);
+}
+
+Image::Image(const std::string &path) {
+  SDL_Surface *surf = IMG_Load((getResourcePath() + path).c_str());
+  if (surf == nullptr) {
+    logSDLError("IMG_Load");
+  }
+
+  auto fmt = surf->format->BytesPerPixel == 4 ? GL_RGBA : GL_RGB;
+  width = surf->w;
+  height = surf->h;
+
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D,texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surf->w,surf->h, 0, fmt, GL_UNSIGNED_BYTE,surf->pixels);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+  SDL_FreeSurface(surf);
+
+  initVertices(vertices, width, height);
 }
 
 Image::~Image() {
