@@ -332,6 +332,23 @@ namespace demoloop {
     gl.drawArrays(mode, 0, count);
   }
 
+  void GL::genericDrawElements(const Vertex *coords, size_t count,
+                              const uint32_t *indices, size_t iCount,
+                              const glm::mat4 &modelView, GLenum mode, uint32_t arraybits) {
+    prepareDraw(modelView);
+
+    bufferVertices(coords, count, GL_DYNAMIC_DRAW);
+    bufferIndices(indices, iCount, GL_DYNAMIC_DRAW);
+
+    useVertexAttribArrays(arraybits);
+
+    glVertexAttribPointer(ATTRIB_POS, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, x));
+    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, s));
+    glVertexAttribPointer(ATTRIB_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex), (GLvoid*) offsetof(Vertex, r));
+
+    gl.drawElements(mode, iCount, GL_UNSIGNED_INT, 0);
+  }
+
   void GL::points(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
     genericDrawArrays(coords, count, modelView, GL_POINTS, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
   }
@@ -354,6 +371,10 @@ namespace demoloop {
 
   void GL::triangleFan(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
     genericDrawArrays(coords, count, modelView, GL_TRIANGLE_FAN, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);
+  }
+
+  void GL::triangles(const Vertex *coords, size_t count, const uint32_t *indices, size_t iCount, const glm::mat4 &modelView) {
+    genericDrawElements(coords, count, indices, iCount, modelView, GL_TRIANGLES, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);
   }
 
   void GL::triangles(const Vertex *coords, size_t count, const glm::mat4 &modelView) {

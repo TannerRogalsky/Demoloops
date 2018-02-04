@@ -173,6 +173,7 @@ public:
 
   void triangles(const Vertex *coords, size_t count, const glm::mat4 &modelView);
   void triangles(const Vertex *coords, size_t count);
+  void triangles(const Vertex *coords, size_t count, const uint32_t *indices, size_t iCount, const glm::mat4 &modelView);
   void triangles(const Triangle* triangles, size_t count);
   void triangles(const Triangle* triangles, size_t count, const glm::mat4 &modelView);
   void points(const Vertex *coords, size_t count, const glm::mat4 &modelView);
@@ -185,6 +186,7 @@ public:
 private:
 
   void genericDrawArrays(const Vertex *coords, size_t count, const glm::mat4 &modelView, GLenum mode, uint32_t arraybits);
+  void genericDrawElements(const Vertex *coords, size_t count, const uint32_t *indices, size_t iCount, const glm::mat4 &modelView, GLenum mode, uint32_t arraybits);
 
   void initMatrices();
   void initMaxValues();
