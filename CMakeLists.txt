@@ -82,6 +82,7 @@ set(LOOPS ${ASSET_LOOPS}
   loop069
   loop070
   loop071
+  loop072
   mandlebrot
   uv_sphere
   tetrahedron

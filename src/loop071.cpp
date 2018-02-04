@@ -188,13 +188,7 @@ array<Vertex, N * 3> getLineGeometry(const array<Vertex, N> &in, float halfWidth
 
 class Loop052 : public Demoloop {
 public:
-  Loop052() : Demoloop(720, 720, 0, 0, 0), surfaceShader({surfaceShaderCode, surfaceShaderCode}) {
-    glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, farPlane);
-    gl.getProjection() = perspective;
-
-    // gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
-    // gl.getTransform() = glm::scale(gl.getTransform(), {100.0f, 100.0f, 100.0f});
-  }
+  Loop052() : Demoloop(1280, 1280, 0, 0, 0), surfaceShader({surfaceShaderCode, surfaceShaderCode}) {}
 
   void Update(float dt) {
     t += dt;
@@ -213,6 +207,8 @@ public:
     const glm::vec3 up = glm::vec3(0, 1, 0);
     const glm::vec3 target = glm::vec3(0, 0, farPlane);
     gl.getTransform() = glm::lookAt(eye, target, up);
+
+    gl.getProjection() = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, farPlane);
 
     auto verticesFunction = [cycle_ratio, mx, my](const float u, const float v, const uint32_t slices, const uint32_t stacks) {
       float z = u * farPlane - fmod(cycle_ratio * farPlane, farPlane / slices);
