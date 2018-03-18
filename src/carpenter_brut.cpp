@@ -187,7 +187,7 @@ void lineSegment(const glm::vec2 &start, const vector<glm::vec2> &deltas) {
 
 class Loop050 : public Demoloop {
 public:
-  Loop050() : Demoloop(500, 500, 0, 0, 0),
+  Loop050() : Demoloop(CYCLE_LENGTH, 500, 500, 0, 0, 0),
         noiseShader({noiseShaderCode, noiseShaderCode}),
         blurShader({blurShaderCode, blurShaderCode}),
         canvas(width, height),
@@ -227,12 +227,7 @@ public:
     }
   }
 
-  void Update(float dt) {
-    t += dt;
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
-
-
+  void Update() {
     gl.bindTexture(gl.getDefaultTexture());
     setColor(white);
 

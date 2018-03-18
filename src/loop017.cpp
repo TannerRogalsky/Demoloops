@@ -14,7 +14,7 @@ const float CYCLE_LENGTH = 6;
 
 class Loop015 : public Demoloop {
 public:
-  Loop015() : Demoloop(150, 150, 150), RADIUS(height / 6) {
+  Loop015() : Demoloop(CYCLE_LENGTH, 150, 150, 150), RADIUS(height / 6) {
     glDisable(GL_DEPTH_TEST);
 
     const float interval = DEMOLOOP_M_PI * 2 / NUM_VERTS;
@@ -29,11 +29,8 @@ public:
     gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     setColor(255, 255, 255);
     gl.lineLoop(vertices, NUM_VERTS, glm::mat4());

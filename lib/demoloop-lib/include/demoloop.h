@@ -31,12 +31,12 @@ public:
     BLENDALPHA_MAX_ENUM
   };
 
-  Demoloop();
-  Demoloop(int r, int g, int b);
-  Demoloop(int width, int height, int r, int g, int b);
+  Demoloop(uint32_t cycleLength);
+  Demoloop(uint32_t cycleLength, int r, int g, int b);
+  Demoloop(uint32_t cycleLength, int width, int height, int r, int g, int b);
   ~Demoloop();
   void Run();
-  virtual void Update(float dt) = 0;
+  virtual void Update() = 0;
   int getMouseX() const;
   int getMouseY() const;
   int getMouseDeltaX() const;
@@ -69,13 +69,18 @@ protected:
   BlendMode getBlendMode(BlendAlpha &alphamode) const;
 
   std::vector<Canvas *> getCanvas() const;
+
+  float getCycleRatio() const;
+  float getTime() const;
 private:
+  const uint32_t cycleLength;
   int bg_r, bg_g, bg_b;
   void InternalUpdate();
   SDL_Event e;
   int mouse_x, mouse_y;
   int prev_mouse_x, prev_mouse_y;
   uint32_t mouse_state;
+  float t = 0;
 
   struct DisplayState
   {

@@ -164,7 +164,7 @@ function<float(float)> circleInOut(const float t) {
 
 class Loop063 : public Demoloop {
 public:
-  Loop063() : Demoloop(720, 720, 0, 0, 0), glowShader({glowShaderCode, glowShaderCode}) {
+  Loop063() : Demoloop(CYCLE_LENGTH, 720, 720, 0, 0, 0), glowShader({glowShaderCode, glowShaderCode}) {
     glDisable(GL_DEPTH_TEST);
     // glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
     // gl.getProjection() = perspective;
@@ -174,11 +174,8 @@ public:
   ~Loop063() {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const float halfwidth = width * 0.1;
     glm::mat4 transform;

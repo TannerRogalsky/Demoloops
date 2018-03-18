@@ -14,7 +14,7 @@ const float CYCLE_LENGTH = 6;
 
 class Loop015 : public Demoloop {
 public:
-  Loop015() : Demoloop(150, 150, 150), RADIUS(height / 6) {
+  Loop015() : Demoloop(CYCLE_LENGTH, 150, 150, 150), RADIUS(height / 6) {
     glDisable(GL_DEPTH_TEST);
 
     float phi = 0.0f;
@@ -33,11 +33,8 @@ public:
     gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     gl.lines(vertices, NUM_VERTS);
 

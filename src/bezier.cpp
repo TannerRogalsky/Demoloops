@@ -22,14 +22,11 @@ glm::vec2 evaluate(const array<glm::vec2, 4> &controlPoints, float t) {
 
 class Bezier : public Demoloop {
 public:
-  Bezier() : Demoloop(150, 150, 150) {
+  Bezier() : Demoloop(CYCLE_LENGTH, 150, 150, 150) {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     array<glm::vec2, 4> controlPoints = {{
       {100 * 5 - 400, 100 * 5 - 400},

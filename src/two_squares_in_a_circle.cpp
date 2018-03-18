@@ -83,14 +83,11 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
 
 class Geometric : public Demoloop {
 public:
-  Geometric() : Demoloop(500, 500, 150, 150, 150), shader({shaderCode, shaderCode}) {
+  Geometric() : Demoloop(CYCLE_LENGTH, 500, 500, 150, 150, 150), shader({shaderCode, shaderCode}) {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     setColor(42, 132, 242);
 

@@ -13,16 +13,14 @@ const float CYCLE_LENGTH = 3;
 
 class Loop1 : public Demoloop {
 public:
-  Loop1() : Demoloop(150, 150, 150) {
+  Loop1() : Demoloop(CYCLE_LENGTH, 150, 150, 150) {
   }
 
-  void Update(float dt) {
-    t += dt;
-
+  void Update() {
     const float RADIUS = height / 3;
 
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+
+    const float cycle_ratio = getCycleRatio();
     float count = 50;
     float aspect_ratio = (width + 0.0) / height;
     int ox = width / 2, oy = height / 2;

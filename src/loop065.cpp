@@ -92,7 +92,7 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
 
 class Loop050 : public Demoloop {
 public:
-  Loop050() : Demoloop(720, 720, 0, 0, 0),
+  Loop050() : Demoloop(CYCLE_LENGTH, 720, 720, 0, 0, 0),
         sphereShader({sphereShaderCode, sphereShaderCode}),
         sphereMesh(sphere(1, 128, 128)),
         offset(static_cast<float>(rand()) / RAND_MAX)  {
@@ -102,11 +102,8 @@ public:
     sphereShader.sendFloat("offset", 1, &offset, 1);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const float scale = 10;
 

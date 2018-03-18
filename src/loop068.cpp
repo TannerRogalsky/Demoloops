@@ -202,7 +202,7 @@ const uint32_t num_particles = 500;
 
 class Loop066 : public Demoloop {
 public:
-  Loop066() : Demoloop(720, 720, 0, 0, 0),
+  Loop066() : Demoloop(CYCLE_LENGTH, 720, 720, 0, 0, 0),
               diamondShader({diamondShaderCode, diamondShaderCode}),
               particleShader({particleShaderCode, particleShaderCode}),
               particleIndicesLocation(particleShader.getAttribLocation("particleIndex")) {
@@ -223,10 +223,8 @@ public:
     glDeleteBuffers(1, &particlesBuffer);
   }
 
-  void Update(float dt) {
-    t += dt;
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
 
     const glm::vec3 eye = glm::vec3(2, 1, 14 * 5);

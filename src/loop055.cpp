@@ -7,7 +7,6 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
 const float CYCLE_LENGTH = 10;
 
 const float SIZE = 3;
@@ -140,19 +139,16 @@ const uint32_t numIndices = slices * stacks * 6;
 
 class Loop055 : public Demoloop {
 public:
-  Loop055() : Demoloop(1280, 720, 150, 150, 150), shader({shaderCode, shaderCode}) {
+  Loop055() : Demoloop(CYCLE_LENGTH, 1280, 720, 150, 150, 150), shader({shaderCode, shaderCode}) {
   }
 
   ~Loop055() {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
     // const float mod_ratio = powf(sinf(cycle_ratio * DEMOLOOP_M_PI), 2);
-    const uint32_t surfaceIndex = fmod(floor(t / CYCLE_LENGTH), surfaces.size());
+    const uint32_t surfaceIndex = fmod(floor(getTime() / CYCLE_LENGTH), surfaces.size());
 
     const uint32_t sliceCount = slices + 1;
 

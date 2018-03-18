@@ -10,7 +10,6 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
 const float CYCLE_LENGTH = 10;
 const uint32_t arms = 5;
 const uint32_t trisPerArm = 40;
@@ -198,7 +197,7 @@ vector<function<glm::vec3(float, uint32_t)>> loops = {
 
 class Hope : public Demoloop {
 public:
-  Hope() : Demoloop(150, 150, 150),
+  Hope() : Demoloop(CYCLE_LENGTH, 150, 150, 150),
           shader({shaderCode, shaderCode}),
           blurShader({blurShaderCode, blurShaderCode}),
           source("hope/hopeneverstops.ogg") {
@@ -215,13 +214,10 @@ public:
     source.play();
   }
 
-  void Update(float dt) {
-    t += dt;
-
+  void Update() {
     source.update();
 
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+    const float cycle_ratio = getCycleRatio();
 
     float bpm = 96.0 / (60.0 / CYCLE_LENGTH);
     float beat_ratio = cycle_ratio * DEMOLOOP_M_PI * bpm;
@@ -234,9 +230,9 @@ public:
     renderTexture(bg_texture, -width / 2, -height / 2, width, height);
 
     uint32_t numLoops = loops.size();
-    uint32_t activeLoop = fmod(floor(t / CYCLE_LENGTH), numLoops);
+    uint32_t activeLoop = fmod(floor(getTime() / CYCLE_LENGTH), numLoops);
 
-    const glm::vec3 twoDAxis = {0, 0 , 1};
+    const glm::vec3 twoDAxis = {0, 0, 1};
     for (uint32_t i = 0; i < numTris; ++i) {
 
       glm::vec3 p1 = loops[activeLoop](cycle_ratio, i);

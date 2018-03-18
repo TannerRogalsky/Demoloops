@@ -226,7 +226,7 @@ const auto vertices = subdivide<0>(indexedVertices, indices);
 
 class Loop037 : public Demoloop {
 public:
-  Loop037() : Demoloop(480, 480, 150, 150, 150), uvTexture("uv_texture.jpg") {
+  Loop037() : Demoloop(CYCLE_LENGTH, 480, 480, 150, 150, 150), uvTexture("uv_texture.jpg") {
     gl.getProjection() = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
     // Vertex v = {100, 200, 300, 1, 1, 4, 5, 6, 7};
     // glm::vec3 pos;
@@ -241,10 +241,8 @@ public:
     // printf("%f\n", v.x);
   }
 
-  void Update(float dt) {
-    t += dt;
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
 
     const glm::vec3 eye = glm::vec3(2, 1, 14);

@@ -12,7 +12,7 @@ const float CYCLE_LENGTH = 3;
 
 class Loop10 : public Demoloop {
 public:
-  Loop10() : Demoloop(150, 150, 150), mesh(cube(0, 0, 0, 10)) {
+  Loop10() : Demoloop(CYCLE_LENGTH, 150, 150, 150), mesh(cube(0, 0, 0, 10)) {
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     for (auto i : mesh.mIndices) {
@@ -22,9 +22,7 @@ public:
     mesh.buffer();
   }
 
-  void Update(float dt) {
-    t += dt;
-
+  void Update() {
     glm::mat4 &m = gl.getTransform();
 
     if (isMouseDown(SDL_BUTTON_RIGHT)) {
@@ -36,12 +34,9 @@ public:
       m = glm::rotate(m, 2 * static_cast<float>(DEMOLOOP_M_PI) * getMouseDeltaY() / height * rotateSpeed, glm::vec3(1, 0, 0));
     }
 
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
-
     // glm::mat4 m;
     // m = glm::translate(m, {0, 0, 10});
-    // m = glm::rotate(m, (float)DEMOLOOP_M_PI * 2 * cycle_ratio, {0, 1, 1});
+    // m = glm::rotate(m, (float)DEMOLOOP_M_PI * 2 * getCycleRatio(), {0, 1, 1});
     mesh.draw();
   }
 

@@ -82,7 +82,7 @@ uint32_t bufferMatrixAttribute(const GLint location, const GLuint buffer, const 
 
 class Loop043 : public Demoloop {
 public:
-  Loop043() : Demoloop(150, 150, 150), shader({shaderCode, shaderCode}) {
+  Loop043() : Demoloop(CYCLE_LENGTH, 150, 150, 150), shader({shaderCode, shaderCode}) {
     glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
     gl.getProjection() = perspective;
 
@@ -91,11 +91,8 @@ public:
     glGenBuffers(1, &colorsBuffer);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const glm::vec3 eye = glm::rotate(glm::vec3(4, 1, 6), cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(-0.3, 1, 0));
     const glm::vec3 up = glm::vec3(0, 1, 0);

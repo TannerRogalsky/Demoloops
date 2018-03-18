@@ -85,7 +85,7 @@ const float farPlane = 80;
 
 class SailorMoon : public Demoloop {
 public:
-  SailorMoon() : Demoloop(540, 803, 255, 255, 255), shader({shaderCode, shaderCode}) {
+  SailorMoon() : Demoloop(CYCLE_LENGTH, 540, 803, 255, 255, 255), shader({shaderCode, shaderCode}) {
     fg_texture = loadTexture("sailor_moon/sailor_moon.jpg");
 
     glGenBuffers(1, &modelViewsBuffer);
@@ -101,11 +101,8 @@ public:
     glDeleteBuffers(1, &colorsBuffer);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     float eyeRot = 0;
     // eyeRot += cycle_ratio * DEMOLOOP_M_PI * 2;
