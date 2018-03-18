@@ -119,7 +119,6 @@ public:
     t1.get() = camera;
 
     const glm::vec3 twoDAxis = {0, 0, 1};
-const uint32_t CYCLE_LENGTH
     for (uint32_t i = 0; i < numTris; ++i) {
       const float t = i;
       const float armIndex = i % arms;
