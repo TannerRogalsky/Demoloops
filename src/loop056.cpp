@@ -17,11 +17,7 @@ vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {
 #endif
 
 #ifdef PIXEL
-uniform float cycle_ratio;
-
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
-  float t = cycle_ratio;
-  // float height = 0.1 + 0.1 * fract(sin((tc.y) * 3.14) * 100000.0);
   float height = 0.1;
   float c = smoothstep(height, height + 0.1, tc.x) * smoothstep(height, height + 0.1, 1.0 - tc.x);
 
@@ -73,6 +69,10 @@ polygonVertices(const float &radius) {
 
   return r;
 }
+
+uint32_t getIndex(const uint32_t &i, const uint32_t &points_per_edge) {
+  return i * 2 + i * 2 * points_per_edge;
+};
 
 class Loop055 : public Demoloop {
 public:
@@ -152,10 +152,6 @@ public:
       applyColor(v2, hsl2rgb(fmod(t + cycle_ratio, 1.0), 1.0, 0.5));
     }
 
-    const static auto getIndex = [](const uint32_t &i, const uint32_t &points_per_edge) {
-      return i * 2 + i * 2 * points_per_edge;
-    };
-
     // set interpolated verts
     for (uint32_t i = 0; i < NUM_VERTS; ++i) {
       uint32_t v_index = getIndex(i, points_per_edge);
@@ -210,7 +206,6 @@ public:
     gl.useVertexAttribArrays(ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);
 
     shader.attach();
-    shader.sendFloat("cycle_ratio", 1, &cycle_ratio, 1);
 
     gl.prepareDraw(view);
     setColor(255, 255, 255);
