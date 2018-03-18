@@ -9,7 +9,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 30;
+const uint32_t CYCLE_LENGTH = 30;
 
 template <
   typename T,

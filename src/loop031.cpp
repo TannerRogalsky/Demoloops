@@ -15,7 +15,7 @@ const Triangle triangle = {
 };
 
 
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 const uint32_t arms = 8;
 const uint32_t num = arms * 40;
 

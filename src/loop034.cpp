@@ -12,7 +12,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 const uint32_t numTris = 300;
 
 const float RADIUS = 0.05;

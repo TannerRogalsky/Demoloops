@@ -9,7 +9,7 @@ using namespace demoloop;
 
 
 const float PI = 3.1459;
-const float CYCLE_LENGTH = 3;
+const uint32_t CYCLE_LENGTH = 3;
 
 class Loop1 : public Demoloop {
 public:

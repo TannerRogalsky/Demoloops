@@ -12,7 +12,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 5;
+const uint32_t CYCLE_LENGTH = 5;
 
 template<uint32_t N>
 array<Vertex, N * 4> rectangle(const float &width, const float &height) {

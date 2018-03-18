@@ -6,7 +6,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 
 const int num_circle_verts = 10;
 const int num_vertices = 5;

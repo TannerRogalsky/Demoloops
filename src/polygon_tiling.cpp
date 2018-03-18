@@ -12,7 +12,7 @@ using namespace demoloop;
 
 const glm::vec3 twoDAxis = {0, 0, 1};
 
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 const uint32_t MAX_VERTS = 12;
 const float SPATIAL_HASH_SIZE = 100;
 array<array<glm::vec4, MAX_VERTS>, MAX_VERTS - 3> polygonVerts;

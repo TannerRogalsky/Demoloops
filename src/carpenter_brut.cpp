@@ -9,7 +9,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 const uint32_t numVerts = 5;
 const float lineWidthScale = 0.85;
 // const float lineWidthScale = cosf(DEMOLOOP_M_PI / numVerts);

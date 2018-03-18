@@ -11,7 +11,7 @@ using namespace demoloop;
 #define NUM_VERTS 3
 
 
-const float CYCLE_LENGTH = 6;
+const uint32_t CYCLE_LENGTH = 6;
 const float rotation_offset = rotationOffset(NUM_VERTS);
 
 class Loop021 : public Demoloop {

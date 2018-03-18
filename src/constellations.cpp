@@ -10,7 +10,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 const float radius = 5;
 
 const uint32_t num_stars = 400;

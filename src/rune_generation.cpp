@@ -12,7 +12,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 
 typedef vector<p2t::Point *> PointsList;
 

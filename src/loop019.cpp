@@ -9,7 +9,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 6;
+const uint32_t CYCLE_LENGTH = 6;
 static const float RADIUS = 0.3;
 
 class Loop19 : public Demoloop {

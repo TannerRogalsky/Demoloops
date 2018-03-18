@@ -8,7 +8,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 0.5;
+const uint32_t CYCLE_LENGTH = 0.5;
 
 glm::vec2 reflect(const glm::vec2 &v, const float &phi) {
   const float slope = cosf(phi) / sinf(phi);

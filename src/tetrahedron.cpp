@@ -8,7 +8,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 7;
+const uint32_t CYCLE_LENGTH = 7;
 
 template<size_t NUM_VERTS, size_t NUM_INDICES>
 array<Vertex, NUM_INDICES> toNonIndexed(const array<Vertex, NUM_VERTS> &in_verts, const array<uint32_t, NUM_INDICES> &indices) {

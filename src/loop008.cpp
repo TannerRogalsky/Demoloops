@@ -9,7 +9,7 @@ using namespace demoloop;
 #define MAX_VERTS 8
 
 
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 
 class Loop6 : public Demoloop {
 public:

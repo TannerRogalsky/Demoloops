@@ -10,7 +10,7 @@ using namespace demoloop;
 #define NUM_VERTS 60
 
 
-const float CYCLE_LENGTH = 6 * 3;
+const uint32_t CYCLE_LENGTH = 6 * 3;
 
 class Loop016 : public Demoloop {
 public:

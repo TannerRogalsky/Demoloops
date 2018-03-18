@@ -6,7 +6,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 
 const static std::string defaultVertexCode = R"===(
 vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {

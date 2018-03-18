@@ -8,7 +8,7 @@
 using namespace std;
 using namespace demoloop;
 
-const float CYCLE_LENGTH = 4;
+const uint32_t CYCLE_LENGTH = 4;
 
 const static std::string shaderCode = R"===(
 uniform mediump float cycle_ratio;

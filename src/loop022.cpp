@@ -10,7 +10,7 @@ using namespace demoloop;
 #define NUM_VERTS 3
 
 
-const float CYCLE_LENGTH = 5;
+const uint32_t CYCLE_LENGTH = 5;
 
 float inQuint(float t, float b, float c, float d) {
   return c * pow(t / d, 5) + b;

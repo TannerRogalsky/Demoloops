@@ -14,7 +14,7 @@ const uint32_t nh = 480 / (RADIUS * 2);
 const uint32_t num = nw * nh;
 
 
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 
 class Loop032 : public Demoloop {
 public:

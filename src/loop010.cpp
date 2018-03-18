@@ -8,7 +8,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 3;
+const uint32_t CYCLE_LENGTH = 3;
 
 class Loop10 : public Demoloop {
 public:

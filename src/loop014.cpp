@@ -10,7 +10,7 @@ using namespace demoloop;
 
 static const uint16_t NUM_VERTS = 60;
 
-const float CYCLE_LENGTH = 6;
+const uint32_t CYCLE_LENGTH = 6;
 static const float RADIUS = 0.3;
 
 class Loop14 : public Demoloop {

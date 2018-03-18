@@ -12,7 +12,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 5;
+const uint32_t CYCLE_LENGTH = 5;
 
 template<uint32_t N>
 typename std::enable_if<N >= 3, array<Vertex, N>>::type

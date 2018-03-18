@@ -7,7 +7,7 @@ using namespace std;
 using namespace demoloop;
 
 
-const float CYCLE_LENGTH = 1;
+const uint32_t CYCLE_LENGTH = 1;
 const uint32_t NUM_CYCLES = 10;
 
 float jmap(const float &t, const float &s0, const float &s1, const float &e0, const float &e1) {
