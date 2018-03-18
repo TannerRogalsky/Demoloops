@@ -9,11 +9,11 @@ using namespace demoloop;
 float t = 0;
 const float CYCLE_LENGTH = 10;
 
-const float size = 1;
+const float SIZE = 1;
 
 Vertex plane(const float u, const float v) {
   return {
-    u * size, v * size, 0,
+    u * SIZE, v * SIZE, 0,
     u, 1 - v,
     255, 255, 255, 255
   };
@@ -75,7 +75,7 @@ Vertex mix(const Vertex& a, const Vertex& b, const float& ratio) {
 
 class Test4 : public Demoloop {
 public:
-  Test4() : Demoloop(150, 150, 150), mesh(parametric(volumetricMobius, 30, 30)) {
+  Test4() : Demoloop(CYCLE_LENGTH, 150, 150, 150), mesh(parametric(volumetricMobius, 30, 30)) {
     // glEnable(GL_CULL_FACE);
     texture = loadTexture("uv_texture.jpg");
   }
@@ -83,11 +83,8 @@ public:
   ~Test4() {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     {
       // const glm::vec3 eye = glm::rotate(glm::vec3(0, 0, 4), static_cast<float>(-cycle_ratio * DEMOLOOP_M_PI * 2), glm::vec3(0, 1, 0));
@@ -103,7 +100,7 @@ public:
       p1.get() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
       glm::mat4 m;
-      m = glm::translate(m, {0, -size / 2, 0});
+      m = glm::translate(m, {0, -SIZE / 2, 0});
       m = glm::rotate(m, cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(0, 1, 0));
       // m = glm::rotate(m, (float)-DEMOLOOP_M_PI / 2, glm::vec3(0, 1, 0));
       // m = glm::rotate(m, cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(1, 0, 0));

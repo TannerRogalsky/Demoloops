@@ -13,17 +13,15 @@ const float CYCLE_LENGTH = 10;
 
 class Loop9 : public Demoloop {
 public:
-  Loop9() : Demoloop(150, 150, 150) {
+  Loop9() : Demoloop(CYCLE_LENGTH, 150, 150, 150) {
     glDisable(GL_DEPTH_TEST);
   }
 
-  void Update(float dt) {
-    t += dt;
-
+  void Update() {
     const float RADIUS = height / 3;
 
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+
+    const float cycle_ratio = getCycleRatio();
     int ox = width / 2, oy = height / 2;
 
     const float vertex_cycle = sin(cycle_ratio * DEMOLOOP_M_PI) * sin(cycle_ratio * DEMOLOOP_M_PI);

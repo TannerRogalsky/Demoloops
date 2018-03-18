@@ -89,16 +89,13 @@ vec4 effect(vec4 unused1, Image texture, vec2 tc, vec2 screen_coords) {
 
 class Loop050 : public Demoloop {
 public:
-  Loop050() : Demoloop(480 * 2, 480 * 2, 150, 150, 150), shader({shaderCode, shaderCode}), headShader({headShaderCode, headShaderCode}) {
+  Loop050() : Demoloop(CYCLE_LENGTH, 480 * 2, 480 * 2, 150, 150, 150), shader({shaderCode, shaderCode}), headShader({headShaderCode, headShaderCode}) {
     glDisable(GL_DEPTH_TEST);
     gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     shader.attach();
     shader.sendFloat("cycle_ratio", 1, &cycle_ratio, 1);

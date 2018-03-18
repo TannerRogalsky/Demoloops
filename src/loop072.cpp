@@ -84,14 +84,11 @@ const float FAR_PLANE = 400.0 * Z_DUPS;
 
 class Loop072 : public Demoloop {
 public:
-  Loop072() : Demoloop(720, 720, 26, 4, 53),
+  Loop072() : Demoloop(CYCLE_LENGTH, 720, 720, 26, 4, 53),
               surfaceShader({surfaceShaderCode, surfaceShaderCode}) {}
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const glm::vec3 eye = glm::vec3(0, 3, cycle_ratio * FAR_PLANE / Z_DUPS);
     const glm::vec3 up = glm::vec3(0, 1, 0);
@@ -143,7 +140,6 @@ public:
 
 private:
   Shader surfaceShader;
-  float t = 0;
 };
 
 int main(int, char**){

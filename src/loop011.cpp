@@ -13,17 +13,14 @@ static const float RADIUS = 0.3;
 
 class Loop11 : public Demoloop {
 public:
-  Loop11() : Demoloop(150, 150, 150), mesh(icosahedron(0, 0, 0, RADIUS)) {
+  Loop11() : Demoloop(CYCLE_LENGTH, 150, 150, 150), mesh(icosahedron(0, 0, 0, RADIUS)) {
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     iota(mesh.mIndices.begin(), mesh.mIndices.end(), 0);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     for (int i = 0; i < NUM_VERTS; ++i) {
       const float t = i;

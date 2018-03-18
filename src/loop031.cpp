@@ -21,15 +21,12 @@ const uint32_t num = arms * 40;
 
 class Loop031 : public Demoloop {
 public:
-  Loop031() : Demoloop(150, 150, 150), maxD(width / 4) {
+  Loop031() : Demoloop(CYCLE_LENGTH, 150, 150, 150), maxD(width / 4) {
     gl.getTransform() = glm::translate(gl.getTransform(), glm::vec3(width / 2, height / 2, 0));
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     for (uint32_t i = 0; i < num; ++i) {
       const float t = i;

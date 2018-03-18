@@ -432,7 +432,7 @@ void show_matches(const std::string& in, const std::string& re)
 
 class Loop050 : public Demoloop {
 public:
-  Loop050() : Demoloop(500, 500, 0, 0, 0) {
+  Loop050() : Demoloop(CYCLE_LENGTH, 500, 500, 0, 0, 0) {
     glDisable(GL_DEPTH_TEST);
     // gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
     // glLineWidth(2.0);
@@ -444,10 +444,8 @@ public:
     show_matches(svg[357], "C (\\d+\\.\\d+),(\\d+\\.\\d+) (\\d+\\.\\d+),(\\d+\\.\\d+) (\\d+\\.\\d+),(\\d+\\.\\d+)");
   }
 
-  void Update(float dt) {
-    t += dt;
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
   }
 
 private:

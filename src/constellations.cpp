@@ -17,7 +17,7 @@ const uint32_t num_stars = 400;
 
 class Loop066 : public Demoloop {
 public:
-  Loop066() : Demoloop(720, 720, 0, 0, 0) {
+  Loop066() : Demoloop(CYCLE_LENGTH, 720, 720, 0, 0, 0) {
     gl.getProjection() = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     array<glm::vec2, num_stars> flat_stars;
@@ -53,12 +53,7 @@ public:
     glDeleteBuffers(1, &vbo);
   }
 
-  void Update(float dt) {
-    t += dt;
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
-
-
+  void Update() {
     const glm::vec3 eye = glm::vec3(2, 1, 14);
     const glm::vec3 up = glm::vec3(0, 1, 0);
     const glm::vec3 target = glm::vec3(0, 0, 0);

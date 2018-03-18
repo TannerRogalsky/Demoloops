@@ -25,19 +25,14 @@ float randFloat() {
 
 class Loop030 : public Demoloop {
 public:
-  Loop030() : Demoloop(150, 150, 150), radius(width / 3) {
+  Loop030() : Demoloop(CYCLE_LENGTH, 150, 150, 150), radius(width / 3) {
     gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
-  void Update(float dt) {
-    t += dt;
+  void Update() {
+    glm::vec3 twoDAxis = {0, 0, 1};
 
-    // float cycle = fmod(t, CYCLE_LENGTH);
-    // float cycle_ratio = cycle / CYCLE_LENGTH;
-
-    glm::vec3 twoDAxis = {0, 0 , 1};
-
-    srand(floor(t / CYCLE_LENGTH));
+    srand(floor(getTime() / CYCLE_LENGTH));
     // srand(t * 1000);
     rand();
     const uint32_t NUM_VERTS = floor(randFloat() * (8 - 5) + 5);

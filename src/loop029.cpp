@@ -14,7 +14,7 @@ const float CYCLE_LENGTH = 10;
 
 class Loop029 : public Demoloop {
 public:
-  Loop029() : Demoloop(150, 150, 150), RADIUS(10), maxD(width / 4) {
+  Loop029() : Demoloop(CYCLE_LENGTH, 150, 150, 150), RADIUS(10), maxD(width / 4) {
     const float interval = DEMOLOOP_M_PI * 2 / NUM_VERTS;
     float phi = 0.0f;
     for (int i = 0; i < NUM_VERTS; i++, phi += interval) {
@@ -26,11 +26,8 @@ public:
     gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const uint32_t arms = 7;
     const uint32_t num = arms * 10;

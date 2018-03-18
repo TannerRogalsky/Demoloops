@@ -23,16 +23,13 @@ const Triangle triangle = {
 
 class Loop039 : public Demoloop {
 public:
-  Loop039() : Demoloop(150, 150, 150) {
+  Loop039() : Demoloop(CYCLE_LENGTH, 150, 150, 150) {
     glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.001f, 100.0f);
     gl.getProjection() = perspective;
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     glm::vec3 eye = glm::rotate(glm::vec3(0, 0, 0.1), -cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(0.4, 1, 0.2)) +
                     glm::vec3(0, 0, powf(sinf(cycle_ratio * DEMOLOOP_M_PI), 2) * 0.8);

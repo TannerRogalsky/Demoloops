@@ -129,7 +129,7 @@ const uint32_t num_details = 4;
 
 class Loop066 : public Demoloop {
 public:
-  Loop066() : Demoloop(720, 720, 150, 150, 150) {
+  Loop066() : Demoloop(CYCLE_LENGTH, 720, 720, 150, 150, 150) {
     gl.getProjection() = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     glGenBuffers(num_details, vbos);
@@ -140,10 +140,8 @@ public:
     glDeleteBuffers(num_details, vbos);
   }
 
-  void Update(float dt) {
-    t += dt;
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
 
     const glm::vec3 eye = glm::vec3(2, 1, 14);

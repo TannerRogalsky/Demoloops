@@ -22,12 +22,12 @@ namespace demoloop {
 
 const int SCREEN_WIDTH = 640, SCREEN_HEIGHT = 480;
 
-Demoloop::Demoloop() : Demoloop(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0) {}
-Demoloop::Demoloop(int r, int g, int b) : Demoloop(SCREEN_WIDTH, SCREEN_HEIGHT, r, g, b) {}
+Demoloop::Demoloop(uint32_t cycleLength) : Demoloop(cycleLength, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 0) {}
+Demoloop::Demoloop(uint32_t cycleLength, int r, int g, int b) : Demoloop(cycleLength, SCREEN_WIDTH, SCREEN_HEIGHT, r, g, b) {}
 
 // implementation of constructor
-Demoloop::Demoloop(int width, int height, int r, int g, int b)
- :width(width), height(height), quit(false), bg_r(r), bg_g(g), bg_b(b) {
+Demoloop::Demoloop(uint32_t cycleLength, int width, int height, int r, int g, int b)
+ : width(width), height(height), quit(false), cycleLength(cycleLength), bg_r(r), bg_g(g), bg_b(b) {
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0){
     logSDLError("SDL_Init");
@@ -47,6 +47,9 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 
+  width = 720;
+  height = 480;
+
   const auto WINDOW_FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
   window = SDL_CreateWindow("Demoloop", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, WINDOW_FLAGS);
   if (window == nullptr){
@@ -54,6 +57,9 @@ Demoloop::Demoloop(int width, int height, int r, int g, int b)
     SDL_Quit();
     // return 1;
   }
+
+  SDL_GetWindowSize(window, &width, &height);
+
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (renderer == nullptr){
     logSDLError("CreateRenderer");
@@ -338,7 +344,19 @@ bool Demoloop::isMouseDown(uint8_t button) const {
   return SDL_BUTTON(button) & mouse_state;
 }
 
+float Demoloop::getCycleRatio() const {
+  return fmod(t, cycleLength) / cycleLength;
+}
+
+float Demoloop::getTime() const {
+  return t;
+}
+
 void Demoloop::InternalUpdate() {
+  if (t >= cycleLength * 3) {
+    quit = true;
+  }
+
   while (SDL_PollEvent(&e)){
     //If user closes the window
     if (e.type == SDL_QUIT){
@@ -346,7 +364,17 @@ void Demoloop::InternalUpdate() {
     }
     //If user presses any key
     if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE){
-      quit = true;
+      if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+        SDL_SetWindowFullscreen(window, 0);
+        SDL_GL_GetDrawableSize(window, &width, &height);
+        setViewportSize(width, height);
+      } else {
+        quit = true;
+      }
+    } else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_RETURN && e.key.keysym.mod & KMOD_ALT) {
+      SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+      SDL_GL_GetDrawableSize(window, &width, &height);
+      setViewportSize(width, height);
     }
   }
   prev_mouse_x = mouse_x, prev_mouse_y = mouse_y;
@@ -362,12 +390,14 @@ void Demoloop::InternalUpdate() {
   auto now = std::chrono::high_resolution_clock::now();
   auto delta = std::chrono::duration_cast<std::chrono::duration<float>>(now - previous_frame);
   previous_frame = now;
-  Update(delta.count());
+  t += delta.count();
+  Update();
 
   SDL_GL_SwapWindow(window);
 }
 
 void Demoloop::Run() {
+  t = 0;
   previous_frame = std::chrono::high_resolution_clock::now();
   #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop_arg([](void *arg) {
@@ -375,36 +405,37 @@ void Demoloop::Run() {
       self->InternalUpdate();
     }, (void *)this, 0, 1);
   #else
-    const std::chrono::duration<float> interval(1.0f / 60.0f);
-    while (!quit) {
-      auto start = std::chrono::high_resolution_clock::now();
-      InternalUpdate();
-      while((std::chrono::high_resolution_clock::now() - start) < interval){}
-    }
-    // const std::chrono::seconds CYCLE_LENGTH(4);
-    // const std::chrono::duration<float> interval(1.0f / 50.0f);
-    // char* pixels = new char [3 * width * height];
-    // SDL_Surface* temp = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 24, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
-    // uint32_t index = 0;
-    // for (std::chrono::duration<float> elapsed(0); elapsed <= CYCLE_LENGTH; elapsed += interval) {
-    //   glClearColor( bg_r / 255.0, bg_g / 255.0, bg_b / 255.0, 1.f );
-    //   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //   Update(interval.count());
-
-    //   SDL_GL_SwapWindow(window);
-
-    //   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-
-    //   for (int i = 0 ; i < height ; i++)
-    //     std::memcpy( ((char *) temp->pixels) + temp->pitch * i, pixels + 3 * width * (height-i - 1), width*3 );
-
-    //   auto numString = std::to_string(index++);
-    //   numString = std::string(4 - numString.length(), '0') + numString;
-    //   SDL_SaveBMP(temp, ("frames/frame" +  numString + ".bmp").c_str());
+    // const std::chrono::duration<float> interval(1.0f / 60.0f);
+    // while (!quit) {
+    //   auto start = std::chrono::high_resolution_clock::now();
+    //   InternalUpdate();
+    //   while((std::chrono::high_resolution_clock::now() - start) < interval){}
     // }
-    // cleanup(temp);
-    // delete [] pixels;
+    const std::chrono::seconds c(cycleLength * 3);
+    const std::chrono::duration<float> interval(1.0f / 60.0f);
+    char* pixels = new char [3 * width * height];
+    SDL_Surface* temp = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 24, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
+    uint32_t index = 0;
+    for (std::chrono::duration<float> elapsed(0); elapsed <= c; elapsed += interval) {
+      t = elapsed.count();
+      glClearColor( bg_r / 255.0, bg_g / 255.0, bg_b / 255.0, 1.f );
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      Update();
+
+      SDL_GL_SwapWindow(window);
+
+      glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+      for (int i = 0 ; i < height ; i++)
+        std::memcpy( ((char *) temp->pixels) + temp->pitch * i, pixels + 3 * width * (height-i - 1), width*3 );
+
+      auto numString = std::to_string(index++);
+      numString = std::string(4 - numString.length(), '0') + numString;
+      SDL_SaveBMP(temp, ("frames/frame" +  numString + ".bmp").c_str());
+    }
+    cleanup(temp);
+    delete [] pixels;
   #endif
 }
 

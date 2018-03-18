@@ -69,7 +69,7 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
 )===";
 class Loop050 : public Demoloop {
 public:
-  Loop050() : Demoloop(150, 150, 150), shader({shaderCode, shaderCode}) {
+  Loop050() : Demoloop(CYCLE_LENGTH, 150, 150, 150), shader({shaderCode, shaderCode}) {
     glm::vec3 colors[5] = {
       glm::vec3(0.8, 0.6, 0.1),
       glm::vec3(0.917, 0.467, 0.008),
@@ -80,11 +80,8 @@ public:
     shader.sendFloat("gradientColors", 3, &colors[0].x, 5);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     shader.attach();
     shader.sendFloat("cycle_ratio", 1, &cycle_ratio, 1);

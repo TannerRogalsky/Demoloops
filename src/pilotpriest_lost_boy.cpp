@@ -224,7 +224,7 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
 
 class Loop055 : public Demoloop {
 public:
-  Loop055() : Demoloop(720, 720, 0, 0, 0),
+  Loop055() : Demoloop(CYCLE_LENGTH, 720, 720, 0, 0, 0),
               bgShader({bgShaderCode, bgShaderCode}),
               lineShader({lineShaderCode, lineShaderCode}) {
     // glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
@@ -240,17 +240,15 @@ public:
   ~Loop055() {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const float halfwidth = 3;
     const float pixel_size = 1;
     const bool draw_overdraw = false;
 
     bgShader.attach();
+    const float t = getTime();
     bgShader.sendFloat("cycle_ratio", 1, &t, 1);
     setColor(20, 35, 40);
     renderTexture(gl.getDefaultTexture(), -width / 2, -height / 2, width, height);

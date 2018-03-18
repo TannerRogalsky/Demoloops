@@ -12,7 +12,7 @@ const float CYCLE_LENGTH = 3;
 
 class Loop10 : public Demoloop {
 public:
-  Loop10() : Demoloop(150, 150, 150), mesh(cube(0, 0, 0, 1)) {
+  Loop10() : Demoloop(CYCLE_LENGTH, 150, 150, 150), mesh(cube(0, 0, 0, 1)) {
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     vector<Vertex> vertices;
@@ -25,11 +25,8 @@ public:
     mesh.buffer();
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     static const uint16_t NUM_VERTS = 36;
 

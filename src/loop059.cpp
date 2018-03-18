@@ -55,16 +55,13 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
 const float CYCLE_LENGTH = 7;
 class Loop050 : public Demoloop {
 public:
-  Loop050() : Demoloop(720, 720, 0, 0, 0), RADIUS(height / 5), shader({shaderCode, shaderCode}) {
+  Loop050() : Demoloop(CYCLE_LENGTH, 720, 720, 0, 0, 0), RADIUS(height / 5), shader({shaderCode, shaderCode}) {
     glDisable(GL_DEPTH_TEST);
     gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
     const float PI = static_cast<float>(DEMOLOOP_M_PI);
 
     shader.attach();
@@ -108,7 +105,6 @@ public:
   }
 
 private:
-  float t = 0;
   const float RADIUS;
   Shader shader;
 

@@ -85,7 +85,7 @@ const float farPlane = 80;
 
 class Loop048 : public Demoloop {
 public:
-  Loop048() : Demoloop(150, 150, 150), shader({shaderCode, shaderCode}) {
+  Loop048() : Demoloop(CYCLE_LENGTH, 150, 150, 150), shader({shaderCode, shaderCode}) {
     glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, farPlane);
     gl.getProjection() = perspective;
 
@@ -103,11 +103,8 @@ public:
     glVertexAttribPointer(normalsLocation, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     float eyeRot = 0;
     // eyeRot += cycle_ratio * DEMOLOOP_M_PI * 2;

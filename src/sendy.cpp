@@ -82,7 +82,7 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
 
 class Loop050 : public Demoloop {
 public:
-  Loop050() : Demoloop(480, 480, 254, 230, 231), colorShader({colorShaderCode, colorShaderCode}),
+  Loop050() : Demoloop(CYCLE_LENGTH, 480, 480, 254, 230, 231), colorShader({colorShaderCode, colorShaderCode}),
               transformShader({transformShaderCode, transformShaderCode}), canvas(width * 2, height * 2) {
     glDisable(GL_DEPTH_TEST);
     {
@@ -136,11 +136,8 @@ public:
     // cleanup(text);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     // GL::TempTransform t1(gl);
     // t1.get() = glm::scale(t1.get(), {0.5, 0.5, 1});

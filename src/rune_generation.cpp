@@ -170,7 +170,7 @@ PointsList generateGlyph(const float width, const float height) {
 
 class Loop055 : public Demoloop {
 public:
-  Loop055() : Demoloop(1280, 720, 255,119,170), shader({shaderCode, shaderCode}) {
+  Loop055() : Demoloop(CYCLE_LENGTH, 1280, 720, 255,119,170), shader({shaderCode, shaderCode}) {
     glDisable(GL_DEPTH_TEST);
 
     gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
@@ -219,11 +219,8 @@ public:
   ~Loop055() {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     setColor(119,170,255);
     circle(gl, 0, 0, height * 0.4, 60);

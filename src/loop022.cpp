@@ -18,7 +18,7 @@ float inQuint(float t, float b, float c, float d) {
 
 class Loop021 : public Demoloop {
 public:
-  Loop021() : Demoloop(0, 0, 0), RADIUS(10) {
+  Loop021() : Demoloop(CYCLE_LENGTH, 0, 0, 0), RADIUS(10) {
     glDisable(GL_DEPTH_TEST);
 
     float phi = 0.0f;
@@ -33,11 +33,8 @@ public:
     gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height / 2, 0});
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const uint16_t num = CYCLE_LENGTH * 4;
     const uint16_t arms = 2;

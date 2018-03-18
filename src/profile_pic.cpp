@@ -22,7 +22,7 @@ const Triangle triangle = {
 
 class ProfilePic : public Demoloop {
 public:
-  ProfilePic() : Demoloop(960, 1280, 255, 255, 255) {
+  ProfilePic() : Demoloop(CYCLE_LENGTH, 960, 1280, 255, 255, 255) {
     fg_texture = loadTexture("profile_pic/tanner_fg.png");
   }
 
@@ -30,11 +30,8 @@ public:
     glDeleteTextures(1,&fg_texture);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const glm::vec3 eye = glm::vec3(0, 0, 5);
     const glm::vec3 up = glm::vec3(0, 1, 0);

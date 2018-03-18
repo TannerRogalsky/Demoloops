@@ -15,7 +15,7 @@ const float CYCLE_LENGTH = 10;
 
 class Loop20 : public Demoloop {
 public:
-  Loop20() : Demoloop(150, 150, 150), mesh(icosahedron(0, 0, 0, 1.2)) {
+  Loop20() : Demoloop(CYCLE_LENGTH, 150, 150, 150), mesh(icosahedron(0, 0, 0, 1.2)) {
     glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI / 4.0f), (float)width / (float)height, 0.1f, 100.0f);
     gl.getProjection() = perspective;
 
@@ -33,11 +33,8 @@ public:
     lines = mesh.getLines();
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const float rad = cycle_ratio * DEMOLOOP_M_PI * 2;
 

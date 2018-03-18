@@ -11,7 +11,7 @@ const float CYCLE_LENGTH = 10;
 
 class Test4 : public Demoloop {
 public:
-  Test4() : Demoloop(1280, 640, 150, 150, 150), mesh(sphere(1, 30, 30)) {
+  Test4() : Demoloop(CYCLE_LENGTH, 1280, 640, 150, 150, 150), mesh(sphere(1, 30, 30)) {
     // glEnable(GL_CULL_FACE);
     texture = loadTexture("uv_texture.jpg");
   }
@@ -19,11 +19,8 @@ public:
   ~Test4() {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     {
       // const glm::vec3 eye = glm::rotate(glm::vec3(0, 0, 4), static_cast<float>(-cycle_ratio * DEMOLOOP_M_PI * 2), glm::vec3(0, 1, 0));

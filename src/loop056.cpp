@@ -77,7 +77,7 @@ polygonVertices(const float &radius) {
 
 class Loop055 : public Demoloop {
 public:
-  Loop055() : Demoloop(720, 720, 150, 150, 150), shader({shaderCode, shaderCode}), roseShader({roseShaderCode, roseShaderCode}) {
+  Loop055() : Demoloop(CYCLE_LENGTH, 720, 720, 150, 150, 150), shader({shaderCode, shaderCode}), roseShader({roseShaderCode, roseShaderCode}) {
     // glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
     // gl.getProjection() = perspective;
 
@@ -87,11 +87,8 @@ public:
   ~Loop055() {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
 
     const uint32_t NUM_VERTS = 7;
