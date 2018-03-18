@@ -177,7 +177,6 @@ public:
   void Update() {
     const float cycle_ratio = getCycleRatio();
 
-    const float halfwidth = width * 0.1;
     glm::mat4 transform;
 
     const RGB blue = {25, 135, 225};
