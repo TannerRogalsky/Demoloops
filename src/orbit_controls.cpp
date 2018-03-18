@@ -7,7 +7,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
+
 const float CYCLE_LENGTH = 3;
 
 class Loop10 : public Demoloop {

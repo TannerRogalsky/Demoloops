@@ -10,7 +10,7 @@ using namespace demoloop;
 
 #define NUM_VERTS 3
 
-float t = 0;
+
 const float CYCLE_LENGTH = 6;
 const float rotation_offset = rotationOffset(NUM_VERTS);
 

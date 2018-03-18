@@ -5,7 +5,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
+
 const float CYCLE_LENGTH = 10;
 const uint32_t arms = 5;
 const uint32_t trisPerArm = 40;

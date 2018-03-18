@@ -11,7 +11,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
+
 const float CYCLE_LENGTH = 10;
 const uint32_t numTris = 300;
 

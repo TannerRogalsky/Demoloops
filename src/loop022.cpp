@@ -9,7 +9,7 @@ using namespace demoloop;
 
 #define NUM_VERTS 3
 
-float t = 0;
+
 const float CYCLE_LENGTH = 5;
 
 float inQuint(float t, float b, float c, float d) {

@@ -47,9 +47,6 @@ Demoloop::Demoloop(uint32_t cycleLength, int width, int height, int r, int g, in
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 
-  width = 720;
-  height = 480;
-
   const auto WINDOW_FLAGS = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
   window = SDL_CreateWindow("Demoloop", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, WINDOW_FLAGS);
   if (window == nullptr){
@@ -405,37 +402,37 @@ void Demoloop::Run() {
       self->InternalUpdate();
     }, (void *)this, 0, 1);
   #else
-    // const std::chrono::duration<float> interval(1.0f / 60.0f);
-    // while (!quit) {
-    //   auto start = std::chrono::high_resolution_clock::now();
-    //   InternalUpdate();
-    //   while((std::chrono::high_resolution_clock::now() - start) < interval){}
-    // }
-    const std::chrono::seconds c(cycleLength * 3);
     const std::chrono::duration<float> interval(1.0f / 60.0f);
-    char* pixels = new char [3 * width * height];
-    SDL_Surface* temp = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 24, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
-    uint32_t index = 0;
-    for (std::chrono::duration<float> elapsed(0); elapsed <= c; elapsed += interval) {
-      t = elapsed.count();
-      glClearColor( bg_r / 255.0, bg_g / 255.0, bg_b / 255.0, 1.f );
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      Update();
-
-      SDL_GL_SwapWindow(window);
-
-      glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-
-      for (int i = 0 ; i < height ; i++)
-        std::memcpy( ((char *) temp->pixels) + temp->pitch * i, pixels + 3 * width * (height-i - 1), width*3 );
-
-      auto numString = std::to_string(index++);
-      numString = std::string(4 - numString.length(), '0') + numString;
-      SDL_SaveBMP(temp, ("frames/frame" +  numString + ".bmp").c_str());
+    while (!quit) {
+      auto start = std::chrono::high_resolution_clock::now();
+      InternalUpdate();
+      while((std::chrono::high_resolution_clock::now() - start) < interval){}
     }
-    cleanup(temp);
-    delete [] pixels;
+    // const std::chrono::seconds c(cycleLength);
+    // const std::chrono::duration<float> interval(1.0f / 60.0f);
+    // char* pixels = new char [3 * width * height];
+    // SDL_Surface* temp = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 24, 0x000000FF, 0x0000FF00, 0x00FF0000, 0);
+    // uint32_t index = 0;
+    // for (std::chrono::duration<float> elapsed(0); elapsed <= c; elapsed += interval) {
+    //   t = elapsed.count();
+    //   glClearColor( bg_r / 255.0, bg_g / 255.0, bg_b / 255.0, 1.f );
+    //   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //   Update();
+
+    //   SDL_GL_SwapWindow(window);
+
+    //   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+    //   for (int i = 0 ; i < height ; i++)
+    //     std::memcpy( ((char *) temp->pixels) + temp->pitch * i, pixels + 3 * width * (height-i - 1), width*3 );
+
+    //   auto numString = std::to_string(index++);
+    //   numString = std::string(4 - numString.length(), '0') + numString;
+    //   SDL_SaveBMP(temp, ("frames/frame" +  numString + ".bmp").c_str());
+    // }
+    // cleanup(temp);
+    // delete [] pixels;
   #endif
 }
 

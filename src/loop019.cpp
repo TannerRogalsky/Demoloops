@@ -8,7 +8,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
+
 const float CYCLE_LENGTH = 6;
 static const float RADIUS = 0.3;
 

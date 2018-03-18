@@ -7,7 +7,7 @@ using namespace std;
 using namespace demoloop;
 
 static const uint16_t NUM_VERTS = 60;
-float t = 0;
+
 const float CYCLE_LENGTH = 3;
 static const float RADIUS = 0.3;
 

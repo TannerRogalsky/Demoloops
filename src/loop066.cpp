@@ -7,12 +7,13 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
+
 const float CYCLE_LENGTH = 10;
 const float radius = 5;
 
 // Icosahedron
 const float p = ( 1 + sqrt( 5 ) ) / 2;
+const float t = 0;
 const array<Vertex, 12> indexedVertices = {{
   {- 1,  t,  0},    {1,  t,  0},   {- 1, - t,  0},   { 1, - t,  0},
    {0, - 1,  t},    {0,  1,  t},   { 0, - 1, - t},   { 0,  1, - t},

@@ -8,7 +8,7 @@ using namespace demoloop;
 
 #define MAX_VERTS 6
 
-float t = 0;
+
 const float CYCLE_LENGTH = 6;
 
 class Loop12 : public Demoloop {

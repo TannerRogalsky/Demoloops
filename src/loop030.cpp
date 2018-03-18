@@ -14,7 +14,7 @@ const Triangle triangle = {
   {RADIUS * cosf(interval * 2), RADIUS * sinf(interval * 2), 1}
 };
 
-float t = 0;
+
 const float CYCLE_LENGTH = 10;
 const uint32_t arms = 5;
 const uint32_t num = arms * 20;

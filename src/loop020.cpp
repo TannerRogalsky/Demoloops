@@ -10,7 +10,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
+
 const float CYCLE_LENGTH = 10;
 
 class Loop20 : public Demoloop {
@@ -20,6 +20,7 @@ public:
     gl.getProjection() = perspective;
 
     points = mesh.getIndexedVertices();
+
     float t = 0;
     for (auto i : points) {
       auto color = hsl2rgb(t++ / points.size(), 1, 0.5);

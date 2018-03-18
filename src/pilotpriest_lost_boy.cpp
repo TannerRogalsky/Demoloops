@@ -7,7 +7,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
+
 const float CYCLE_LENGTH = 3;
 
 template<uint32_t N>

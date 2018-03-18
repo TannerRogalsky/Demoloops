@@ -7,7 +7,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
+
 const float CYCLE_LENGTH = 7;
 
 template<size_t NUM_VERTS, size_t NUM_INDICES>

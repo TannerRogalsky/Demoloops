@@ -9,7 +9,7 @@ using namespace demoloop;
 
 #define NUM_VERTS 12
 
-float t = 0;
+
 const float CYCLE_LENGTH = 6;
 
 class Loop015 : public Demoloop {

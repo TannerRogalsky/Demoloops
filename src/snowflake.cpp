@@ -7,7 +7,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
+
 const float CYCLE_LENGTH = 0.5;
 
 glm::vec2 reflect(const glm::vec2 &v, const float &phi) {
