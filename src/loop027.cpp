@@ -31,7 +31,8 @@ public:
     const uint32_t arms = 7;
     const uint32_t num = arms * 10;
 
-    const glm::vec3 twoDAxis = {0, 0 , 1};
+    const glm::vec3 twoDAxis = {0, 0, 1};
+const uint32_t CYCLE_LENGTH
     GL::TempTransform outsideTransform(gl);
     outsideTransform.get()  = glm::rotate(outsideTransform.get(), -cycle_ratio * (float)DEMOLOOP_M_PI * 2, twoDAxis);
 

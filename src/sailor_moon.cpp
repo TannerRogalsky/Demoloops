@@ -125,7 +125,8 @@ public:
       // GL::TempTransform t2(gl);
       // t2.get() = glm::translate(t2.get(), {0.0, 10.0, 0.0});
 
-      const glm::vec3 twoDAxis = {0, 0 , 1};
+      const glm::vec3 twoDAxis = {0, 0, 1};
+const uint32_t CYCLE_LENGTH
       for (uint32_t i = 0; i < numTris; ++i) {
         const float t = i;
         const float armIndex = i % arms;
