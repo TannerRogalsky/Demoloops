@@ -369,7 +369,6 @@ const std::string svg[] = {
   "C 50.988996,343.79948 50.408838,338.00062 49.526241,331.79072 Z"
 };
 
-
 const uint32_t CYCLE_LENGTH = 10;
 const uint32_t numVerts = 5;
 const float lineWidthScale = 0.85;

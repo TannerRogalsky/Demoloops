@@ -7,7 +7,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 using namespace std;
 using namespace demoloop;
-
 const uint32_t CYCLE_LENGTH = 4;
 
 const static std::string shaderCode = R"===(

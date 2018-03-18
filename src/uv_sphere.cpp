@@ -6,7 +6,6 @@
 using namespace std;
 using namespace demoloop;
 
-
 const uint32_t CYCLE_LENGTH = 10;
 
 class Test4 : public Demoloop {

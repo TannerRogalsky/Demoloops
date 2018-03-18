@@ -6,7 +6,6 @@
 using namespace std;
 using namespace demoloop;
 
-
 const uint32_t CYCLE_LENGTH = 10;
 
 glm::mat4 bezier_mat = {{-1.f, 3.f, -3.f, 1.f}, {3.f, -6.f, 3.f, 0.f}, {-3.f, 3.f, 0.f, 0.f}, {1.f, 0.f, 0.f, 0.f}};

@@ -8,7 +8,6 @@ using namespace demoloop;
 
 #define MAX_VERTS 8
 
-
 const uint32_t CYCLE_LENGTH = 10;
 
 class Loop6 : public Demoloop {

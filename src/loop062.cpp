@@ -11,7 +11,6 @@
 using namespace std;
 using namespace demoloop;
 
-
 const uint32_t CYCLE_LENGTH = 5;
 
 template<uint32_t N>

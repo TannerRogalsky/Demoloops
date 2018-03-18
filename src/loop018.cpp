@@ -9,7 +9,6 @@ using namespace demoloop;
 
 #define NUM_VERTS 12
 
-
 const uint32_t CYCLE_LENGTH = 6;
 
 class Loop015 : public Demoloop {

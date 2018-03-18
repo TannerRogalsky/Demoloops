@@ -8,7 +8,6 @@
 using namespace std;
 using namespace demoloop;
 
-
 const uint32_t CYCLE_LENGTH = 10;
 const uint32_t numVerts = 5;
 const float lineWidthScale = 0.85;

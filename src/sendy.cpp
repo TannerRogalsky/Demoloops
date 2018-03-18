@@ -10,7 +10,6 @@
 using namespace std;
 using namespace demoloop;
 
-
 const uint32_t CYCLE_LENGTH = 7;
 
 const static std::string colorShaderCode = R"===(

@@ -78,7 +78,6 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
 const uint32_t Z_DUPS = 4;
 const uint32_t SLICES = 25 * Z_DUPS;
 const uint32_t STACKS = 15;
-
 const uint32_t CYCLE_LENGTH = 4;
 const float FAR_PLANE = 400.0 * Z_DUPS;
 

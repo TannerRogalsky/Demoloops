@@ -51,7 +51,6 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
 }
 #endif
 )===";
-
 const uint32_t CYCLE_LENGTH = 7;
 class Loop050 : public Demoloop {
 public:

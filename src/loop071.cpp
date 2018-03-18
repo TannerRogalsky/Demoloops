@@ -8,7 +8,6 @@
 using namespace std;
 using namespace demoloop;
 
-
 const uint32_t CYCLE_LENGTH = 4;
 
 const float farPlane = 40.0;
