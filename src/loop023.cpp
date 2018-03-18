@@ -9,12 +9,11 @@ using namespace demoloop;
 
 #define NUM_VERTS 3
 
-float t = 0;
-const float CYCLE_LENGTH = 5;
+const uint32_t CYCLE_LENGTH = 5;
 
 class Loop021 : public Demoloop {
 public:
-  Loop021() : Demoloop(150, 150, 150), RADIUS(10) {
+  Loop021() : Demoloop(CYCLE_LENGTH, 150, 150, 150), RADIUS(10) {
     // glDisable(GL_DEPTH_TEST);
 
     float phi = 0.0f;
@@ -29,11 +28,8 @@ public:
     gl.getTransform() = glm::translate(gl.getTransform(), {width / 2, height, 0});
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const uint32_t arms = 4;
     const uint32_t num = 10 * arms;

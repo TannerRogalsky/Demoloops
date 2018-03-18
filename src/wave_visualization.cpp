@@ -6,8 +6,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 1;
+const uint32_t CYCLE_LENGTH = 1;
 const uint32_t NUM_CYCLES = 10;
 
 float jmap(const float &t, const float &s0, const float &s1, const float &e0, const float &e1) {
@@ -56,15 +55,10 @@ float cubicEaseInOut(float t,float b , float c, float d) {
 
 class WaveVisualization : public Demoloop {
 public:
-  WaveVisualization() : Demoloop(150, 150, 150) {
+  WaveVisualization() : Demoloop(CYCLE_LENGTH, 150, 150, 150) {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
-
+  void Update() {
     const float SCALE = 1;
 
     GL::TempTransform t1(gl);
@@ -77,7 +71,7 @@ public:
     float radius[num_humps];
     float amplitude[num_humps];
 
-    srand(fmod(floor(t / CYCLE_LENGTH), NUM_CYCLES));
+    srand(fmod(floor(getTime() / CYCLE_LENGTH), NUM_CYCLES));
     // srand(0);
 
     for (uint32_t hump_index = 0; hump_index < num_humps; ++hump_index) {
@@ -86,7 +80,6 @@ public:
       amplitude[hump_index] = random(.5, 2) * height / 4;
     }
 
-    const float PI = DEMOLOOP_M_PI;
     for (int i = 0; i < width; ++i) {
       float x = i;
       float t = x / width;

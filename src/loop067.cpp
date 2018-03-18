@@ -8,8 +8,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 const float radius = 5;
 
 template<size_t N>
@@ -40,7 +39,7 @@ const uint32_t num_stars = 400;
 
 class Loop066 : public Demoloop {
 public:
-  Loop066() : Demoloop(720, 720, 0, 0, 0) {
+  Loop066() : Demoloop(CYCLE_LENGTH, 720, 720, 0, 0, 0) {
     gl.getProjection() = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     array<glm::vec3, num_stars> flat_stars;
@@ -99,10 +98,8 @@ public:
   ~Loop066() {
   }
 
-  void Update(float dt) {
-    t += dt;
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
 
     const glm::vec3 eye = glm::vec3(2, 1, 14);

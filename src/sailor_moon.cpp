@@ -6,8 +6,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 const uint32_t arms = 7;
 const uint32_t trisPerArm = 50;
 const uint32_t numTris = arms * trisPerArm;
@@ -85,7 +84,7 @@ const float farPlane = 80;
 
 class SailorMoon : public Demoloop {
 public:
-  SailorMoon() : Demoloop(540, 803, 255, 255, 255), shader({shaderCode, shaderCode}) {
+  SailorMoon() : Demoloop(CYCLE_LENGTH, 540, 803, 255, 255, 255), shader({shaderCode, shaderCode}) {
     fg_texture = loadTexture("sailor_moon/sailor_moon.jpg");
 
     glGenBuffers(1, &modelViewsBuffer);
@@ -101,11 +100,8 @@ public:
     glDeleteBuffers(1, &colorsBuffer);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     float eyeRot = 0;
     // eyeRot += cycle_ratio * DEMOLOOP_M_PI * 2;
@@ -129,7 +125,8 @@ public:
       // GL::TempTransform t2(gl);
       // t2.get() = glm::translate(t2.get(), {0.0, 10.0, 0.0});
 
-      const glm::vec3 twoDAxis = {0, 0 , 1};
+      const glm::vec3 twoDAxis = {0, 0, 1};
+const uint32_t CYCLE_LENGTH
       for (uint32_t i = 0; i < numTris; ++i) {
         const float t = i;
         const float armIndex = i % arms;

@@ -10,8 +10,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 const uint32_t arms = 5;
 const uint32_t trisPerArm = 20;
 const uint32_t numTris = arms * trisPerArm;
@@ -27,7 +26,7 @@ const Triangle defaultTriangle = {
 
 class Loop033 : public Demoloop {
 public:
-  Loop033() : Demoloop(150, 150, 150), mesh(cube(0, 0, 0, 1)), canvas(height, height)  {
+  Loop033() : Demoloop(CYCLE_LENGTH, 150, 150, 150), mesh(cube(0, 0, 0, 1)), canvas(height, height)  {
     glEnable(GL_CULL_FACE);
 
     mesh.setTexture(&canvas);
@@ -40,11 +39,8 @@ public:
     mesh.buffer();
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
     float tau_cycle = cycle_ratio * DEMOLOOP_M_PI * 2;
 
     {

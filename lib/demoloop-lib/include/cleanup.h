@@ -55,3 +55,16 @@ inline void cleanup<TTF_Font>(TTF_Font *font){
   }
   TTF_CloseFont(font);
 }
+
+/*
+ * Helpers for using SDL with smart pointers
+ */
+template<typename T>
+struct SDLDeleter {
+  void operator()(T *p) const {
+    cleanup(p);
+  }
+};
+
+template <typename T>
+using unique_sdl = std::unique_ptr<T, SDLDeleter<T>>;

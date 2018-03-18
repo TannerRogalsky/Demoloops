@@ -8,8 +8,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 3;
+const uint32_t CYCLE_LENGTH = 3;
 
 template<uint32_t N>
 typename std::enable_if<N >= 3, array<Vertex, N>>::type
@@ -40,7 +39,7 @@ float getComplimentaryScale(float radius, uint32_t primary_num_verts, uint32_t s
 
 class Loop055 : public Demoloop {
 public:
-  Loop055() : Demoloop(1280, 720, 9,103,131) {
+  Loop055() : Demoloop(CYCLE_LENGTH, 1280, 720, 9,103,131) {
     // glDisable(GL_DEPTH_TEST);
     // glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
     // gl.getProjection() = perspective;
@@ -54,11 +53,8 @@ public:
   ~Loop055() {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
     // const uint32_t num_cycles = 2;
     // const float cycle_ratio = 0.5;
 

@@ -11,8 +11,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 5;
+const uint32_t CYCLE_LENGTH = 5;
 
 template<uint32_t N>
 array<Vertex, N * 4> rectangle(const float &width, const float &height) {
@@ -140,7 +139,7 @@ const RGB colors[4] = {
 
 class Loop055 : public Demoloop {
 public:
-  Loop055() : Demoloop(720, 720, 62,209,164), shader({shaderCode, shaderCode}) {
+  Loop055() : Demoloop(CYCLE_LENGTH, 720, 720, 62,209,164), shader({shaderCode, shaderCode}) {
     glDisable(GL_DEPTH_TEST);
     // glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
     // gl.getProjection() = perspective;
@@ -162,11 +161,8 @@ public:
   ~Loop055() {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const static auto getTransform = [](const float &cycle_ratio, const float &/*width*/, const float &height) {
       glm::mat4 transform;

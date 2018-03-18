@@ -13,21 +13,17 @@ const uint32_t nw = 640 / (RADIUS * 2);
 const uint32_t nh = 480 / (RADIUS * 2);
 const uint32_t num = nw * nh;
 
-float t = 0;
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 
 class Loop032 : public Demoloop {
 public:
-  Loop032() : Demoloop(150, 150, 150) {
+  Loop032() : Demoloop(CYCLE_LENGTH, 150, 150, 150) {
     // Matrix4 &m = gl.getTransform();
     // m.translate(width / 2, height / 2);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     uint32_t count = 0;
 

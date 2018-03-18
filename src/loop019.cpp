@@ -8,13 +8,12 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 6;
+const uint32_t CYCLE_LENGTH = 6;
 static const float RADIUS = 0.3;
 
 class Loop19 : public Demoloop {
 public:
-  Loop19() : Demoloop(150, 150, 150), mesh(icosahedron(0, 0, 0, RADIUS)) {
+  Loop19() : Demoloop(CYCLE_LENGTH, 150, 150, 150), mesh(icosahedron(0, 0, 0, RADIUS)) {
     gl.getProjection() = glm::perspective((float)DEMOLOOP_M_PI / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
 
     auto indices = mesh.getIndexedVertices();
@@ -43,11 +42,8 @@ public:
     mesh.buffer();
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     gl.pushTransform();
     const float lookX = sin(cycle_ratio * DEMOLOOP_M_PI * 2) * 3;

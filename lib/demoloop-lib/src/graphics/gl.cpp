@@ -350,7 +350,7 @@ namespace demoloop {
   }
 
   void GL::points(const Vertex *coords, size_t count, const glm::mat4 &modelView) {
-    genericDrawArrays(coords, count, modelView, GL_POINTS, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR);
+    genericDrawArrays(coords, count, modelView, GL_POINTS, ATTRIBFLAG_POS | ATTRIBFLAG_COLOR | ATTRIBFLAG_TEXCOORD);
   }
 
   void GL::lines(const Vertex *coords, size_t count, const glm::mat4 &modelView) {

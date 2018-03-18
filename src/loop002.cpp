@@ -7,21 +7,19 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
+
 const float PI = 3.1459;
-const float CYCLE_LENGTH = 3;
+const uint32_t CYCLE_LENGTH = 3;
 
 class Loop2 : public Demoloop {
 public:
-  Loop2() : Demoloop(150, 150, 150) {}
+  Loop2() : Demoloop(CYCLE_LENGTH, 150, 150, 150) {}
 
-  void Update(float dt) {
-    t += dt;
-
+  void Update() {
     const float RADIUS = height / 3;
 
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+
+    const float cycle_ratio = getCycleRatio();
     int ox = width / 2, oy = height / 2;
 
     const int num_vertices = 20;

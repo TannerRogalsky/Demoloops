@@ -8,8 +8,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 30;
+const uint32_t CYCLE_LENGTH = 30;
 
 template <
   typename T,
@@ -119,7 +118,7 @@ const uint32_t numIndices = slices * stacks * 6;
 
 class Loop055 : public Demoloop {
 public:
-  Loop055() : Demoloop(150, 150, 150), shader({shaderCode, shaderCode}), sphereMesh(sphere(0.05)) {
+  Loop055() : Demoloop(CYCLE_LENGTH, 150, 150, 150), shader({shaderCode, shaderCode}), sphereMesh(sphere(0.05)) {
     // glEnable(GL_CULL_FACE);
     texture = loadTexture("uv_texture.jpg");
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
@@ -129,11 +128,8 @@ public:
   ~Loop055() {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
     const float mod_ratio = powf(sinf(cycle_ratio * DEMOLOOP_M_PI), 2);
 
     // const glm::vec3 eye = glm::rotate(glm::vec3(0, 0, 10), static_cast<float>(cycle_ratio * DEMOLOOP_M_PI * 2), glm::vec3(0, 1, 0));

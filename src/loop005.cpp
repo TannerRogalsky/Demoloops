@@ -5,8 +5,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 
 const int num_circle_verts = 10;
 const int num_vertices = 5;
@@ -14,17 +13,15 @@ const int dot_count = 20;
 
 class Loop5 : public Demoloop {
 public:
-  Loop5() : Demoloop(150, 150, 150) {
+  Loop5() : Demoloop(CYCLE_LENGTH, 150, 150, 150) {
     glDisable(GL_DEPTH_TEST);
   }
 
-  void Update(float dt) {
-    t += dt;
-
+  void Update() {
     const float RADIUS = height / 3;
 
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+
+    const float cycle_ratio = getCycleRatio();
     int ox = width / 2, oy = height / 2;
 
     const float interval = (DEMOLOOP_M_PI * 2) / num_vertices;

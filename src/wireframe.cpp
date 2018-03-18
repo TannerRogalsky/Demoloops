@@ -7,8 +7,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 7;
+const uint32_t CYCLE_LENGTH = 7;
 
 template<size_t NUM_VERTS, size_t NUM_INDICES>
 array<Vertex, NUM_INDICES> toNonIndexed(const array<Vertex, NUM_VERTS> &in_verts, const array<uint32_t, NUM_INDICES> &indices) {
@@ -193,14 +192,12 @@ const auto wireframe = getWireframeGeometry(vertices);
 
 class Loop037 : public Demoloop {
 public:
-  Loop037() : Demoloop(720, 720, 150, 150, 150), uvTexture("uv_texture.jpg") {
+  Loop037() : Demoloop(CYCLE_LENGTH, 720, 720, 150, 150, 150), uvTexture("uv_texture.jpg") {
     gl.getProjection() = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
   }
 
-  void Update(float dt) {
-    t += dt;
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
 
     const glm::vec3 eye = glm::vec3(2, 1, 14);

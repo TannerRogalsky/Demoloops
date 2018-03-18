@@ -7,8 +7,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 
 const static std::string shaderCode = R"===(
 uniform mediump float cycle_ratio;
@@ -208,7 +207,7 @@ const uint32_t numIndices = slices * stacks * 6;
 
 class Test4 : public Demoloop {
 public:
-  Test4() : Demoloop(25, 25, 25), shader({shaderCode, shaderCode}) {
+  Test4() : Demoloop(CYCLE_LENGTH, 25, 25, 25), shader({shaderCode, shaderCode}) {
     glEnable(GL_CULL_FACE);
     // texture = loadTexture("uv_texture.jpg");
     // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
@@ -221,11 +220,8 @@ public:
     glDeleteBuffers(1, &normalsBuffer);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
     // const float mod_ratio = powf(sinf(cycle_ratio * DEMOLOOP_M_PI), 2);
 
     const uint32_t sliceCount = slices + 1;

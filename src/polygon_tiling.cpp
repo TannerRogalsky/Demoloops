@@ -11,8 +11,7 @@ using namespace std;
 using namespace demoloop;
 
 const glm::vec3 twoDAxis = {0, 0, 1};
-float t = 0;
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 const uint32_t MAX_VERTS = 12;
 const float SPATIAL_HASH_SIZE = 100;
 array<array<glm::vec4, MAX_VERTS>, MAX_VERTS - 3> polygonVerts;
@@ -272,7 +271,7 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) 
 
 class Loop021 : public Demoloop {
 public:
-  Loop021() : Demoloop(720, 720, 150, 150, 150), RADIUS(height / 20), shader({shaderCode, shaderCode}) {
+  Loop021() : Demoloop(CYCLE_LENGTH, 720, 720, 150, 150, 150), RADIUS(height / 20), shader({shaderCode, shaderCode}) {
     glDisable(GL_DEPTH_TEST);
 
     glGenBuffers(MAX_VERTS - 3, vbos);
@@ -306,11 +305,8 @@ public:
     glDeleteBuffers(1, &colorsBuffer);
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     // for (uint32_t i = 0; i < 35; ++i) {
     //   addForShape(RADIUS, treeData);

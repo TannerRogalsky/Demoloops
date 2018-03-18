@@ -2,10 +2,8 @@ cmake_minimum_required(VERSION 3.8)
 project(demoloops)
 
 set(ASSET_LOOPS
-  asset_test
   profile_pic
   sailor_moon
-  test_openal
   hope
   sendy
   loop064
@@ -91,14 +89,11 @@ set(LOOPS ${ASSET_LOOPS}
   normal_lighting3
   wireframe
   loop030_3d
-  testopengl
   voronoi
   lsystem
   carpenter_brut
-  canvas
   two_squares_in_a_circle
   bezier
-  pingpong
   parametric_surface
   snowflake
   wave_visualization
@@ -111,9 +106,9 @@ set(LOOPS ${ASSET_LOOPS}
   tiling_domain_warping
   constellations
   pilotpriest_lost_boy
-  compile_time_geometry
+  # compile_time_geometry
   stag
-  gradients
+  valentines2018
 )
 
 # Bump up warning levels appropriately for clang, gcc & msvc
@@ -138,7 +133,7 @@ endif()
 
 # SDL2
 if (EMSCRIPTEN)
-  add_definitions("-std=c++1z -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1")
+  add_definitions("-std=c++1z -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s USE_VORBIS=1 -s USE_OGG=1")
 else()
   include(FindPkgConfig)
 
@@ -175,9 +170,6 @@ if (NOT EMSCRIPTEN)
   # GLEW
   find_package(GLEW REQUIRED)
   include_directories(${GLEW_INCLUDE_DIRS})
-
-  find_package(BULLET REQUIRED)
-  include_directories(SYSTEM ${BULLET_INCLUDE_DIRS})
 endif()
 
 # DEMOLOOP LIB
@@ -210,10 +202,11 @@ foreach(LOOP ${LOOPS})
       set_target_properties(${LOOP}_asm PROPERTIES LINK_FLAGS ${TEMP} )
     endif()
 
-    target_link_libraries(${LOOP} demoloop-lib poly2tri "-s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1 -s WASM=1")
-    target_link_libraries(${LOOP}_asm demoloop-lib poly2tri "-s USE_VORBIS=1 -s USE_OGG=1 -s USE_BULLET=1")
+    target_link_libraries(${LOOP} demoloop-lib poly2tri "-s USE_VORBIS=1 -s USE_OGG=1 -s WASM=1")
+    target_link_libraries(${LOOP}_asm demoloop-lib poly2tri "-s USE_VORBIS=1 -s USE_OGG=1")
 
-    # set_property(TARGET ${LOOP}_asm PROPERTY SUFFIX ".html")
+    set_property(TARGET ${LOOP} PROPERTY SUFFIX ".html")
+    set_property(TARGET ${LOOP}_asm PROPERTY SUFFIX ".html")
   else()
     target_link_libraries(${LOOP} demoloop-lib poly2tri
                           ${SDL2_LIBRARIES}
@@ -224,8 +217,7 @@ foreach(LOOP ${LOOPS})
                           ${VORBIS_LIBRARIES}
                           ${VORBISFILE_LIBRARIES}
                           ${OGG_LIBRARIES}
-                          ${GLEW_LIBRARIES}
-                          ${BULLET_LIBRARIES})
+                          ${GLEW_LIBRARIES})
     set_property(TARGET ${LOOP} PROPERTY CXX_STANDARD 17)
     add_custom_target(run-${LOOP}
         COMMAND ${LOOP}

@@ -6,8 +6,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 
 const static std::string shaderCode = R"===(
 uniform mediump float cycle_ratio;
@@ -67,14 +66,11 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
 )===";
 class Loop050 : public Demoloop {
 public:
-  Loop050() : Demoloop(150, 150, 150), shader({shaderCode, shaderCode}) {
+  Loop050() : Demoloop(CYCLE_LENGTH, 150, 150, 150), shader({shaderCode, shaderCode}) {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     shader.attach();
     shader.sendFloat("cycle_ratio", 1, &cycle_ratio, 1);

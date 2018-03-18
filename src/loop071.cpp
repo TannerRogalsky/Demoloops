@@ -8,8 +8,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 4;
+const uint32_t CYCLE_LENGTH = 4;
 
 const float farPlane = 40.0;
 
@@ -188,13 +187,10 @@ array<Vertex, N * 3> getLineGeometry(const array<Vertex, N> &in, float halfWidth
 
 class Loop052 : public Demoloop {
 public:
-  Loop052() : Demoloop(1280, 1280, 0, 0, 0), surfaceShader({surfaceShaderCode, surfaceShaderCode}) {}
+  Loop052() : Demoloop(CYCLE_LENGTH, 1280, 1280, 0, 0, 0), surfaceShader({surfaceShaderCode, surfaceShaderCode}) {}
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
     // cycle_ratio = 0;
 
     float mx = (static_cast<float>(getMouseX()) / width - 0.5) * 2.0;

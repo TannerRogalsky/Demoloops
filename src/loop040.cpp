@@ -6,8 +6,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 const uint32_t arms = 20;
 const uint32_t trisPerArm = 20;
 const uint32_t numTris = arms * trisPerArm;
@@ -23,16 +22,13 @@ const Triangle triangle = {
 
 class Loop040 : public Demoloop {
 public:
-  Loop040() : Demoloop(150, 150, 150) {
+  Loop040() : Demoloop(CYCLE_LENGTH, 150, 150, 150) {
     glm::mat4 perspective = glm::perspective(static_cast<float>(DEMOLOOP_M_PI) / 4.0f, (float)width / (float)height, 0.1f, 100.0f);
     gl.getProjection() = perspective;
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const glm::vec3 eye = glm::rotate(glm::vec3(4, 1, 4), -cycle_ratio * (float)DEMOLOOP_M_PI * 2, glm::vec3(-0.3, 1, 0));
     const glm::vec3 up = glm::vec3(0, 1, 0);

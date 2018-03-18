@@ -5,8 +5,7 @@
 using namespace std;
 using namespace demoloop;
 
-float t = 0;
-const float CYCLE_LENGTH = 10;
+const uint32_t CYCLE_LENGTH = 10;
 
 const static std::string defaultVertexCode = R"===(
 vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {
@@ -299,7 +298,7 @@ vec4 effect(vec4 /*color*/, Image texture, vec2 tc, vec2 screen_coords) {
 
 class Loop050 : public Demoloop {
 public:
-  Loop050() : Demoloop(720, 720, 150, 150, 150),
+  Loop050() : Demoloop(CYCLE_LENGTH, 720, 720, 150, 150, 150),
       originalShader({defaultVertexCode, originalNoiseCode}),
       tilingPerlinShader({defaultVertexCode, tilingPerlinCode}),
       tilingSimplexShader({defaultVertexCode, tilingSimplexCode}),
@@ -307,11 +306,8 @@ public:
   {
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    const float cycle = fmod(t, CYCLE_LENGTH);
-    const float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     const float w = width / 2;
     const float h = height / 2;

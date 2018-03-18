@@ -10,13 +10,12 @@ using namespace demoloop;
 
 #define NUM_VERTS 3
 
-float t = 0;
-const float CYCLE_LENGTH = 6;
+const uint32_t CYCLE_LENGTH = 6;
 const float rotation_offset = rotationOffset(NUM_VERTS);
 
 class Loop021 : public Demoloop {
 public:
-  Loop021() : Demoloop(150, 150, 150), RADIUS(height / 6) {
+  Loop021() : Demoloop(CYCLE_LENGTH, 150, 150, 150), RADIUS(height / 6) {
     glDisable(GL_DEPTH_TEST);
 
     float phi = 0.0f;
@@ -35,11 +34,8 @@ public:
     gl.getTransform() = glm::translate(gl.getTransform(), glm::vec3(width / 2, height / 2, 0));
   }
 
-  void Update(float dt) {
-    t += dt;
-
-    float cycle = fmod(t, CYCLE_LENGTH);
-    float cycle_ratio = cycle / CYCLE_LENGTH;
+  void Update() {
+    const float cycle_ratio = getCycleRatio();
 
     setColor(255, 255, 255);
     gl.lines(vertices, (NUM_VERTS * 2));
