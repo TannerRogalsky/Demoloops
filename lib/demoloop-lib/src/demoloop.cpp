@@ -350,10 +350,6 @@ float Demoloop::getTime() const {
 }
 
 void Demoloop::InternalUpdate() {
-  if (t >= cycleLength * 3) {
-    quit = true;
-  }
-
   while (SDL_PollEvent(&e)){
     //If user closes the window
     if (e.type == SDL_QUIT){
