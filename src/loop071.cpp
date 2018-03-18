@@ -94,7 +94,6 @@ const static std::string surfaceShaderCode = R"===(
 #extension GL_OES_standard_derivatives : require
 #endif
 
-uniform mediump float cycle_ratio;
 #define DEMOLOOP_M_PI 3.1459
 
 #ifdef VERTEX
@@ -105,8 +104,6 @@ vec4 position(mat4 transform_proj, mat4 model, vec4 vertpos) {
 
 #ifdef PIXEL
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
-  float cr = cycle_ratio;
-
   vec2 fw = fwidth(tc);
   float width = max(fw.x, fw.y);
   vec2 p0 = tc - .5 * width;
@@ -226,7 +223,6 @@ public:
     glm::mat4 transform;
 
     surfaceShader.attach();
-    surfaceShader.sendFloat("cycle_ratio", 1, &cycle_ratio, 1);
     gl.triangles(vertices.data(), vertices.size(), transform);
     surfaceShader.detach();
 

@@ -14,8 +14,6 @@ const Vertex quad[4] = {
 const glm::vec3 twoDAxis = {0, 0, 1};
 
 const static std::string shaderCode = R"===(
-uniform mediump float cycle_ratio;
-
 #define DEMOLOOP_M_PI 3.1459
 
 #ifdef VERTEX
@@ -42,7 +40,6 @@ float shape(vec2 diff, float radius){
 }
 
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 screen_coords) {
-  float t = cycle_ratio;
   tc = tc*2.-1.;
   // tc.x *= demoloop_ScreenSize.x/demoloop_ScreenSize.y;
 
@@ -64,7 +61,6 @@ public:
     const float PI = static_cast<float>(DEMOLOOP_M_PI);
 
     shader.attach();
-    shader.sendFloat("cycle_ratio", 1, &cycle_ratio, 1);
 
     for (uint32_t i = 0; i < NB_REPEAT; ++i) {
       float rep = static_cast<float>(i);
